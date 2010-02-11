@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/tracker30/!svn/ver/4271/tools/tracker-etl/trunk/src/com/ebay/tracker/defs
+END
+TableTransformDef.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/tracker30/!svn/ver/4267/tools/tracker-etl/trunk/src/com/ebay/tracker/defs/TableTransformDef.groovy
+END
+FieldTransformDef.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/tracker30/!svn/ver/4271/tools/tracker-etl/trunk/src/com/ebay/tracker/defs/FieldTransformDef.groovy
+END
+MergeDef.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/tracker30/!svn/ver/4268/tools/tracker-etl/trunk/src/com/ebay/tracker/defs/MergeDef.groovy
+END
