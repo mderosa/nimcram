@@ -16,7 +16,7 @@ package com.fisher.extract.defs;
 class FieldTransformDef {
 	def from
 	def to
-	def useSeq = false
+	def useGenerator = false
 	def isMeta = false
 	def fn
 	def lookup
@@ -27,14 +27,14 @@ class FieldTransformDef {
 		assert to, "Configuration Error: FieldTransformDef.to is a required parameter"
 		
 		def count = 0
-		if (useSeq) {count++}
+		if (useGenerator) {count++}
 		if (fn) {count++}
 		if (lookup) {count++}
 		if (count == 0) {
-			assert false, "Configuration Error: one of useSeq, fn, or lookup must be defined"
+			assert false, "Configuration Error: one of useGenerator, fn, or lookup must be defined"
 		}
 		if (count > 1) {
-			assert false, "Configuration Error: only one of useSeq, fn, or lookup should be defined"
+			assert false, "Configuration Error: only one of useGenerator, fn, or lookup should be defined"
 		}
 		
 		if (lookup) {

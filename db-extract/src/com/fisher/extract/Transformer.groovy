@@ -5,9 +5,12 @@ class Transformer {
 	
 	/**
 	 * use this constructor when there is a repository available 
+	 * <p>
+	 * The assert on the repository size has been removed as it gets in the way of incremental
+	 * development of the config files
 	 */
 	public Transformer(repository) {
-		assert repository.lookupTables.size() > 0, "expected the repository to have lookup table mappings"
+		//assert repository.lookupTables.size() > 0, "expected the repository to have lookup table mappings"
 		repo = repository
 	}
 	
@@ -32,7 +35,7 @@ class Transformer {
 			def fld = transformDef.fieldTransformDefs[i]
 			if (!fld.includeInInsert) {return}
 			
-			if (fld.useSeq) {
+			if (fld.useGenerator) {
 				temp.put fld.to, "{autogen}"
 			} else if (fld.fn) {
 				temp.putAll transformFunctionalField(fld, recSource, elmt)
@@ -52,7 +55,7 @@ class Transformer {
 	 * This is the transformation for ref data that needs to be merged into the target database.
 	 * The general form of the transform is
 	 * [pk, data1, data2,...dataN] -> [data1', data2',...dataN']
-	 * Here useSeq fields are eliminated from the transformed data set as they will be generated
+	 * Here useGenerator fields are eliminated from the transformed data set as they will be generated
 	 * in Database with a seq.nextval in the insert clause.
 	 */
 	def transformRefData(mergeDef, recSource, env) {
@@ -61,7 +64,7 @@ class Transformer {
 			def fld = mergeDef.fieldTransformDefs[i]
 			if (!fld.includeInInsert) {return}
 			
-			if (fld.useSeq) {
+			if (fld.useGenerator) {
 				//pass
 			} else if (fld.fn) {
 				temp.putAll transformFunctionalField(fld, recSource, elmt)

@@ -51,7 +51,7 @@ class LookupRepository {
 		assert mapping.fieldTransformDefs != null, "unexpected missing field definitions"
 		for (i in (0..<mapping.fieldTransformDefs.size())) {
 			def fld = mapping.fieldTransformDefs[i]
-			if (fld.useSeq) {
+			if (fld.useGenerator) {
 				def pkSource = recSrc[i]
 				if (!existsLookupTableEntry(mapping.to)) {
 					createNewLookupTableEntry(mapping.to)

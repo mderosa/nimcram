@@ -3,6 +3,7 @@ package com.fisher.extract;
 import org.apache.log4j.Logger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import com.fisher.extract.defs.DynamicLookupExpanderDef
 
 class Main {
 	def static logger = Logger.getLogger(Main.class.getName())
@@ -58,16 +59,29 @@ class Main {
 	
 	static def loadSourceData(params, db, env, repo) {
 		def trans = new Transformer(repo);
-		for (mapping in params.configuration.mappings) {
-			println 'begin: transfer to ' + mapping.to
-			def recsSrc = db.readSource(mapping, env)
-			for (recSrc in recsSrc) {
-				def recTgt = trans.transformSourceData(mapping, recSrc, env)
-				def key = db.writeTargetData(mapping, recTgt)
-				repo.updateRepo mapping, recSrc, key
+		for (tblTransDef in params.configuration.mappings) {
+			if (tblTransDef instanceof DynamicLookupExpanderDef) {
+				extendLookupTable(db, repo, tblTransDef)
+			} else {
+				println 'begin: transfer to ' + tblTransDef.to
+				def recsSrc = db.readSource(tblTransDef, env)
+				for (recSrc in recsSrc) {
+					def recTgt = trans.transformSourceData(tblTransDef, recSrc, env)
+					def key = db.writeTargetData(tblTransDef, recTgt)
+					repo.updateRepo tblTransDef, recSrc, key
+				}
+				println "finish: transfer to " + tblTransDef.to
 			}
-			println "finish: transfer to " + mapping.to
 		}
+	}
+	
+	/**
+	 * extendLookupTable :: Database -> Repository -> DynamicLookupExpanderDef -> () 
+	 */
+	static def extendLookupTable(db, repo, lookupExpanderDef) {
+		def existingMap = repo.lookupTables[lookupExpanderDef.sourceKeyName]
+		def newMap = db.queryExpandedLookup(existingMap, lookupExpanderDef)
+		repo.lookupTables[lookupExpanderDef.createKeyName] = newMap
 	}
 	
 }

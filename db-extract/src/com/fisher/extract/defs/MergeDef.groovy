@@ -12,7 +12,8 @@ class MergeDef {
 	def fieldTransformDefs
 	def sourceSql
 	def conditionalSql
-	def tableSeq
+	def idGenerator
+	def idGeneratorType
 	def logModificationData = false
 	
 	def assertInvariant() {
@@ -25,8 +26,11 @@ class MergeDef {
 			}
 		}
 		
-		if (tableSeq) {
-			assert tableSeq.contains(to), "Warning: in most cases the sequence for a table in the tracker db is named after the table itself"
+		if (idGenerator) {
+			assert idGeneratorType, "Configuration Error: MergeDef.idGeneratorType must be specified when idGenerator is specified"
+			if (idGeneratorType == IdGeneratorType.SEQUENCE) {
+				assert idGenerator.contains(to), "Warning: in most cases the sequence for a table in the tracker db is named after the table itself"
+			}
 		}
 	}
 }

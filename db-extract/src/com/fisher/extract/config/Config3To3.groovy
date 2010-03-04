@@ -7,7 +7,7 @@ class Config3To3 extends Config {
 	
 	def mappings = [
 	    new TableTransformDef(to: "workflow", fieldTransformDefs: [
-	        new FieldTransformDef(from: "id", to: "id", useSeq: true),
+	        new FieldTransformDef(from: "id", to: "id", useGenerator: true),
 	        new FieldTransformDef(from: "name", to: "name", fn: {it}),
 			new FieldTransformDef(from: "type", to: "type", fn: {it}),
 			new FieldTransformDef(from: "metadata", to: "metadata", fn: {it}),
@@ -18,7 +18,8 @@ class Config3To3 extends Config {
 			new FieldTransformDef(from: "dedicated_team_id", to: "dedicated_team_id", lookup: "dedicated_team")
 		],
 	    sourceSql: new SimpleTemplateEngine().createTemplate(""),
-	    tableSeq: "SEQ_WORKFLOW_ID")
+	    idGenerator: "SEQ_WORKFLOW_ID",
+		idGeneratorType: IdGeneratorType.SEQUENCE)
 	
 	]
 	

@@ -21,7 +21,7 @@ class Config2To3 extends Config {
 	
 	def mappings = [
 	    new TableTransformDef(to: "workflow", logModificationData: true, fieldTransformDefs: [
-	        new FieldTransformDef(from: "parentid", to: "id", useSeq: true),
+	        new FieldTransformDef(from: "parentid", to: "id", useGenerator: true),
 			new FieldTransformDef(from: "parent_title", to: "name", fn: {it}),
 			new FieldTransformDef(from: 'type', to: 'type', fn: {it}),
 			new FieldTransformDef(from: 'metadata', to: 'metadata', fn: {rec, elmt ->
@@ -54,10 +54,11 @@ FROM ctfeature_parent cp
 INNER JOIN project_typess pt ON pt.project_type_id = cp.project_type_id
 where parentid = ${projectId}
 	    		'''),
-	    tableSeq: "seq_workflow_id"),
+	    idGenerator: "seq_workflow_id",
+		idGeneratorType: IdGeneratorType.SEQUENCE),
 	    
 	    new TableTransformDef(to: "project_task", logModificationData: true, fieldTransformDefs: [
-	        new FieldTransformDef(from: "taskid", to: "id", useSeq: true),
+	        new FieldTransformDef(from: "taskid", to: "id", useGenerator: true),
 			new FieldTransformDef(from: "task_name", to: "name", fn: {it}),
 			new FieldTransformDef(from: 'user_id', to: 'person_id', lookup: "person"),
 			new FieldTransformDef(from: 'parentid', to: 'project_id', lookup: 'workflow'),
@@ -73,7 +74,8 @@ INNER JOIN taskss t on t.parentid = cp.parentid
 INNER JOIN task_assignments ta on ta.task_id = t.task_id
 WHERE cp.parentid = ${projectId}
    	    		'''),
-   	    tableSeq: "seq_project_task_id")
+   	    idGenerator: "seq_project_task_id",
+		idGeneratorType: IdGeneratorType.SEQUENCE)
 	]
 	
 	def dbSource = [url: "cfdb04qa.vip.its.ebay.com", sid: "cfdb04", loginName: "bugsuser", password: "bugs_test"]
@@ -112,7 +114,7 @@ WHERE cp.parentid = ${projectId}
 	
 	def merges = [
 	    new MergeDef(to: "release", fieldTransformDefs: [
-	        new FieldTransformDef(from: "train_id", to: "id", useSeq: true),
+	        new FieldTransformDef(from: "train_id", to: "id", useGenerator: true),
 	        new FieldTransformDef(from: "weeknumber", to: "trainweek", fn: {it}),
 	        new FieldTransformDef(from: "name", to: "name", fn: {it}),
 	        new FieldTransformDef(from: "releasestartdate", to: "start_date", fn: {it}),
@@ -129,7 +131,8 @@ WHERE cp.parentid = ${projectId}
 	    	GROUP BY t.train_id, t.weeknumber
 	    	HAVING min(c.releasestartdate) > sysdate - 90'''),
 	    conditionalSql: new SimpleTemplateEngine().createTemplate('SELECT 1 FROM release WHERE trainweek = ${trainweek}'),
-	    tableSeq: "seq_release_id")
+	    idGenerator: "seq_release_id",
+		idGeneratorType: IdGeneratorType.SEQUENCE)
 	]
 	
 }

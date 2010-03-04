@@ -22,8 +22,9 @@ class Menu {
 		println "Do you want to move data"
 		println "1: from a legacy tracker db to a current tracker db?"
 		println "2: between two current tracker dbs?"
-		println "3: Quit"
-		print "('1','2', or '3'):"
+		println "3: from a legacy tracker db to a Project.net db?"
+		println "4: Quit"
+		print "('1','2', '3' or '4'):"
 		def configuration
 		def scan = new Scanner(System.in)
 		try {
@@ -35,6 +36,9 @@ class Menu {
 					configuration = new Config3To3()
 					break;
 				case 3:
+					configuration = new Config2ToPnet()
+					break;
+				case 4:
 					System.exit(0);
 				default:
 					println "Invalid input"

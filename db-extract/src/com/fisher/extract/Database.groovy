@@ -2,6 +2,9 @@ package com.fisher.extract;
 
 import groovy.sql.Sql
 import org.apache.log4j.Logger
+import com.fisher.extract.defs.IdGeneratorType
+import com.fisher.extract.defs.WriteMethod
+import com.fisher.extract.defs.OutputParamsLocation
 
 class Database {
 	def static logger = Logger.getLogger(Database.class.getName())
@@ -26,11 +29,22 @@ class Database {
 		dbSource.rows(selectSql)
 	}
 	
-	def getNextKey(transformDef) {
-		if (transformDef.tableSeq == null) {
+	def getNextKey(tblTransformDef) {
+		if (tblTransformDef.idGenerator == null) {
 			return null
 		}
-		def sql = "SELECT " + transformDef.tableSeq + ".nextval FROM dual"
+		
+		def sql
+		switch (tblTransformDef.idGeneratorType) {
+			case IdGeneratorType.SEQUENCE:
+				sql = "SELECT " + tblTransformDef.idGenerator + ".nextval FROM dual"
+				break;
+			case IdGeneratorType.INCREMENT:
+				sql = "SELECT max(" + tblTransformDef.targetPrimaryKey() + ") + 1 FROM " + tblTransformDef.to
+				break;
+			default:
+				assert "A valid value of idGeneratorType was not found for table " + tblTransformDef.to
+		}
 		def newKey
 		dbTarget.eachRow(sql) { row ->
 			newKey = row[0]
@@ -39,14 +53,27 @@ class Database {
 	}
 	
 	/**
-	 * writeTargetData :: transformDef -> transformedDataRec -> Integer
+	 * writeTargetData :: TableTransformDef -> transformedDataRec -> Integer
+	 */
+	def writeTargetData(tblTransDef, recTarget) {
+		if (tblTransDef.writer.method == WriteMethod.SQL) {
+			_writeTargetDataViaSql(tblTransDef, recTarget)
+		} else if (tblTransDef.writer.method == WriteMethod.PROC) {
+			_writeTargetDataViaStoredProc(tblTransDef, recTarget)
+		} else {
+			assert false, "invalid WriteMethod encountered"
+		}
+	}
+	
+	/**
+	 * writeTargetData :: TableTransformDef -> transformedDataRec -> Integer
 	 * <p>
-	 * After writing a new record to the database we return the primary key of '
+	 * After writing a new record to the database we return the primary key of
 	 * the newly inserted record
 	 */
-	def writeTargetData(transformDef, recTarget) {
-		def insertSql = this.transformDefToInsert(transformDef)
-		def nextKey = getNextKey(transformDef)
+	def _writeTargetDataViaSql(tblTransDef, recTarget) {
+		def insertSql = this.transformDefToInsert(tblTransDef)
+		def nextKey = getNextKey(tblTransDef)
 		
 		def params = recTarget.collect {k, v -> v}
 		if (nextKey) {
@@ -61,6 +88,42 @@ class Database {
 		logger.debug insertSql; logger.debug params.toString()
 		dbTarget.executeInsert(insertSql, params)
 		
+		return nextKey
+	}
+	
+	/**
+	 * writeTargetData :: TableTransformDef -> transformedDataRec -> Integer
+	 * <p>
+	 * After writing a new record to the database we return the primary key of
+	 * the newly inserted record
+	 */
+	def _writeTargetDataViaStoredProc(tblTransDef, recTarget) {
+		def nextKey
+		if (tblTransDef.idGeneratorType == IdGeneratorType.SEQUENCE) {
+			nextKey = getNextKey(tblTransDef)
+		}
+		def params = recTarget.collect {k, v -> v}
+		if (nextKey) {
+			params = params.collect {
+				if (it == "{autogen}") {
+					nextKey
+				} else {
+					it
+				}
+			}
+		}
+		def allParams
+		if (tblTransDef.writer.outputParams && tblTransDef.writer.outputParamsLocation == OutputParamsLocation.PRE) {
+			allParams = tblTransDef.writer.outputParams + params
+		} else {
+			allParams = params + tblTransDef.writer.outputParams
+		}
+		logger.debug tblTransDef.writer.statement; logger.debug allParams.toString()
+		dbTarget.call(tblTransDef.writer.statement, allParams)
+
+		if (tblTransDef.idGeneratorType == IdGeneratorType.INCREMENT) {
+			nextKey = getNextKey(tblTransDef) - 1
+		}
 		return nextKey
 	}
 	
@@ -135,8 +198,8 @@ class Database {
 		mergeDef.fieldTransformDefs.each {
 			if (it.includeInInsert) {
 				flds << it.to
-				if (it.useSeq) {
-					vals << mergeDef.tableSeq + ".nextval"
+				if (it.useGenerator) {
+					vals << mergeDef.idGenerator + ".nextval"
 				} else {
 					vals << "?"
 				}
@@ -156,6 +219,29 @@ class Database {
 			flds << "modified_date" << "modified_by"
 			vals << "?" << "?"
 		}
+	}
+	
+	/**
+	 * queryExpandedLookup :: Map -> DynamicLookupExpander -> Map
+	 * <p>
+	 * This function performs a lookup in the target database expanding an existing map so that
+	 * the source keys in the original map point are retained but point to new derived keys.
+	 * <p>
+	 * For example if we start with the map [sourceProjId1 : targetProjId1, sourceProjId2 : targetProjId2] 
+	 * but we also need a mapping from projectIds in the source database to planIds in the 
+	 * target database, [sourceProjId1 : targetPlanId1, sourceProjId2 : targetPlanId2].  Then this
+	 * function will do that transformation
+	 */
+	def queryExpandedLookup(existingMap, dynamicExpander) {
+		def newMap = [:]
+		existingMap.each {srcDbKey, tgtDbValOld ->
+			def tgtDbValNew = dbTarget.firstRow(dynamicExpander.lookupSql, [tgtDbValOld])
+			assert tgtDbValNew.size() == 1, "expecting only one result as for the moment we only handle unique mappings"
+			tgtDbValNew.each {k, v ->
+				newMap[srcDbKey] = v
+			}
+		}
+		return newMap
 	}
 	
 }
