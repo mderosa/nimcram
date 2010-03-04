@@ -38,7 +38,7 @@ class build {
 		ant.jar(destfile: "${dist_dir}/${file_name}.jar", basedir: "${build_dir}")
 		{
 			manifest {
-				attribute( name: 'Main-Class', value: "com.ebay.tracker.Main" )
+				attribute( name: 'Main-Class', value: "com.fisher.extract.Main" )
 				attribute( name: 'Class-Path', value: "../lib/ojdbc14.jar ../lib/groovy-all-1.7.0.jar " +
 						"../lib/commons-beanutils-1.8.2.jar ../lib/commons-collections-3.2.1.jar " +
 						"../lib/commons-lang-2.4.jar ../lib/commons-logging-1.1.1.jar " +
