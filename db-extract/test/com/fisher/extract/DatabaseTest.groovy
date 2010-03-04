@@ -7,6 +7,7 @@ import org.junit.Before
 import groovy.text.SimpleTemplateEngine
 import com.fisher.extract.defs.FieldTransformDef
 
+
 class DatabaseTest extends GroovyTestCase {
 	def basicDef
 	

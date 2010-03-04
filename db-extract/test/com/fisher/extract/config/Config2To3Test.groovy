@@ -1,0 +1,18 @@
+package com.fisher.extract.config;
+
+import groovy.util.GroovyTestCase;
+import static org.junit.Assert.*
+import org.junit.Test
+
+class Config2To3Test extends GroovyTestCase {
+	
+	/**
+	 * Our configuration files should always be valid
+	 */
+	@Test
+	public final void testAssertPasses() {
+		Config2To3 config = new Config2To3()
+		config.assertInvariant()
+		assert true, "we should always pass"
+	}
+}

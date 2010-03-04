@@ -1,0 +1,17 @@
+package com.ebay.tracker.config;
+
+import org.junit.Test;
+import static org.junit.Assert.*
+
+class Config2ToPnetTest extends GroovyTestCase {
+	
+	/**
+	 * Configuration files should always be in valid form
+	 */
+	@Test
+	public final void testConfigurationIntegrity() {
+		Config2ToPnet config = new Config2ToPnet();
+		config.assertInvariant()
+		assert true, "we should always pass this test"
+	}
+}

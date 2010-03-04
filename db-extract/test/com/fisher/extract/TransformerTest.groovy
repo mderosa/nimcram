@@ -21,7 +21,7 @@ class TransformerTest extends GroovyTestCase {
 				new FieldTransformDef(from: "person_id", fn: {it}, to: "id"),
 				new FieldTransformDef(from: "name", fn: {"yo"}, to: "login_name")],
 			sourceSql: new SimpleTemplateEngine().createTemplate(""),
-			tableSeq: "seq")
+			idGenerator: "seq")
 		
 		repo = new LookupRepository()
 		repo.lookupTables.put "project_type", [1:2, 2:3, 3:4]
@@ -59,7 +59,7 @@ class TransformerTest extends GroovyTestCase {
 	 */
 	@Test
 	public void testIncompleteTransformSourceData() {
-		basicDef.fieldTransformDefs[0].useSeq = true
+		basicDef.fieldTransformDefs[0].useGenerator = true
 		def data = [person_id: 1, name: "marc"]
 		
 		def trn = new Transformer()
@@ -134,6 +134,26 @@ class TransformerTest extends GroovyTestCase {
 		def trans = new Transformer()
 		def actual = trans.transformSourceData(basicDef, recSrc, environment)
 		assert [id: 1, login_name: "yo"] == actual
+	}
+	
+	/**
+	 * Particularly for stored proc updates we want to be able to run a stored proc where we are not feeding
+	 * the new pk to the proc -- we will get it from the table of interest after the call to the stored proc.
+	 * For this use case we want the table transform def to specify what the primary key is but we dont
+	 * want the primary key to be added to the transformed dataset by the Transformer
+	 */
+	@Test
+	public void testPrimaryKeysMardkedAsDontIncludeAreNotIncluded() {
+		def ttDef = new ConfigElementFactory().getRoleToRoleTableTransformDef();
+		ttDef.fieldTransformDefs[0].includeInInsert = false
+		ttDef.idGenerator = 'default'
+		ttDef.idGeneratorType = IdGeneratorType.INCREMENT
+		ttDef.logModificationData = false
+		def recSrc = [id: null, name: 'name', description: 'description']
+		
+		def trans = new Transformer()
+		def actual = trans.transformSourceData(ttDef, recSrc, environment)
+		assert [name: 'name', description: 'description'] == actual
 	}
 
 }

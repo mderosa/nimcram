@@ -24,11 +24,11 @@ class LookupRepositoryTest extends GroovyTestCase {
 		
 		mapping = 
 		    new TableTransformDef(to: "workflow", fieldTransformDefs: [
-				new FieldTransformDef(from: "id", fn: {it}, to: "id", useSeq: true),
+				new FieldTransformDef(from: "id", fn: {it}, to: "id", useGenerator: true),
 				new FieldTransformDef(from: "name", fn: {it}, to: "name"),
 				new FieldTransformDef(from: "type", fn: {it}, to: "type")],
 			sourceSql: new SimpleTemplateEngine().createTemplate("SELECT id,name,type FROM workflow"),
-			tableSeq: "")
+			idGenerator: "")
 	}
 	
 	/**
