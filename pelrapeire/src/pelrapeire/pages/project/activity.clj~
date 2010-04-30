@@ -1,0 +1,11 @@
+
+(ns compjtest.pages.project.activity
+  (:use compjtest.tiles))
+
+(defn show-current-activity []
+  [:table 
+   [:tr
+    [:td {:class "icebox"}]
+    [:td {:class "active"}]
+    [:td {:class "live"}]]])
+     
