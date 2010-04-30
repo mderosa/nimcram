@@ -1,0 +1,3 @@
+
+building
+	-From the project root type mvn war:war
