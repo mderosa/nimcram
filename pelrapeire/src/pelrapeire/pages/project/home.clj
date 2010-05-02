@@ -1,4 +1,4 @@
-(ns pelrapeire.pages.project.activity
+(ns pelrapeire.pages.project.home
   (:use pelrapeire.tiles))
 
 (def arrows

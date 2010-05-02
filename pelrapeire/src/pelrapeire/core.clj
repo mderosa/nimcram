@@ -3,7 +3,7 @@
 	ring.adapter.jetty 
 	hiccup.core
 	pelrapeire.tiles
-	pelrapeire.pages.project.activity
+	pelrapeire.pages.project.home
 	clojure.contrib.debug)
   (:import (org.mortbay.jetty.handler ResourceHandler HandlerList)
 	   (org.mortbay.jetty Server)))
