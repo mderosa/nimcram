@@ -3,7 +3,7 @@
 	ring.adapter.jetty 
 	hiccup.core
 	pelrapeire.tiles
-	pelrapeire.pages.project.home
+	pelrapeire.pages.projects.n.home
 	clojure.contrib.debug)
   (:import (org.mortbay.jetty.handler ResourceHandler HandlerList)
 	   (org.mortbay.jetty Server)))
@@ -32,9 +32,9 @@
 	      [:div "got here"]))
 
 (defroutes main-routes
-  (GET "/projects/10/public/home" []
+  (GET "/projects/10/home" []
 ;;       (debug-repl)
-       (project-tile "current project activity" show-current-activity))
+       (project-tile "current project activity" show-page "/js/projects/n/home.js"))
   (POST "/doit" []
 	(result))
   (ANY "*" []

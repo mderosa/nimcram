@@ -28,13 +28,15 @@
    [:a {:href "http://pages.ebay.com/sitemap.html"} "Site Map"]
    [:a {:href "http://pages.ebay.com/help/index.html"} "Help"]])
 
-(defn project-tile [title content]
+(defn project-tile [title content script]
   (html 
    [:html
     [:head
      [:meta {:content "text/html;charset=UTF-8" :http-equiv "Content Type"}]
      [:link {:href "/js/yui/assets/yui.css" :type "text/css" :rel "stylesheet"}]
      [:link {:href "/css/pelrapeire.css" :type "text/css" :rel "stylesheet"}]
+     [:script {:src "/js/yui/build/yui/yui.js"}]
+     [:script {:src script}]
      [:title title]]
     [:body
      [:div {:class "header"} (header)]
