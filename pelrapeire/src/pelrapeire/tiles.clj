@@ -2,18 +2,29 @@
   (:use hiccup.core))
       
 (defn header []
-  [:img {:src "/img/logoEbay_x45.gif"}])
+  [:div
+   [:img {:src "/img/logoEbay_x45.gif"}]
+   [:span {:style "padding-bottom:5px;font-size:20px"} "PicoMinMin"]
+   [:div {:class "gh-col"} 
+    [:b {:class "gh-c1"}]
+    [:b {:class "gh-c2"}]
+    [:b {:class "gh-c3"}]
+    [:b {:class "gh-c4"}]
+    [:b {:class "gh-c5"}]
+    [:b {:class "gh-c6"}]
+    [:b {:class "gh-c7"}]
+    [:div {:class "gh-clr"}]]
+   [:div {:id "headerWrapper" :class "gh-hbw"}
+    [:div {:class "gh-hb"}
+     [:div {:class "gh-mn"}
+      [:a {:id "BrowseCategories" :href "/projects/10/public/home"} "OUR SPACE"]
+      [:a {:id "BrowseCategories" :href "/projects/10/private/home"} "MY SPACE"]
+]]]])
 
 (defn footer []
   [:div
    [:a {:href "http://pages.ebay.com/aboutebay.html"} "About eBay"]
    [:a {:href "http://www2.ebay.com/aw/marketing.shtml"} "Announcements"]
-   [:a {:href "http://hub.shop.ebay.com/"} "Buy Hub"]
-   [:a {:href "http://pages.ebay.com/securitycenter/index.html"} "Security Center"]
-   [:a {:href "http://resolutioncenter.ebay.com"} "Resolution Center"]
-   [:a {:href "http://pages.ebay.com/buy/toolsf.html"} "Buyer Tools"]
-   [:a {:href "http://pages.ebay.com/help/policies/overview.html" :rel "nofollow"} "Policies"]
-   [:a {:href "http://www.ebaymainstreet.com"} "Government Relations"]
    [:a {:href "http://pages.ebay.com/sitemap.html"} "Site Map"]
    [:a {:href "http://pages.ebay.com/help/index.html"} "Help"]])
 
@@ -21,6 +32,9 @@
   (html 
    [:html
     [:head
+     [:meta {:content "text/html;charset=UTF-8" :http-equiv "Content Type"}]
+     [:link {:href "/js/yui/assets/yui.css" :type "text/css" :rel "stylesheet"}]
+     [:link {:href "/css/pelrapeire.css" :type "text/css" :rel "stylesheet"}]
      [:title title]]
     [:body
      [:div {:class "header"} (header)]

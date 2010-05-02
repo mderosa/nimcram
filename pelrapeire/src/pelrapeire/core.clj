@@ -32,7 +32,7 @@
 	      [:div "got here"]))
 
 (defroutes main-routes
-  (GET "/projects/10/activity" []
+  (GET "/projects/10/public/home" []
 ;;       (debug-repl)
        (project-tile "current project activity" show-current-activity))
   (POST "/doit" []
