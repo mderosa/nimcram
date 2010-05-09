@@ -61,6 +61,10 @@ body {
     position:relative;
 }
 
+table.buckets {
+    width: 100%;
+}
+
 table.buckets td.bucket {
     width: 33%;
     padding: 2px;

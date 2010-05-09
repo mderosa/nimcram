@@ -30,8 +30,11 @@
       [:span
        [:a {:href "#" :style "margin-left:20px"} "[new]"]]]
      [:div {:class "tasks"}
+      [:table {:class "task"} [:tr [:td]]]
+      (make-task :north-east "another task that has a really really really long title that takes up a lot of space and may push stuff out of the way" 0)
       (make-task :north-east "some task here" 0)
-      (make-task :north-east "another task that has a really really really long title that takes up a lot of space and may push stuff out of the way" 0)]]
+      (make-task :north-east "some task here2" 0)
+]]
     [:td {:id "active" :class "bucket"}
      [:div {:class "bmrcp-n"}
       [:div {:class "bmrcp-e"}
