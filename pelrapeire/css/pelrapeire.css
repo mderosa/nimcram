@@ -75,6 +75,10 @@ div.tasks {
     height: 300px; //this just gives a default value that keeps elements from jumping around on load
 }
 
+td.bucket table.yui3-dd-drop-over, td.bucket div.yui3-dd-drop-over.bmrcp-head {
+    border-bottom: 2px solid black;
+}
+
 table.task {
     border: 1px solid #CCC;
     margin: 0;
