@@ -33,7 +33,9 @@
    [:html
     [:head
      [:meta {:content "text/html;charset=UTF-8" :http-equiv "Content Type"}]
-     [:link {:href "/js/yui/assets/yui.css" :type "text/css" :rel "stylesheet"}]
+     [:link {:href "/js/yui/build/cssreset/reset.css" :type "text/css" :rel "stylesheet"}]     
+     [:link {:href "/js/yui/build/cssfonts/fonts.css" :type "text/css" :rel "stylesheet"}]
+     [:link {:href "/js/yui/build/cssgrids/grids.css" :type "text/css" :rel "stylesheet"}]
      [:link {:href "/css/pelrapeire.css" :type "text/css" :rel "stylesheet"}]
      [:script {:src "/js/yui/build/yui/yui.js"}]
      [:script {:src script}]
