@@ -66,3 +66,4 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', function(Y) {
    });
 
 });
+
