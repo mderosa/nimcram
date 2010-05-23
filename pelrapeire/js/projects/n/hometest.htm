@@ -1,0 +1,45 @@
+
+<html>
+	<head>
+		<script type="text/javascript" charset="utf-8" src="../../yui/build/yui/yui-debug.js"></script>
+		<script type="text/javascript" charset="utf-8" src="./home.js" ></script>
+	</head>
+	<body class="yui3-skin-sam">
+		<h1>title</h1>
+		
+		<script type="text/javascript">
+			YUI({
+    			base: '../../yui/build/',
+    			filter: "debug",
+    			logInclude: { TestRunner: true}
+			}).use('test','console', function (Y) {
+				
+				var testcase = new Y.Test.Case({
+					name: "home test",
+					
+					testNothing: function() {
+						Y.assert(true, "this should always pass");
+					},
+					
+					testNothingElse: function() {
+						Y.Assert.areEqual(1, 2);
+						Y.assert(false, "this should never pass");
+					}
+					
+				});
+				
+				//initialize the console
+			    var yconsole = new Y.Console({
+			        newestOnTop: false                   
+			    });
+			    yconsole.render('#logger');
+			 
+			    //run the tests
+				Y.Test.Runner.add(testcase);
+			    Y.Test.Runner.run();
+
+			});
+		</script>
+		
+	</body>
+</html>
