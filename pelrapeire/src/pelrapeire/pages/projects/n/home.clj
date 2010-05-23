@@ -1,5 +1,7 @@
 (ns pelrapeire.pages.projects.n.home
-  (:use pelrapeire.tiles))
+  (:use pelrapeire.pages.tiles))
+
+(def title "current project activity")
 
 (def arrows
  {:north "&#8679;" 
