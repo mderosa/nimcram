@@ -28,7 +28,7 @@
    [:a {:href "http://pages.ebay.com/sitemap.html"} "Site Map"]
    [:a {:href "http://pages.ebay.com/help/index.html"} "Help"]])
 
-(defn project-tile [pageDef]
+(defn projects-tile [pageDef]
   (html 
    [:html
     [:head
@@ -42,5 +42,5 @@
      [:title (pageDef :title)]]
     [:body
      [:div {:class "header"} (header)]
-     [:div {:class "content"} (pageDef :entry-point)]
+     [:div {:class "content"} ((pageDef :entry-point))]
      [:div {:class "footer"} (footer)]]]))

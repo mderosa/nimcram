@@ -7,6 +7,17 @@
   (:import (org.mortbay.jetty.handler ResourceHandler HandlerList)
 	   (org.mortbay.jetty Server)))
 
+(defn html-doc [title & body]
+  (html
+   [:html
+    [:head
+     [:title title]]
+    [:body
+     [:div
+      [:h2
+       [:a {:href "/init"} "Home"]]]
+     body]]))
+
 (defn result []
     (html-doc "Result"
 	      [:div "got here"]))
@@ -16,7 +27,7 @@
 
 (defroutes main-routes
   (GET "/projects/10/home" []
-       (maps-to pelrapeire.pages.pagedefinition/project-home))
+       (maps-to pelrapeire.pages.pagedefinition/projects-n-home))
   (POST "/doit" []
 	(result))
   (ANY "*" []

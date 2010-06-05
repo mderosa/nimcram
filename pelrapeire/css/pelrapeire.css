@@ -93,6 +93,23 @@ table.task td.statistic {
     width: 10%;
 }
 
+form {
+	padding: 10px;
+}
+form label {
+	display: block;
+}
+form input, form textarea {
+	width: 100%;
+}
+form fieldset {
+	border: 1px solid #CCC;
+	padding: 4px; 
+}
+form button:hover {
+	cursor: pointer;
+}
+
 a:active, a:link, .g-novisited a:visited {
 color:#0000CC;
 text-decoration:none;

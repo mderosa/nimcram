@@ -21,7 +21,13 @@
        [:td {:class "statistic"} (arrows progress)]
        [:td {:class "statistic"} (str days)]]])
 
-(defn show-page []
+(defn 
+  #^{:target-content-type "text/html"
+     :depends-on {:js ["/js/projects/n/home.js"]
+		  :css ["/css/pelrapeire.css"]
+		  }
+     }
+  show []
   [:table {:class "buckets"}
    [:tr
     [:td {:id "backburner" :class "bucket"}
@@ -30,7 +36,7 @@
        [:div {:class "bmrcp-w"}]]]
      [:div {:class "bmrcp-head"} "waiting to start"
       [:span
-       [:a {:href "#" :style "margin-left:20px"} "[new]"]]]
+       [:a {:id "new" :href "#" :style "margin-left:20px"} "[new]"]]]
      [:div {:class "tasks"}
       (make-task :north-east "another task that has a really really really long title that takes up a lot of space and may push stuff out of the way" 0)
       (make-task :north-east "some task here" 0)
