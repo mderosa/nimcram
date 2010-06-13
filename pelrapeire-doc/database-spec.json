@@ -1,0 +1,29 @@
+
+//user example spec
+{
+	'_id': 'Uuid (email)',
+	'type': 'user',
+	'password': 'String'
+	'projects-im-contributing-to': ['Uuid']
+	'projects-im-following': ['Uuid']
+}
+
+//project
+{
+	'_id': 'Uuid (project name)'
+	'type': 'project'	
+}
+
+//task
+{
+	'_id': 'Uuid',
+	'type': 'task',
+	'title': 'String', 
+	'specification': 'String',
+	'project': 'Uuid',
+	'solution-team': ['Uuid'],
+	'delivers-user-functionality': 'Boolean'
+	'task-start-date': 'Date',
+	'task-complete-date': 'Date',
+	'progress': "proposed|analysis active|development active|qa active|deployed"
+}
