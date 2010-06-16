@@ -4,3 +4,4 @@
   (:require pelrapeire.pages.tilestest))
 
 (run-tests 'pelrapeire.pages.tilestest)
+(run-tests 'pelrapeire.repository.taskstest)
