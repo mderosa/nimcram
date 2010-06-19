@@ -41,6 +41,24 @@
 	rsp-handler (BasicResponseHandler.)]
     (. http-client execute post rsp-handler)))
 
+
+(defn 
+  #^{:tag String
+     :doc "db -> db + obj"
+     :throws "throws an HttpResponseException for response codes >= 400"
+     }
+  create-named-doc [#^String id #^String json cfg]
+  {:pre [(not (nil? id))
+	 (not (. json contains "_id")) (not (. json contains "_rev"))]}
+  (let [http-client (DefaultHttpClient.)
+	entity (StringEntity. json)
+	put (doto (HttpPut. (str (:url cfg) id))
+	      (.addHeader "Content-Type" "application/json")
+	      (.addHeader "Accept" "application/json")
+	      (.setEntity entity))
+	rsp-handler (BasicResponseHandler.)]
+    (. http-client execute put rsp-handler)))
+
 (defn 
   #^{:doc "deletion from the database by revision number"}
   delete-doc [id rev cfg]

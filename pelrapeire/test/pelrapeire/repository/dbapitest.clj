@@ -43,8 +43,15 @@
 
 (deftest test-overwrite
   (testing "we should be able to overwrite an existing record"
-    (let [original (read-json-string (trace (get-doc "101" db-config-int)))
+    (let [original (read-json-string (get-doc "101" db-config-int))
 	  org-mod (dissoc original "_id")
 	  rsp (overwrite-doc (original "_id") (json-str org-mod) db-config-int)]
       (is (not (= (original "_rev") (extract-rev rsp)))))))
 
+(deftest test-create-named-doc
+  (testing "we should be able to create a new doc by name"
+    (let [rsp1 (create-named-doc "deleteme" "{\"note\": \"this should not exists in the database if so it is an error in the testing code\"}" db-config-int)
+	  rev (extract-rev rsp1)
+	  rsp2 (delete-doc "deleteme" rev db-config-int)]
+      (is (. rsp1 contains "ok"))
+      (is (not (nil? rev))))))
