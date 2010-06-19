@@ -1,2 +1,0 @@
-
-(ns pelrapeire.repository.projects)

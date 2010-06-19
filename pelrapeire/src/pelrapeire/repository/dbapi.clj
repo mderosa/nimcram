@@ -1,5 +1,7 @@
 
-(ns pelrapeire.repository.dbapi
+(ns 
+    #^{:doc "a low level string based api to couch db"}
+  pelrapeire.repository.dbapi
   (:use pelrapeire.repository.uuid
 	clojure.contrib.json.read
 	clojure.contrib.json.write)
@@ -12,7 +14,7 @@
 
 (defn 
   #^{:tag String
-     :doc "Gets an existing document from the database"
+     :doc "gets an existing document from the database"
      :throws "throws an HttpResponseException for any https response code >= 400"
      }
   get-doc [#^String id cfg]
@@ -25,7 +27,6 @@
 
 (defn 
   #^{:tag String
-     :db-resp-ok "{'ok':true,'id':'11','rev:'1-55fa92c1a80a923f12ca22e79eefded1'}"
      :doc "db -> db + obj(system generated id)"
      :throws "throws an HttpResponseException for response codes >= 400"
      }
@@ -41,8 +42,7 @@
     (. http-client execute post rsp-handler)))
 
 (defn 
-  #^{:doc "for the delete request we need the the task number in the url and also 
-the revision number as a parameter."}
+  #^{:doc "deletion from the database by revision number"}
   delete-doc [id rev cfg]
   {:pre [(not (nil? id))
 	 (not (nil? rev))]}
@@ -54,7 +54,6 @@ the revision number as a parameter."}
 
 (defn 
   #^{:tag String
-     :db-resp-ok "{'ok':true,'id':'11','rev:'1-55fa92c1a80a923f12ca22e79eefded1'}"
      :doc "db + obj -> db + obj'"
      :throws "throws an HttpResponseException for response codes >= 400"
      }
