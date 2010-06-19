@@ -1,22 +1,24 @@
 
-(ns pelrapeire.repository.taskstest
+(ns pelrapeire.repository.dbapitest
   (:use clojure.test
 	clojure.contrib.trace
+	clojure.contrib.json.read
+	clojure.contrib.json.write
 	pelrapeire.dbconfig
-	pelrapeire.repository.tasks)
+	pelrapeire.repository.dbapi)
   (:import org.apache.http.client.HttpResponseException))
 
-(deftest test-get-task-doesnt-exist
+(deftest test-get-doc-doesnt-exist
   (testing "should throw exception when a doc doesnt exist"
-    (is (thrown? HttpResponseException (get-task "doesntExist" db-config-int)))))
+    (is (thrown? HttpResponseException (get-doc "doesntExist" db-config-int)))))
 
-(deftest test-get-task-exists
+(deftest test-get-doc-exists
   (testing "should find the test doc id = 100"
-  (let [rsp (get-task "100" db-config-int)]
+  (let [rsp (get-doc "100" db-config-int)]
     (is (. rsp contains "a document for testing")))))
 
 (deftest test-delete-not-exist-task
-  (is (thrown? HttpResponseException (delete-task "doesntExist" "23" db-config-int))))
+  (is (thrown? HttpResponseException (delete-doc "doesntExist" "23" db-config-int))))
 
 (defn extract-id [s] 
   (let [regex-id #"\"id\":\"([a-zA-Z0-9]+)\""]
@@ -31,21 +33,18 @@
   (is (= "2-2f80c392bf0d5f4897178567f56689c9" (extract-rev "{\"ok\":true,\"id\":\"017d482a95684ce799f7d3309e058d62\",\"rev\":\"2-2f80c392bf0d5f4897178567f56689c9\"}"))))
 
 (defn add-then-delete []
-  (let [rsp (create-task "{\"name\":\"a record to delete\"}" db-config-int)
+  (let [rsp (create-doc "{\"name\":\"a record to delete\"}" db-config-int)
 	id (extract-id rsp)
 	rev (extract-rev rsp)]
-    (delete-task id rev db-config-int)))
+    (delete-doc id rev db-config-int)))
 
 (deftest test-add-then-delete
   (is (. (add-then-delete) contains "ok")))
 
-(deftest update
-  (testing "obj'(rev=n-1) update(:append | write) obj(rev=n) -> exception"
-    (is (true? false)))
-  (testing "obj'(rev=n) update(:append) obj(rev=n) -> merged obj"
-    (is (true? false)))
-  (testing "obj'(rev=n) update(:write) obj(rev=n) -> obj'(rev=n+1)"
-    (is (true? false))))
-
-    
+(deftest test-overwrite
+  (testing "we should be able to overwrite an existing record"
+    (let [original (read-json-string (trace (get-doc "101" db-config-int)))
+	  org-mod (dissoc original "_id")
+	  rsp (overwrite-doc (original "_id") (json-str org-mod) db-config-int)]
+      (is (not (= (original "_rev") (extract-rev rsp)))))))
 
