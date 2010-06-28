@@ -3,12 +3,15 @@
     #^{:doc "this is a high level api that insulates clojure from
 having to interact with couch db through strings"}
   pelrapeire.repository.dbops
-  (:use pelrapeire.repository.dbapi))
+  (:use pelrapeire.dbconfig
+	clojure.contrib.json.read))
 
 (defn repo-get
   #^{:pre [(not (nil? id))]
      :post [(and (% "_id") (% "_rev"))]}
-  [#^String id])
+  [#^String id get-fn]
+  (let [json-data (get-fn id db-config)]
+    (read-json json-data)))
 
 (defn repo-create 
   (#^{:pre [(and (nil? (map "_id")) (nil? (map "_rev")))]
