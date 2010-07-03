@@ -43,17 +43,21 @@ exists key='_rev' and the rev is like '1_%w'"}
 
 (defn 
   repo-update
-  #^{:pre [(not (nil? (map "_id"))) (not (nil? (map "_rev")))
+  #^{:pre [(not (nil? (map-data "_id"))) (not (nil? (map-data "_rev")))
 	   (or (= mode :append) (= mode :write))]
      :post [(and (% "_id") (% "_rev"))]}
-  [map mode access-fn]
+  [map-data mode fn-get fn-put]
   (if (= mode :write)
-    (let [json-out (access-fn (map "_id") (json-str map) db-config)]
-      (read-json json-out))
-    ()))
+    (let [str-json (fn-put (map-data "_id") (json-str map-data) db-config)]
+      (read-json str-json))
+    (let [str-json-org (fn-get (map-data "_id") db-config)
+	  map-merged (merge (read-json str-json-org) map-data)
+	  str-json-out (fn-put (map-data "_id") (json-str map-merged) db-config)]
+      (read-json str-json-out))))
 
 (defn 
   repo-delete
-  #^{:pre [(not (nil? (map "_id"))) (not (nil? (map "_rev")))]
+  #^{:pre [(not (nil? (map-data "_id"))) (not (nil? (map-data "_rev")))]
      :post (nil? %)}
-  [#^String map])
+  [map-data fn-del]
+  (read-json (fn-del (map-data "_id") (map-data "_rev") db-config)))
