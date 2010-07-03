@@ -2,9 +2,7 @@
 (ns 
     #^{:doc "a low level string based api to couch db"}
   pelrapeire.repository.dbapi
-  (:use pelrapeire.repository.uuid
-	clojure.contrib.json.read
-	clojure.contrib.json.write)
+  (:use pelrapeire.repository.uuid)
   (:import org.apache.http.HttpEntity
 	   (org.apache.http.client HttpClient ResponseHandler)
 	   (org.apache.http.client.methods HttpGet HttpPut HttpDelete HttpPost)
