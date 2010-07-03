@@ -1,9 +1,8 @@
 
-(ns pelrapeire.repository.dbopstest
+(ns pelrapeire.repository.dbapiwrappertest
   (:use clojure.test
-
 	pelrapeire.repository.dbapi
-	pelrapeire.repository.dbops))
+	pelrapeire.repository.dbapiwrapper))
 
 (defn fn-return-json [id cfg]
   "{\"_id\":\"23dkdie3\", \"_rev\":\"1-3edic3er\", \"name\":12, \"active\":false}")
