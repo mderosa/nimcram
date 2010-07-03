@@ -1,8 +1,8 @@
 
 (ns 
     #^{:doc "a low level string based api to couch db"}
-  pelrapeire.repository.dbapi
-  (:use pelrapeire.repository.uuid)
+  pelrapeire.repository.db.dbapi
+  (:use pelrapeire.repository.db.uuid)
   (:import org.apache.http.HttpEntity
 	   (org.apache.http.client HttpClient ResponseHandler)
 	   (org.apache.http.client.methods HttpGet HttpPut HttpDelete HttpPost)

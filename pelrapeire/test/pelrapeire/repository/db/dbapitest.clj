@@ -1,11 +1,11 @@
 
-(ns pelrapeire.repository.dbapitest
+(ns pelrapeire.repository.db.dbapitest
   (:use clojure.test
 	clojure.contrib.trace
 	clojure.contrib.json.read
 	clojure.contrib.json.write
-	pelrapeire.dbconfig
-	pelrapeire.repository.dbapi)
+	pelrapeire.repository.dbconfig
+	pelrapeire.repository.db.dbapi)
   (:import org.apache.http.client.HttpResponseException))
 
 (deftest test-get-doc-doesnt-exist

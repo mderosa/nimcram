@@ -1,8 +1,9 @@
 
-(ns pelrapeire.repository.dbapiwrappertest
+(ns pelrapeire.repository.db.dbapiwrappertest
   (:use clojure.test
-	pelrapeire.repository.dbapi
-	pelrapeire.repository.dbapiwrapper))
+	pelrapeire.repository.dbconfig
+	pelrapeire.repository.db.dbapi
+	pelrapeire.repository.db.dbapiwrapper))
 
 (defn fn-return-json [id cfg]
   "{\"_id\":\"23dkdie3\", \"_rev\":\"1-3edic3er\", \"name\":12, \"active\":false}")
@@ -15,20 +16,20 @@
 (deftest test-get-operation
   (testing "this function should input a string id and recieve a clojure map containing a 
 document content"
-    (let [data (repo-get "23" fn-return-json)]
+    (let [data (wrapper-get "23" fn-return-json db-config)]
       (is (not (nil? data)))
       (is (= 12 (data "name"))))))
 
 (deftest test-create-operation-post
   (testing "a post request that creates should submit a map of values and return a map of 
 those same values back only with additional id and rev values"
-    (let [data (repo-create {"one" 1 "two" 2} fn-return-json)]
+    (let [data (wrapper-create {"one" 1 "two" 2} fn-return-json db-config)]
       (is (data "_id"))
       (is (data "_rev")))))
 
 (deftest test-create-operation-put
   (testing "at a high level a put request should be converted to a from a map"
-    (let [data (repo-create "anid" {"one" 1 "two" 2} fn-return-json3)]
+    (let [data (wrapper-create "anid" {"one" 1 "two" 2} fn-return-json3 db-config)]
       (is (data "_id"))
       (is (data "_rev")))))
 
@@ -41,19 +42,19 @@ those same values back only with additional id and rev values"
 
 (deftest test-update-write
   (testing "should overwrite any existing data"
-    (let [actual (repo-update {"_id" 1 "_rev" "1-ad" "one" 1 "two" 2} :write fn-return-json fn-mock-overwrite)]
+    (let [actual (wrapper-update {"_id" 1 "_rev" "1-ad" "one" 1 "two" 2} :write fn-return-json fn-mock-overwrite db-config)]
 	 (is (= 1 (actual "one")))
 	 (is (= 2 (actual "two")))
 	 (is (nil? (actual "name"))))))
 
 (deftest test-update-append
   (testing "should append initial keys are retained, new keys are added, existing keys are overwritten"
-    (let [actual (repo-update {"_id" "1" "_rev" "1-ad" "one" 1 "two" 2} :append fn-return-json fn-mock-overwrite)]
+    (let [actual (wrapper-update {"_id" "1" "_rev" "1-ad" "one" 1 "two" 2} :append fn-return-json fn-mock-overwrite db-config)]
 	 (is (= 1 (actual "one")))
 	 (is (= 2 (actual "two")))
 	 (is (= 12 (actual "name"))))))
 
 (deftest test-delete
   (testing "we should get a success response back"
-    (let [actual (repo-delete {"_id" "3kdieee" "_rev" "3-dkiie"} (fn [id rev cfg] "{\"ok\" true}"))]
+    (let [actual (wrapper-delete {"_id" "3kdieee" "_rev" "3-dkiie"} (fn [id rev cfg] "{\"ok\" true}") db-config)]
       (is (true? (actual "ok"))))))

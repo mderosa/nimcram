@@ -1,4 +1,4 @@
-(ns pelrapeire.dbconfig)
+(ns pelrapeire.repository.dbconfig)
 
 (def db-config {:url "http://localhost:5984/picominmin/"})
 
