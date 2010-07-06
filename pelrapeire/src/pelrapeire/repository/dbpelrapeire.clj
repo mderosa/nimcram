@@ -19,3 +19,5 @@
 (defn pel-delete [map-data]
   (op-delete map-data db-config))
     
+
+;;curl http://localhost:5984/picominmin/_design/picominmin/_view/project-tasks?key=%22PicoMinMin%22

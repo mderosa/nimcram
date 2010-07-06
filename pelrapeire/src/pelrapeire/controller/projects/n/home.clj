@@ -1,4 +1,4 @@
 
 (ns pelrapeire.controller.projects.n.home)
 
-(defn run [])
+(defn run [db-fn req])

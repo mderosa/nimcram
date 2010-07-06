@@ -1,6 +1,12 @@
-(ns pelrapeire.repository.db.dbops
+(ns 
+    #^{:doc "this namespace contains generic database access functions. the functions
+should take just data and configuration infomation passed in from the user"}
+  pelrapeire.repository.db.dbops
   (:use pelrapeire.repository.db.dbapi
 	pelrapeire.repository.db.dbapiwrapper))
+
+(defn op-get-view [#^String loc cfg]
+  (wrapper-view loc get-doc cfg))
 
 (defn op-get [#^String id cfg]
   (wrapper-get id get-doc cfg))

@@ -6,6 +6,15 @@ having to interact with couch db through strings"}
   (:use clojure.contrib.json.read
 	clojure.contrib.json.write))
 
+(defn 
+  #^{:doc "this is a view specific wrapper.  we need it because view results dont
+satisfy the post condition of a simple get wrapper"}
+  wrapper-view [#^String loc fn-access db-config]
+  {:pre [(not (nil? loc))]
+   :post [(and (% "total_rows") (% "rows"))]}
+  (let [str-json (fn-access loc db-config)]
+    (read-json str-json)))
+
 (defn wrapper-get
   #^{:pre [(not (nil? id))]
      :post [(and (% "_id") (% "_rev"))]}
