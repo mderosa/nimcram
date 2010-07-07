@@ -5,7 +5,11 @@ should take just data and configuration infomation passed in from the user"}
   (:use pelrapeire.repository.db.dbapi
 	pelrapeire.repository.db.dbapiwrapper))
 
-(defn op-get-view [#^String loc cfg]
+(defn 
+  #^{:doc "this function is used for calling views the usage is like:
+(op-get-view '_design/picominmin/_view/project-tasks?key=%22PicoMinMin%22' db-config). the
+return information is a result set as well as sumary statistics"}
+ op-get-view [#^String loc cfg]
   (wrapper-view loc get-doc cfg))
 
 (defn op-get [#^String id cfg]
