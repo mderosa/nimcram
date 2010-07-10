@@ -26,7 +26,7 @@
   ((pageDef :layout) pageDef))
 
 (defroutes main-routes
-  (GET "/projects/10/home" []
+  (GET "/projects/:project-name/home" [project-name]
        (maps-to pelrapeire.pages.pagedefinition/projects-n-home))
   (POST "/doit" []
 	(result))
