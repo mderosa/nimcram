@@ -2,7 +2,9 @@
     #^{:doc "this is the interface to the pelrapeire database"}
   pelrapeire.repository.dbpelrapeire
   (:use pelrapeire.repository.dbconfig
-	pelrapeire.repository.db.dbops))
+	pelrapeire.repository.db.dbops)
+  (:require [clojure.contrib.str-utils2 :as s])
+  (:import java.util.Calendar))
 
 (defn pel-get [id]
   (op-get id db-config))
@@ -24,7 +26,7 @@
   #^{:doc "this function gets all the tasks associated with a project. this could be
 a lot of tasks so be careful what you wish for."}
   project-tasks [#^String project-name]
-  {:pre [(> 0 (.length (.trim project-name)))]}
+  {:pre [(not (s/blank? project-name))]}
   (let [loc (str "_design/picominmin/_view/project-tasks?key=%22" project-name "%22")]
     (op-get-view loc db-config)))
 
@@ -32,7 +34,7 @@ a lot of tasks so be careful what you wish for."}
   #^{:doc "returns a list of all the task associated with a project that do
 not have a task-complete-date"}
   active-project-tasks [#^String project-name]
-  {:pre [(> 0 (.length (.trim project-name)))]}
+  {:pre [(not (s/blank? project-name))]}
   (let [loc (str "_design/picominmin/_view/project-tasks?key=%22" project-name "%22")]
     (op-get-view loc db-config)))
 
@@ -43,9 +45,21 @@ cut off date is supplied then projects where (< task-complete-date cut-off-date)
 not included in the returned list"}
   completed-project-tasks 
   ([#^String project-name]
-     {:pre [(> 0 (.length (.trim project-name)))]})
+     {:pre [(not (s/blank? project-name))]}
+     (let [loc (str "_design/picominmin/_view/completed-tasks?startkey=[%22" project-name "%22]")]
+       (op-get-view loc db-config)))
   ([#^String project-name cut-off-date]
-     {:pre []}))
+     {:pre [(not (s/blank? project-name))]}
+     (let [cal (doto (Calendar/getInstance) 
+		 (.setTime cut-off-date))
+	   loc (str "_design/picominmin/_view/completed-tasks?startkey=[%22" 
+		    project-name "%22,"
+		    (. cal get Calendar/YEAR) ","
+		    (+ 1 (. cal get Calendar/MONTH)) ","
+		    (. cal get Calendar/DAY_OF_MONTH) ","
+		    (. cal get Calendar/HOUR) ","
+		    (. cal get Calendar/MINUTE) ","
+		    (. cal get Calendar/SECOND) "]")]
+       (println loc)
+       (op-get-view loc db-config))))
 
-
- 
