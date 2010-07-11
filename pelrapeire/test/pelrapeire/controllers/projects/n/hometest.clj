@@ -16,10 +16,13 @@
 
 (deftest test-run [] 
   (testing "in the standard situation the run function should return a map of the
-form {:active [tasks] :completed [tasks]}"
-    (let [actual (run mock-active-tasks mock-completed-tasks)]
+form {:active (tasks) :completed (tasks)}"
+    (let [actual (run mock-active-tasks mock-completed-tasks "PicoMinMin")]
       (is (not (nil? actual)))
       (is (not (nil? (:active actual))))
       (is (not (nil? (:completed actual))))
-      (is (> 0 (.size (:active actual))))
-      (is (> 0 (.size (:completed actual)))))))
+      (is (> (.size (:active actual)) 0))
+      (is (> (.size (:completed actual)) 0))
+      (is (= "task" ((first (:active actual)) "type")))
+      (is (= "task" ((first (:completed actual)) "type")))
+      )))
