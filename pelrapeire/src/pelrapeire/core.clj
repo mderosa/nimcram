@@ -3,6 +3,8 @@
 	ring.adapter.jetty 
 	hiccup.core
 	pelrapeire.pages.pagedefinition
+	pelrapeire.pages.pages
+	pelrapeire.layouts.layouts
 	clojure.contrib.debug)
   (:import (org.mortbay.jetty.handler ResourceHandler HandlerList)
 	   (org.mortbay.jetty Server)))
@@ -21,6 +23,26 @@
 (defn result []
     (html-doc "Result"
 	      [:div "got here"]))
+
+(defn direct-to [fn-controller any-data]
+  (let [view-data (fn-controller any-data)
+	fn-view (let [pages-key (:view view-data)
+		      pages-fn (do (assert pages-key)
+				   (pages-key pages))]
+		  (do (assert pages-fn)
+		      pages-fn))
+	fn-layout (let [layout-key (:layout view-data)
+			layout-fn (do (assert layout-key)
+				      (layout-key layouts))]
+		    (do	(assert layout-fn)
+			layout-fn))]
+    (do 
+      (let [layout-data (fn-view view-data)]
+	(assert (. layout-data containsKey :js))
+	(assert (. layout-data containsKey :css))
+	(assert (. layout-data containsKey :title))
+	(assert (. layout-data containsKey :content))
+	(fn-layout layout-data)))))
 
 (defn maps-to [pageDef]
   ((pageDef :layout) pageDef))

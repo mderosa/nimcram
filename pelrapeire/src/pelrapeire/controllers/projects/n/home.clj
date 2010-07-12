@@ -12,4 +12,6 @@ them back in a map structure to clients {:active (tasks) :completed (tasks)}"}
 	active (fn-get-active-tasks project-name)
 	completed (fn-get-completed-tasks project-name date-later-than)]
     {:active (map #(% "value") (active "rows")) 
-     :completed (map #(% "value") (completed "rows"))}))
+     :completed (map #(% "value") (completed "rows"))
+     :view :projects.n.home
+     :layout :projectlayout}))
