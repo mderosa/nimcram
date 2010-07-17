@@ -1,7 +1,6 @@
 (ns pelrapeire.pages.projects.n.home
-  (:use pelrapeire.pages.tiles))
-
-(def title "current project activity")
+  (:use pelrapeire.pages.tiles
+	pelrapeire.app.taskstatistics))
 
 (def arrows
  {:north "&#8679;" 
@@ -13,21 +12,23 @@
   :west "&#8678;"
   :north-west "&#11009;"})
 
-(defn make-task [progress title days] 
-     [:table {:class "task"}
-      [:tr
-       [:td [:a {:href "#" :class "collapsible"} "+"]]
-       [:td {:class "title"} title]
-       [:td {:class "statistic"} (arrows progress)]
-       [:td {:class "statistic"} (str days)]]])
+(defn make-task [task] 
+  [:table {:class "task"}
+   [:tr
+    [:td [:a {:href "#" :class "collapsible"} "+"]]
+    [:td {:class "title"} (task "title")]
+    [:td {:class "statistic"} (days-in-progress task)]]])
 
-(defn 
-  #^{:target-content-type "text/html"
-     :depends-on {:js ["/js/projects/n/home.js"]
-		  :css ["/css/pelrapeire.css"]
-		  }
-     }
-  show []
+(defn make-tasks [tasks progress]
+  {:pre [(contains? #{"waiting" "in-progress" "delivered"} progress)]}
+  (let [tasks-subset (filter #(= progress (% "progress")) tasks)]
+    (map make-task tasks-subset)))
+   
+(defn show [map-data]
+  (let [js "/js/projects/n/home.js"
+	css nil
+	title "current project activity"
+	content 
   [:table {:class "buckets"}
    [:tr
     [:td {:id "backburner" :class "bucket"}
@@ -37,23 +38,19 @@
      [:div {:class "bmrcp-head"} "waiting to start"
       [:span
        [:a {:id "new" :href "#" :style "margin-left:20px"} "[new]"]]]
-     [:div {:class "tasks"}
-      (make-task :north-east "another task that has a really really really long title that takes up a lot of space and may push stuff out of the way" 0)
-      (make-task :north-east "some task here" 0)
-      (make-task :north-east "some task here2" 0)
-]]
+     (into [:div {:class "tasks"}] (make-tasks (:active map-data) "waiting"))]
     [:td {:id "active" :class "bucket"}
      [:div {:class "bmrcp-n"}
       [:div {:class "bmrcp-e"}
        [:div {:class "bmrcp-w"}]]]
      [:div {:class "bmrcp-head"} "work in progress"]
-     [:div {:class "tasks"}
-]]
+     (into [:div {:class "tasks"}] (make-tasks (:active map-data) "in-progress"))]
     [:td {:id "live" :class "bucket"}
      [:div {:class "bmrcp-n"}
       [:div {:class "bmrcp-e"}
        [:div {:class "bmrcp-w"}]]]
      [:div {:class "bmrcp-head"} "delivered to user"]
-     [:div {:class "tasks"}
-]]]])
+     (into [:div {:class "tasks"}] (make-tasks (:completed map-data) "delivered"))
+]]]]
+    {:js js :css css :title title :content content}))
      

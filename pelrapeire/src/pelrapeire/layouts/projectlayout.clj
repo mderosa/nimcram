@@ -29,7 +29,7 @@
    [:a {:href "http://pages.ebay.com/help/index.html"} "Help"]])
 
 (defn
-  #^{:doc "takes a map of the form {:content Node :js String :css String} :title String} and
+  #^{:doc "takes a map of the form {:content Node :js String :css String :title String} and
 surrounds the node with a layout"}
   render [map-data]
   (html 

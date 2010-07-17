@@ -1,7 +1,8 @@
 
 (ns pelrapeire.controllerdefs
   (:use pelrapeire.repository.dbpelrapeire)
-  (:require pelrapeire.controller.projects.n.home))
+  (:require pelrapeire.controllers.projects.n.home
+	    pelrapeire.controllers.test))
 
 (def 
  #^{:doc "this map configures the controllers in the project by passing them
@@ -10,6 +11,7 @@ run(), which will take any number of parameters the last of which will be a
 request data object"} 
  controllers 
      (ref {:projects-n-home 
-	   (partial pelrapeire.controller.projects.n.home/run 
+	   (partial pelrapeire.controllers.projects.n.home/run 
 		    active-project-tasks
-		    completed-project-tasks)}))
+		    completed-project-tasks)
+	   :test pelrapeire.controllers.test/run}))

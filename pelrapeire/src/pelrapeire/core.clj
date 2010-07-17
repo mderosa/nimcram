@@ -2,7 +2,7 @@
   (:use compojure.core 
 	ring.adapter.jetty 
 	hiccup.core
-	pelrapeire.pages.pagedefinition
+	pelrapeire.controllerdefs
 	pelrapeire.pages.pages
 	pelrapeire.layouts.layouts
 	clojure.contrib.debug)
@@ -49,9 +49,13 @@
 
 (defroutes main-routes
   (GET "/projects/:project-name/home" [project-name]
-       (maps-to pelrapeire.pages.pagedefinition/projects-n-home))
+       (direct-to (:projects-n-home @controllers) project-name))
   (POST "/doit" []
 	(result))
+  (GET "/testhello" []
+       (direct-to (:test @controllers) "hello"))
+  (GET "/testbye" []
+       "<div>bye</div>")
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 
