@@ -82,6 +82,7 @@ td.bucket table.yui3-dd-drop-over, td.bucket div.yui3-dd-drop-over.bmrcp-head {
 table.task {
     border: 1px solid #CCC;
     margin: 0;
+	width: 100%;
 }
 
 table.task td.title {

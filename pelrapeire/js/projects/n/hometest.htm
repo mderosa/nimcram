@@ -5,41 +5,74 @@
 		<script type="text/javascript" charset="utf-8" src="./home.js" ></script>
 	</head>
 	<body class="yui3-skin-sam">
-		<h1>title</h1>
+		<h1>home.js test</h1>
 		
 		<script type="text/javascript">
 			YUI({
     			base: '../../yui/build/',
     			filter: "debug",
     			logInclude: { TestRunner: true}
-			}).use('test','console', function (Y) {
+			}).use('node-event-simulate', 'test','console', function (Y) {
 				
 				var testcase = new Y.Test.Case({
 					name: "home test",
 					
-					testNothing: function() {
-						Y.assert(true, "this should always pass");
+					testSuccessfulFormCreation: function() {
+						Y.one('#new').simulate('click');
+						var ndParent = Y.one('#backburner div.tasks');
+						Y.Assert.isNotNull(ndParent);
+						var ns = ndParent.get('children');
+						Y.Assert.areEqual(1, ns.size(), 'should have only one node')
+						Y.Assert.areEqual("newTaskForm", ns.item(0).get('id'), 'should find the root of the form');
+
 					},
 					
-					testNothingElse: function() {
-						Y.Assert.areEqual(1, 2);
-						Y.assert(false, "this should never pass");
+					testSuccessfulFormDestruction: function() {
+						var ancCancel = Y.one('#newTaskCanceler');
+						Y.Assert.isNotNull(ancCancel);  //i expect this to exist from the above test
+						ancCancel.simulate('click');
+						var ndParent = Y.one('#backburner div.tasks');
+						var ns = ndParent.get('children');
+						Y.Assert.areEqual(0, ns.size());
+					},
+					
+					testWeShouldOnlyBeAbleToCreateOneFormAtATime: function () {
+						Y.one('#new').simulate('click');
+						Y.one('#new').simulate('click');
+						var ndParent = Y.one('#backburner div.tasks');
+						var ns = ndParent.get('children');
+						Y.Assert.areEqual(1, ns.size(), 'we should not be able to create two forms at the same time');
+						Y.one('#newTaskCanceler').simulate('click');
+						ns = ndParent.get('children');
+						Y.Assert.areEqual(0, ns.size(), 'we should be able to destroy the form we just created');
 					}
 					
 				});
-				
-				//initialize the console
-			    var yconsole = new Y.Console({
-			        newestOnTop: false                   
-			    });
+		
+			    var yconsole = new Y.Console({newestOnTop: false});
 			    yconsole.render('#logger');
-			 
-			    //run the tests
 				Y.Test.Runner.add(testcase);
 			    Y.Test.Runner.run();
 
 			});
 		</script>
+		
+		<a href="#" id="new">new</a>
+		<table class="buckets">
+			<tbody>
+				<tr>
+					<td id="backburner" class="bucket">
+						<div class="tasks"></div>
+					</td>
+					<td id="active" class="bucket">
+						<div class="tasks"></div>
+					</td>
+					<td id="live" class="bucket">
+						<div class="tasks"></div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 		
 	</body>
 </html>

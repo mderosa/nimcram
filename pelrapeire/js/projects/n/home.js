@@ -21,13 +21,85 @@ TaskListView.prototype = {
  * 
  */
 var NewTaskForm = function(config) {
-	var html = '';
+	this.config = config;
+	this.visible = false;
 }
-NewTaskForm.prototype = {};
+NewTaskForm.prototype = {
+	_addSubmitHandler: function(Y) {
+			var nodBtn = Y.one('#newTaskSubmitter').on("click", function() {
+			var uri = "projects/PicoMinMin/tasks"
+			var cfg = {
+				method: 'POST',
+				on: {
+					success: function(id, rsp, args) {
+						console.log('success');
+					},
+					failure: function(id, rsp, args) {
+						console.log('failure');
+					},
+					complete: function(id, rsp, args) {
+						console.log('complete');
+					}
+				},
+				form: {id: 'newTaskForm'}
+			};
+			//Y.io(uri, cfg);
+		});
+	},
+	_addCancelHandler: function(Y) {
+		var that = this;
+		var nodAnchor = Y.one("#newTaskCanceler").on('click', function() {
+			that.destroy(Y);
+		});
+	},
+	_buildFormHtml: function(Y) {
+		var nodNewTask = Y.Node.create(
+			'<form id="newTaskForm" method="POST" action="#">' +
+				'<input type="hidden" name="r_method" value="put" />' +
+				'<label for="title">title:</label>' +
+				'<input type="text" id="title" name="title"></input>' +
+				'<label for="description">description:</label>' +
+				'<textarea id="description" name="description"></textarea>' +
+				'<fieldset><legend>provides end user functionality</legend>' +
+					'<label>yes</label>' +
+					'<input type="radio" name="deliversCustomerFunctionality" value="true" />' +
+					'<label>no</label>' +
+					'<input type="radio" name="deliversCustomerFunctionality" value="false" />' +
+				'</fieldset>' +
+				'<button id="newTaskSubmitter" type="button">create</button>' +
+				'&nbsp;&nbsp;<a id="newTaskCanceler" href="#">cancel</a>' +
+			'</form>');
+		return nodNewTask;
+	},
+	show : function(Y) {
+		if (this.visible == false) {
+			var nodNewTask = this._buildFormHtml(Y);
+			var nodTasks = this.config.root;
+			if (nodTasks.hasChildNodes()) {
+				nodTasks.prepend(nodNewTask);
+			} else {
+				nodTasks.appendChild(nodNewTask);
+			}
+			
+			this._addSubmitHandler(Y);
+			this._addCancelHandler(Y);
+			this.visible = true;
+		}
+	},
+	destroy: function(Y) {
+		Y.one("#newTaskForm").remove();
+		this.visible = false;
+	}
+
+};
 
 
 YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', function(Y) {
 	y = Y;
+	var newTaskForm = new NewTaskForm({
+			root: Y.one('#backburner div.tasks'),
+			uri: "projects/PicoMinMin/tasks"
+		});
 	
     var tasks = Y.Node.all('div.tasks table.task');
     Y.each(tasks, function(v, k) {
@@ -52,58 +124,11 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', function(Y) {
 	   var heightY = Y.DOM.winHeight();
 	   var ls = Y.all('div.tasks');
 	   ls.setStyle('height', (heightY - 175));
-   };
-   
-   function createNewTaskForm() {
-   		var nodNewTask = Y.Node.create('<form id="newTaskForm" method="POST" action="projects/10/tasks">' +
-		'<input type="hidden" name="r_method" value="put" />' +
-		'<label for="title">title:</label>' +
-		'<input type="text" id="title" name="title"></input>' +
-		'<label for="description">description:</label>' +
-		'<textarea id="description" name="description"></textarea>' +
-		'<fieldset><legend>provides end user functionality</legend>' +
-			'<label>yes</label>' +
-			'<input type="radio" name="deliversCustomerFunctionality" value="true" />' +
-			'<label>no</label>' +
-			'<input type="radio" name="deliversCustomerFunctionality" value="false" />' +
-		'</fieldset>' +
-		'<button id="newTaskSubmitter" type="button">create</button>' +
-		'&nbsp;&nbsp;<a id="newTaskCanceler" href="#">cancel</a>' +
-		'</form>');
-		var nodTasks = Y.one('#backburner div.tasks');
-		if (nodTasks.hasChildNodes()) {
-			nodTasks.prepend(nodNewTask);
-		} else {
-			nodTasks.appendChild(nodNewTask);
-		}
-		
-		var nodBtn = Y.one('#newTaskSubmitter').on("click", function() {
-			var uri = "projects/10/tasks"
-			var cfg = {
-				method: 'POST',
-				on: {
-					success: function(id, rsp, args) {
-						console.log('success');
-					},
-					failure: function(id, rsp, args) {
-						console.log('failure');
-					},
-					complete: function(id, rsp, args) {
-						console.log('complete');
-					}
-				},
-				form: {id: 'newTaskForm'}
-			};
-			//Y.io(uri, cfg);
-		});
-		
-		var nodAnchor = Y.one("#newTaskCanceler").on('click', function() {
-			Y.one("#newTaskForm").remove();
-		});
-   };
+   };   
+
    
    Y.one('#new').on('click', function() {
-   		createNewTaskForm();
+   		newTaskForm.show(Y);
    });
    
    Y.on('resize', function(e){

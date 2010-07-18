@@ -44,9 +44,6 @@
 	(assert (. layout-data containsKey :content))
 	(fn-layout layout-data)))))
 
-(defn maps-to [pageDef]
-  ((pageDef :layout) pageDef))
-
 (defroutes main-routes
   (GET "/projects/:project-name/home" [project-name]
        (direct-to (:projects-n-home @controllers) project-name))
@@ -63,7 +60,7 @@
 (defn start [] 
   (let [resource-handler (doto (ResourceHandler.) 
 			 (.setResourceBase "."))
-	request-handler (proxy-handler main-routes)
+	request-handler (proxy-handler (var main-routes))
 	handler-list (doto (HandlerList.)
 		      (.addHandler resource-handler)
 		      (.addHandler request-handler))
