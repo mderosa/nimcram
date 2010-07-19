@@ -1,5 +1,6 @@
 (ns pelrapeire.layouts.projectlayout
-  (:use hiccup.core))
+  (:use hiccup.core
+	clojure.contrib.json.write))
       
 (defn header []
   [:div
@@ -42,6 +43,7 @@ surrounds the node with a layout"}
      [:link {:href "/css/pelrapeire.css" :type "text/css" :rel "stylesheet"}]
      [:script {:src "/js/yui/build/yui/yui.js"}]
      [:script {:src (:js map-data)}]
+     [:script (str "var serverData = " (json-str (:params map-data)) ";")]
      [:title (:title map-data)]]
     [:body
      [:div {:class "header"} (header)]

@@ -52,5 +52,5 @@
      [:div {:class "bmrcp-head"} "delivered to user"]
      (into [:div {:class "tasks"}] (make-tasks (:completed map-data) "delivered"))
 ]]]]
-    {:js js :css css :title title :content content}))
+    {:js js :css css :title title :content content :params (map-data :params)}))
      

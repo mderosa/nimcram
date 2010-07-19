@@ -45,8 +45,10 @@
 	(fn-layout layout-data)))))
 
 (defroutes main-routes
-  (GET "/projects/:project-name/home" [project-name]
-       (direct-to (:projects-n-home @controllers) project-name))
+  (GET "/projects/:project-name/home" {params :params :as req}
+       (do
+	 (println req)
+	 (direct-to (:projects-n-home @controllers) params)))
   (POST "/doit" []
 	(result))
   (GET "/testhello" []

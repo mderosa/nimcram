@@ -17,7 +17,7 @@
 (deftest test-run [] 
   (testing "in the standard situation the run function should return a map of the
 form {:active (tasks) :completed (tasks)}"
-    (let [actual (run mock-active-tasks mock-completed-tasks "PicoMinMin")]
+    (let [actual (run mock-active-tasks mock-completed-tasks {"project-name" "PicoMinMin"})]
       (is (not (nil? actual)))
       (is (not (nil? (:active actual))))
       (is (not (nil? (:completed actual))))
