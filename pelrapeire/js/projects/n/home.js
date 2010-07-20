@@ -1,17 +1,28 @@
 var y;
 
+var Server = function(config) {
+	
+};
+Server.prototype = {
+	createTask: function() {
+		
+	}
+}
 /**
  * This object represents a listing of tasks
  * <p>
- * config :: {root: Node, dragSelector: String, dropSelector: String}
+ * config :: {root: Node, dragSelector: String, dropSelector: String, yui: Object}
  * root = the node that contains the contents of the table, right now this is a <td> 
  */
 var TaskList = function(config) {
 	this.config = config;
+	this._makeNodesDraggable(config);
+	this._makeNodesDroppable(config);
 };
 TaskList.prototype = {
-	_makeNodesDraggable : function() {
-		var ns = Y.Node.all(this.config.dragSelector);
+	_makeNodesDraggable : function(cfg) {
+		var Y = cfg.yui;
+		var ns = cfg.root.all(cfg.dragSelector);
     	Y.each(ns, function(v, k) {
 	    	var drag = new Y.DD.Drag({
 	    		node: v,
@@ -22,8 +33,9 @@ TaskList.prototype = {
 	    });
 	},
 	
-	_makeNodesDroppable: function() {
-		var ns = Y.Node.all(this.config.dropSelector);
+	_makeNodesDroppable: function(cfg) {
+		var Y = cfg.yui;
+		var ns = cfg.root.all(cfg.dropSelector);
 	    Y.each(ns, function(v, k) {
 	        var drop = new Y.DD.Drop({node: v});       
 	    });
@@ -43,23 +55,24 @@ var NewTaskForm = function(config) {
 }
 NewTaskForm.prototype = {
 	_addSubmitHandler: function(Y) {
+			var that = this;
 			var nodBtn = Y.one('#newTaskSubmitter').on("click", function() {
-			var cfg = {
-				method: 'POST',
-				on: {
-					success: function(id, rsp, args) {
-						console.log('success');
+				var cfg = {
+					method: 'POST',
+					on: {
+						success: function(id, rsp, args) {
+							console.log('success');
+						},
+						failure: function(id, rsp, args) {
+							console.log('failure');
+						},
+						complete: function(id, rsp, args) {
+							console.log('complete');
+						}
 					},
-					failure: function(id, rsp, args) {
-						console.log('failure');
-					},
-					complete: function(id, rsp, args) {
-						console.log('complete');
-					}
-				},
-				form: {id: 'newTaskForm'}
-			};
-			//Y.io(this.config.uri, cfg);
+					form: {id: 'newTaskForm'}
+				};
+			Y.io(that.config.uri, cfg);
 		});
 	},
 	_addCancelHandler: function(Y) {
@@ -113,27 +126,27 @@ NewTaskForm.prototype = {
 YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', function(Y) {
 	y = Y;
 	var newTaskForm = new NewTaskForm({
-			root: Y.one('#backburner div.tasks'),
-			uri: "projects/" + serverData.project-name + "/tasks"
+		root: Y.one('#backburner div.tasks'),
+		uri: "projects/" + serverData.project-name + "/tasks"
 		});
-	var waitingTasks = new TaskList({root: Y.one('#backburner')});
-	var inProgressTasks = new TaskList({root: Y.one('#active')});
-	var deliveredTasks = new TaskList({root: Y.one('#live')});
-	
-    var tasks = Y.Node.all('div.tasks table.task');
-    Y.each(tasks, function(v, k) {
-    	var drag = new Y.DD.Drag({
-    		node: v,
-    		target: {
-    			border: '0 0 0 20'
-    		}
-    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
-    });
-
-    var tasksDiv = Y.Node.all('table.task, div.bmrcp-head');
-    Y.each(tasksDiv, function(v, k) {
-        var drop = new Y.DD.Drop({node: v});       
-    });
+	var waitingTasks = new TaskList({
+		root: Y.one('#backburner'),
+		dragSelector: 'div.tasks table.task',
+		dropSelector: 'table.task, div.bmrcp-head',
+		yui: Y
+		});
+	var inProgressTasks = new TaskList({
+		root: Y.one('#active'),
+		dragSelector: 'div.tasks table.task',
+		dropSelector: 'table.task, div.bmrcp-head',
+		yui: Y
+		});
+	var deliveredTasks = new TaskList({
+		root: Y.one('#live'),
+		dragSelector: 'div.tasks table.task',
+		dropSelector: 'table.task, div.bmrcp-head',
+		yui: Y
+		});
 
    function resizeTasks() {
 	   var heightY = Y.DOM.winHeight();

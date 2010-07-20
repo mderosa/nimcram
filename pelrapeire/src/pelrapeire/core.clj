@@ -49,8 +49,10 @@
        (do
 	 (println req)
 	 (direct-to (:projects-n-home @controllers) params)))
-  (POST "/doit" []
-	(result))
+  (POST "/doit" {params :params :as req}
+	(do
+	  (println req)
+	  (result)))
   (GET "/testhello" []
        (direct-to (:test @controllers) "hello"))
   (GET "/testbye" []

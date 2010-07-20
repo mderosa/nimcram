@@ -13,7 +13,7 @@
     			base: '../../yui/build/',
     			filter: "debug",
     			logInclude: { TestRunner: true}
-			}).use('node-event-simulate', 'test','console', function (Y) {
+			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', function (Y) {
 				
 				var testcase = new Y.Test.Case({
 					name: "home test",
@@ -46,8 +46,23 @@
 						Y.one('#newTaskCanceler').simulate('click');
 						ns = ndParent.get('children');
 						Y.Assert.areEqual(0, ns.size(), 'we should be able to destroy the form we just created');
+					},
+					/**
+					 * when we initialize a table the only nodes below the root node should take on
+					 * dragable or dropable class types
+					 */
+					testInitializeANodeList: function() {
+						var ns = Y.all('div.bmrcp-head');
+						var count = 0;
+						Y.each(ns, function(v, k){
+							if (v.test('.yui3-dd-drop')) {
+								count++;
+							}
+						});
+						Y.Assert.areEqual(4, ns.size(), 'there are 4 nodes total');
+						Y.Assert.areEqual(3, count, 'only three nodes should be droppable');
 					}
-					
+
 				});
 		
 			    var yconsole = new Y.Console({newestOnTop: false});
@@ -63,17 +78,22 @@
 			<tbody>
 				<tr>
 					<td id="backburner" class="bucket">
+						<div class="bmrcp-head">waiting to start</div>
 						<div class="tasks"></div>
 					</td>
 					<td id="active" class="bucket">
+						<div class="bmrcp-head">work in progress</div>
 						<div class="tasks"></div>
 					</td>
 					<td id="live" class="bucket">
+						<div class="bmrcp-head">delivered to user</div>
 						<div class="tasks"></div>
 					</td>
 				</tr>
 			</tbody>
 		</table>
+		
+		<div class="bmrcp-head"></div>
 		
 	</body>
 </html>
