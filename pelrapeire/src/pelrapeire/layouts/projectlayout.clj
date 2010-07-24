@@ -41,7 +41,7 @@ surrounds the node with a layout"}
      [:link {:href "/js/yui/build/cssfonts/fonts.css" :type "text/css" :rel "stylesheet"}]
      [:link {:href "/js/yui/build/cssgrids/grids.css" :type "text/css" :rel "stylesheet"}]
      [:link {:href "/css/pelrapeire.css" :type "text/css" :rel "stylesheet"}]
-     [:script {:src "/js/yui/build/yui/yui.js"}]
+     [:script {:src "/js/yui/build/yui/yui-debug.js"}]
      [:script {:src (:js map-data)}]
      [:script (str "var serverData = " (json-str (:params map-data)) ";")]
      [:title (:title map-data)]]

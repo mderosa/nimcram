@@ -9,21 +9,6 @@
   (:import (org.mortbay.jetty.handler ResourceHandler HandlerList)
 	   (org.mortbay.jetty Server)))
 
-(defn html-doc [title & body]
-  (html
-   [:html
-    [:head
-     [:title title]]
-    [:body
-     [:div
-      [:h2
-       [:a {:href "/init"} "Home"]]]
-     body]]))
-
-(defn result []
-    (html-doc "Result"
-	      [:div "got here"]))
-
 (defn direct-to [fn-controller any-data]
   (let [view-data (fn-controller any-data)
 	fn-view (let [pages-key (:view view-data)
@@ -53,14 +38,6 @@
 	(do
 	  (println req)
 	  (direct-to (:projects-n-tasks @controllers) params)))
-  (POST "/doit" {params :params :as req}
-	(do
-	  (println req)
-	  (result)))
-  (GET "/testhello" []
-       (direct-to (:test @controllers) "hello"))
-  (GET "/testbye" []
-       "<div>bye</div>")
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 

@@ -89,7 +89,7 @@ NewTaskForm.prototype = {
 	_addSubmitHandler: function(Y) {
 		var req = {
 			uri: this.config.uri,
-			sourceForm:	this.config.root,
+			sourceForm:	this.config.root.one('#newTaskForm'),
 			successFn: this.destroy
 			};
 		var that = this;
@@ -150,7 +150,7 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', function(Y) {
 	var server = new Server({yui: Y});
 	var newTaskForm = new NewTaskForm({
 		root: Y.one('#proposed div.tasks'),
-		uri: "projects/" + serverData['project-name'] + "/tasks",
+		uri: "/projects/" + serverData['project-name'] + "/tasks",
 		server: server
 		});
 	var waitingTasks = new TaskList({

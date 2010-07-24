@@ -11,7 +11,7 @@ from the start date to today"
 
 (deftest test-days-of-activity-waiting
   (testing "if a task is waiting then it should always have 0 for its days in progress"
-    (is (= 0 (days-in-progress {"progress" "waiting"
+    (is (= 0 (days-in-progress {"progress" "proposed"
 				"task-start-date" nil
 				"task-complete-date" nil})))))
 

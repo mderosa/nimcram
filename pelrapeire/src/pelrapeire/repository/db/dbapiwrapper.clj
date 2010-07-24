@@ -26,7 +26,7 @@ satisfy the post condition of a simple get wrapper"}
 exists key='_rev' and the rev is like '1_%w'"}
   initial-rev? [map]
   (let [regex #"^(\d)-.+"
-	val (map "_rev")]
+	val (or (map "_rev") (map "rev"))]
     (if val
       (= "1" (get (re-find regex val) 1))
       false)))

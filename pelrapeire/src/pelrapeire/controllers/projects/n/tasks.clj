@@ -4,9 +4,9 @@
   {:pre []}
   (let [submit-data (assoc params "type" "task" "progress" "proposed")
 	conditioned-data (if (= "true" (submit-data "delivers-user-functionality"))
-			   (. submit-data put "delivers-user-functionality" true)
-			   (. submit-data put "delivers-user-functionality" false))
-	created-data (fn-create-task submit-data)]
+			   (assoc submit-data "delivers-user-functionality" true)
+			   (assoc submit-data "delivers-user-functionality" false))
+	created-data (fn-create-task conditioned-data)]
     {:view :null
      :layout :nulllayout
      :content created-data}))
