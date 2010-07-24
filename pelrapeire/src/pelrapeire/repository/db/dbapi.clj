@@ -29,7 +29,6 @@
      :throws "throws an HttpResponseException for response codes >= 400"
      }
   create-doc [#^String json cfg]
-  {:pre [(not (. json contains "_id")) (not (. json contains "_rev"))]}
   (let [http-client (DefaultHttpClient.)
 	entity (StringEntity. json)
 	post (doto (HttpPost. (:url cfg))

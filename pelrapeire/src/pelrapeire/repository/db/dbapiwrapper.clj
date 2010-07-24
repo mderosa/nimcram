@@ -1,4 +1,3 @@
-
 (ns 
     #^{:doc "this is a high level api that insulates clojure from
 having to interact with couch db through strings"}
@@ -34,15 +33,15 @@ exists key='_rev' and the rev is like '1_%w'"}
 
 (defn wrapper-create 
   (#^{:pre [(and (nil? (map "_id")) (nil? (map "_rev")))]
-      :post [(and (not (nil? %)) (not (nil? (% "_id"))) (not (nil? (% "_rev"))))
+      :post [(and (not (nil? %)) (not (nil? (% "id"))) (not (nil? (% "rev"))))
 	     (initial-rev? %)]}
    [map access-fn db-config]
      (let [json-in (json-str map)
 	   json-out (access-fn json-in db-config)]
-       (read-json json-out)))
+	 (read-json json-out)))
   (#^{:pre [(not (nil? id))
 	    (and (nil? (map "_id")) (nil? (map "_rev")))]
-      :post [(and (% "_id") (% "_rev"))
+      :post [(and (% "id") (% "rev"))
 	     (initial-rev? %)]}
    [id map access-fn db-config]
      (let [json-in (json-str map)

@@ -1,11 +1,42 @@
 var y;
 
+/**
+ * abstract server communications from other page controls
+ * @param {Object} config
+ * {yui: Object}
+ * where yui is the yui global object 
+ */
 var Server = function(config) {
-	
+	this.config = config;
 };
 Server.prototype = {
-	createTask: function() {
-		
+
+	/**
+	 * Creates a task
+	 * @param {Object} obj
+	 * {uri: String, sourceForm: Node, successFn: function}
+	 * where the source form is the form from which to post data will come and the success fn is
+	 * the function which will be called on a successful task creation
+	 */
+	createTask: function(obj) {
+		var cfg = {
+			method: 'POST',
+			on: {
+				success: function(id, rsp, args) {
+					console.log('success');
+				},
+				failure: function(id, rsp, args) {
+					obj.successFn();
+				},
+				complete: function(id, rsp, args) {
+					console.log('complete');
+				}
+			},
+			form: {
+				id: obj.sourceForm
+			}
+		};
+		this.config.yui.io(obj.uri, cfg);
 	}
 }
 /**
@@ -45,9 +76,10 @@ TaskList.prototype = {
 /**
  * This object represents a form which can be used to create a new task
  * <p>
- * config :: {root: Node, uri: String}
+ * config :: {root: Node, uri: String, server: Server}
  * root = the node that will become the parent node of the form when it is created
  * uri = the uri to submit form data to
+ * server = the server object defined on this page
  */
 var NewTaskForm = function(config) {
 	this.config = config;
@@ -55,45 +87,35 @@ var NewTaskForm = function(config) {
 }
 NewTaskForm.prototype = {
 	_addSubmitHandler: function(Y) {
-			var that = this;
-			var nodBtn = Y.one('#newTaskSubmitter').on("click", function() {
-				var cfg = {
-					method: 'POST',
-					on: {
-						success: function(id, rsp, args) {
-							console.log('success');
-						},
-						failure: function(id, rsp, args) {
-							console.log('failure');
-						},
-						complete: function(id, rsp, args) {
-							console.log('complete');
-						}
-					},
-					form: {id: 'newTaskForm'}
-				};
-			Y.io(that.config.uri, cfg);
-		});
+		var req = {
+			uri: this.config.uri,
+			sourceForm:	this.config.root,
+			successFn: this.destroy
+			};
+		var that = this;
+		Y.one('#newTaskSubmitter').on("click", function() {
+				that.config.server.createTask(req);		
+			});
 	},
 	_addCancelHandler: function(Y) {
 		var that = this;
 		var nodAnchor = Y.one("#newTaskCanceler").on('click', function() {
-			that.destroy(Y);
+			that.destroy();
 		});
 	},
 	_buildFormHtml: function(Y) {
 		var nodNewTask = Y.Node.create(
 			'<form id="newTaskForm" method="POST" action="#">' +
-				'<input type="hidden" name="r_method" value="put" />' +
+				'<input type="hidden" name="r_method" value="post" />' +
 				'<label for="title">title:</label>' +
 				'<input type="text" id="title" name="title"></input>' +
-				'<label for="description">description:</label>' +
-				'<textarea id="description" name="description"></textarea>' +
-				'<fieldset><legend>provides end user functionality</legend>' +
+				'<label for="specification">specification:</label>' +
+				'<textarea id="specification" name="specification"></textarea>' +
+				'<fieldset><legend>delivers end user functionality</legend>' +
 					'<label>yes</label>' +
-					'<input type="radio" name="deliversCustomerFunctionality" value="true" />' +
+					'<input type="radio" name="delivers-user-functionality" value="true" />' +
 					'<label>no</label>' +
-					'<input type="radio" name="deliversCustomerFunctionality" value="false" />' +
+					'<input type="radio" name="delivers-user-functionality" value="false" />' +
 				'</fieldset>' +
 				'<button id="newTaskSubmitter" type="button">create</button>' +
 				'&nbsp;&nbsp;<a id="newTaskCanceler" href="#">cancel</a>' +
@@ -115,8 +137,8 @@ NewTaskForm.prototype = {
 			this.visible = true;
 		}
 	},
-	destroy: function(Y) {
-		Y.one("#newTaskForm").remove();
+	destroy: function() {
+		this.config.root.one('#newTaskForm').remove();
 		this.visible = false;
 	}
 
@@ -125,24 +147,26 @@ NewTaskForm.prototype = {
 
 YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', function(Y) {
 	y = Y;
+	var server = new Server({yui: Y});
 	var newTaskForm = new NewTaskForm({
-		root: Y.one('#backburner div.tasks'),
-		uri: "projects/" + serverData.project-name + "/tasks"
+		root: Y.one('#proposed div.tasks'),
+		uri: "projects/" + serverData['project-name'] + "/tasks",
+		server: server
 		});
 	var waitingTasks = new TaskList({
-		root: Y.one('#backburner'),
+		root: Y.one('#proposed'),
 		dragSelector: 'div.tasks table.task',
 		dropSelector: 'table.task, div.bmrcp-head',
 		yui: Y
 		});
 	var inProgressTasks = new TaskList({
-		root: Y.one('#active'),
+		root: Y.one('#in-progress'),
 		dragSelector: 'div.tasks table.task',
 		dropSelector: 'table.task, div.bmrcp-head',
 		yui: Y
 		});
 	var deliveredTasks = new TaskList({
-		root: Y.one('#live'),
+		root: Y.one('#delivered'),
 		dragSelector: 'div.tasks table.task',
 		dropSelector: 'table.task, div.bmrcp-head',
 		yui: Y

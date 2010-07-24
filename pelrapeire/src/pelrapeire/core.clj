@@ -49,6 +49,10 @@
        (do
 	 (println req)
 	 (direct-to (:projects-n-home @controllers) params)))
+  (POST "/projects/:project/tasks" {params :params :as req}
+	(do
+	  (println req)
+	  (direct-to (:projects-n-tasks @controllers) params)))
   (POST "/doit" {params :params :as req}
 	(do
 	  (println req)

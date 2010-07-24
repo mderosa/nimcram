@@ -11,8 +11,10 @@
 
 (defn pel-create 
   ([map-data]
+     {:pre [(not (nil? (map-data "type")))]}
      (op-create map-data db-config))
   ([id map-data]
+     {:pre [(not (nil? (map-data "type")))]}
      (op-create id map-data db-config)))
 
 (defn pel-update [map-data mode]

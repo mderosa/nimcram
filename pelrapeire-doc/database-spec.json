@@ -25,5 +25,5 @@
 	'delivers-user-functionality': 'Boolean'
 	'task-start-date': 'Date',
 	'task-complete-date': 'Date',
-	'progress': "proposed|analysis active|development active|qa active|deployed"
+	'progress': "proposed|analysis in-progress|development in-progress|qa in-progress|delivered"
 }

@@ -3,7 +3,7 @@
 	<head>
 		<script type="text/javascript" charset="utf-8" src="../../yui/build/yui/yui-debug.js"></script>
 		<script type="text/javascript" charset="utf-8" src="./home.js" ></script>
-		<script>var serverData = {"project-name" : "PicoMinMin"}</script>
+		<script>var serverData = {"project-name" : "PicoMinMin"};</script>
 	</head>
 	<body class="yui3-skin-sam">
 		<h1>home.js test</h1>
@@ -20,7 +20,7 @@
 					
 					testSuccessfulFormCreation: function() {
 						Y.one('#new').simulate('click');
-						var ndParent = Y.one('#backburner div.tasks');
+						var ndParent = Y.one('#proposed div.tasks');
 						Y.Assert.isNotNull(ndParent);
 						var ns = ndParent.get('children');
 						Y.Assert.areEqual(1, ns.size(), 'should have only one node')
@@ -32,7 +32,7 @@
 						var ancCancel = Y.one('#newTaskCanceler');
 						Y.Assert.isNotNull(ancCancel);  //i expect this to exist from the above test
 						ancCancel.simulate('click');
-						var ndParent = Y.one('#backburner div.tasks');
+						var ndParent = Y.one('#proposed div.tasks');
 						var ns = ndParent.get('children');
 						Y.Assert.areEqual(0, ns.size());
 					},
@@ -40,7 +40,7 @@
 					testWeShouldOnlyBeAbleToCreateOneFormAtATime: function () {
 						Y.one('#new').simulate('click');
 						Y.one('#new').simulate('click');
-						var ndParent = Y.one('#backburner div.tasks');
+						var ndParent = Y.one('#proposed div.tasks');
 						var ns = ndParent.get('children');
 						Y.Assert.areEqual(1, ns.size(), 'we should not be able to create two forms at the same time');
 						Y.one('#newTaskCanceler').simulate('click');
@@ -61,6 +61,10 @@
 						});
 						Y.Assert.areEqual(4, ns.size(), 'there are 4 nodes total');
 						Y.Assert.areEqual(3, count, 'only three nodes should be droppable');
+					},
+					testSimpleServerObjectCreation: function() {
+						var s = new Server();
+						Y.Assert.isNotNull(s);
 					}
 
 				});
@@ -77,15 +81,15 @@
 		<table class="buckets">
 			<tbody>
 				<tr>
-					<td id="backburner" class="bucket">
+					<td id="proposed" class="bucket">
 						<div class="bmrcp-head">waiting to start</div>
 						<div class="tasks"></div>
 					</td>
-					<td id="active" class="bucket">
+					<td id="in-progress" class="bucket">
 						<div class="bmrcp-head">work in progress</div>
 						<div class="tasks"></div>
 					</td>
-					<td id="live" class="bucket">
+					<td id="delivered" class="bucket">
 						<div class="bmrcp-head">delivered to user</div>
 						<div class="tasks"></div>
 					</td>

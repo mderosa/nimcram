@@ -20,7 +20,7 @@
     [:td {:class "statistic"} (days-in-progress task)]]])
 
 (defn make-tasks [tasks progress]
-  {:pre [(contains? #{"waiting" "in-progress" "delivered"} progress)]}
+  {:pre [(contains? #{"proposed" "in-progress" "delivered"} progress)]}
   (let [tasks-subset (filter #(= progress (% "progress")) tasks)]
     (map make-task tasks-subset)))
    
@@ -31,21 +31,21 @@
 	content 
   [:table {:class "buckets"}
    [:tr
-    [:td {:id "backburner" :class "bucket"}
+    [:td {:id "proposed" :class "bucket"}
      [:div {:class "bmrcp-n"}
       [:div {:class "bmrcp-e"}
        [:div {:class "bmrcp-w"}]]]
-     [:div {:class "bmrcp-head"} "waiting to start"
+     [:div {:class "bmrcp-head"} "proposed"
       [:span
        [:a {:id "new" :href "#" :style "margin-left:20px"} "[new]"]]]
-     (into [:div {:class "tasks"}] (make-tasks (:active map-data) "waiting"))]
-    [:td {:id "active" :class "bucket"}
+     (into [:div {:class "tasks"}] (make-tasks (:active map-data) "proposed"))]
+    [:td {:id "in-progress" :class "bucket"}
      [:div {:class "bmrcp-n"}
       [:div {:class "bmrcp-e"}
        [:div {:class "bmrcp-w"}]]]
      [:div {:class "bmrcp-head"} "work in progress"]
      (into [:div {:class "tasks"}] (make-tasks (:active map-data) "in-progress"))]
-    [:td {:id "live" :class "bucket"}
+    [:td {:id "delivered" :class "bucket"}
      [:div {:class "bmrcp-n"}
       [:div {:class "bmrcp-e"}
        [:div {:class "bmrcp-w"}]]]
