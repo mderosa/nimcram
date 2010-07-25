@@ -14,9 +14,8 @@ Server.prototype = {
 	/**
 	 * Creates a task
 	 * @param {Object} obj
-	 * {uri: String, sourceForm: Node, successFn: function}
-	 * where the source form is the form from which to post data will come and the success fn is
-	 * the function which will be called on a successful task creation
+	 * {uri: String, sourceForm: Node}
+	 * where the source form is the form from which to post data will come
 	 */
 	createTask: function(obj) {
 		var cfg = {
@@ -26,7 +25,7 @@ Server.prototype = {
 					console.log('success');
 				},
 				failure: function(id, rsp, args) {
-					obj.successFn();
+					console.log('failure');
 				},
 				complete: function(id, rsp, args) {
 					console.log('complete');
@@ -90,11 +89,11 @@ NewTaskForm.prototype = {
 		var req = {
 			uri: this.config.uri,
 			sourceForm:	this.config.root.one('#newTaskForm'),
-			successFn: this.destroy
 			};
 		var that = this;
 		Y.one('#newTaskSubmitter').on("click", function() {
-				that.config.server.createTask(req);		
+				that.config.server.createTask(req);	
+				that.destroy();
 			});
 	},
 	_addCancelHandler: function(Y) {
@@ -105,8 +104,7 @@ NewTaskForm.prototype = {
 	},
 	_buildFormHtml: function(Y) {
 		var nodNewTask = Y.Node.create(
-			'<form id="newTaskForm" method="POST" action="#">' +
-				'<input type="hidden" name="r_method" value="post" />' +
+			'<form id="newTaskForm" >' +
 				'<label for="title">title:</label>' +
 				'<input type="text" id="title" name="title"></input>' +
 				'<label for="specification">specification:</label>' +

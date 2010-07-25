@@ -1,4 +1,4 @@
 (ns pelrapeire.pages.null)
 
-(defn show [data]
-    {:js nil :css nil :title nil :content data})
+(defn show [map-data]
+    {:js nil :css nil :title nil :content (:content map-data)})

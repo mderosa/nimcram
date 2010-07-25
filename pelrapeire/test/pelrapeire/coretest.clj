@@ -46,3 +46,14 @@ are required fields"
     (binding [pages (assoc pages :mock-show bad-mock-show) 
 	      layouts (assoc layouts :mock-render mock-render)]
       (is (thrown? AssertionError (html (direct-to mock-run "-")))))))
+
+
+(defn mock-ajax-controller [params] 
+  {:view :null
+     :layout :nulllayout
+     :content {"id" "1" "rev" "1_1" "title" "a title" }})
+(deftest test-direct-to-for-ajax
+  (testing "an ajax call should return an ajax string"
+    (let [rslt (direct-to mock-ajax-controller {})]
+      (is (string? rslt))
+      (is (= "{\"id\":\"1\",\"rev\":\"1_1\",\"title\":\"a title\"}" rslt)))))

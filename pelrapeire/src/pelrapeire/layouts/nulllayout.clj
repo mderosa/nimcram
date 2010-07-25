@@ -1,5 +1,5 @@
 (ns pelrapeire.layouts.nulllayout
-  (use hiccup.core))
+  (use clojure.contrib.json.write))
 
 (defn render [map-data]
-  (:content map-data))
+  (json-str (:content map-data)))

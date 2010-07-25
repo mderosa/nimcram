@@ -1,4 +1,3 @@
-
 (ns pelrapeire.controllerdefs
   (:use pelrapeire.repository.dbpelrapeire)
   (:require pelrapeire.controllers.projects.n.home
@@ -17,5 +16,5 @@ request data object"}
 		    completed-project-tasks)
 	   :projects-n-tasks
 	   (partial pelrapeire.controllers.projects.n.tasks/run
-		    pel-create)
+		    pel-create pel-get)
 	   :test pelrapeire.controllers.test/run}))

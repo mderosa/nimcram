@@ -5,12 +5,13 @@
 	pelrapeire.controllerdefs
 	pelrapeire.pages.pages
 	pelrapeire.layouts.layouts
-	clojure.contrib.debug)
+	clojure.contrib.debug
+	clojure.contrib.trace)
   (:import (org.mortbay.jetty.handler ResourceHandler HandlerList)
 	   (org.mortbay.jetty Server)))
 
-(defn direct-to [fn-controller any-data]
-  (let [view-data (fn-controller any-data)
+(deftrace direct-to [fn-controller any-data]
+  (let [view-data (trace (fn-controller any-data))
 	fn-view (let [pages-key (:view view-data)
 		      pages-fn (do (assert pages-key)
 				   (pages-key pages))]
@@ -22,12 +23,12 @@
 		    (do	(assert layout-fn)
 			layout-fn))]
     (do 
-      (let [layout-data (fn-view view-data)]
+      (let [layout-data (trace (fn-view view-data))]
 	(assert (. layout-data containsKey :js))
 	(assert (. layout-data containsKey :css))
 	(assert (. layout-data containsKey :title))
 	(assert (. layout-data containsKey :content))
-	(fn-layout layout-data)))))
+	(trace (fn-layout layout-data))))))
 
 (defroutes main-routes
   (GET "/projects/:project-name/home" {params :params :as req}
