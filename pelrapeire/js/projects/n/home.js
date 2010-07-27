@@ -39,8 +39,52 @@ Server.prototype = {
 			}
 		};
 		this.config.yui.io(obj.uri, cfg);
+	},
+	/**
+	 * Does a post to update a task with additional information
+	 * {uri: String, task: Node} 
+	 */
+	updateAppendTask: function(obj) {
+				var yui = this.config.yui;
+		var cfg = {
+			method: 'POST',
+			on: {
+				success: function(id, rsp, args) {
+					var json = yui.JSON.parse(rsp.responseText);
+					console.log('success');
+				},
+				failure: function(id, rsp, args) {
+					console.log('failure');
+				},
+				complete: function(id, rsp, args) {
+					console.log('complete');
+				}
+			},
+			data: obj.task.serialize()
+		};
+		this.config.yui.io(obj.uri, cfg);
 	}
-}
+};
+
+/**
+ * A task definition
+ * @param {Object} config
+ * {node: Node, state: 'sync'|'unsync'}
+ */
+var Task = function(config) {
+	this.config = config;
+};
+Task.prototype = {
+	serialize: function() {
+		var obj = {};
+		arrIdAndRev = this.config.node.get("id").split(".");
+		obj._id = arrIdAndRev[0];
+		obj._rev = arrIdAndRev[1];
+		obj._state = this.config.state;
+		return {};
+	}
+};
+
 /**
  * This object represents a listing of tasks
  * <p>
@@ -77,7 +121,7 @@ TaskList.prototype = {
 	addNewTask: function(data) {
 		var Y = this.config.yui;
 		var node = Y.Node.create('<table class="task">' +
-		'<tr>' +
+		'<tr id="' + data._id + '.' + data._rev + '">' +
 			'<td><a class="collapsible" href="#">+</a></td>' +
 			'<td class="title">' + data.title + '</td>' + 
 			'<td class="statistic">0</td>' +

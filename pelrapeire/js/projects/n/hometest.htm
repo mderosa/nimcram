@@ -92,6 +92,19 @@
 						Y.Assert.areEqual(initialCount + 1, finalCount);
 						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-drop'));
 						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-draggable'));
+					},
+					/**
+					 * we want the task object to serialize at least its '_id' and
+					 * '_rev'; we also want it to serialize its 'progress' and lastly
+					 * whatever other info it can devine
+					 */
+					testSerializationOfTaskObject: function() {
+						var nd = Y.one('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
+						var t = new Task({node: nd, state: 'unsync'});
+						var json = t.serialize();
+						Y.Assert.areEqual("64dca73821060386b52188b6cc8e5a89", json._id);
+						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev);
+						Y.Assert.areEqual("delivered", json.progress);
 					}
 
 				});
@@ -118,13 +131,26 @@
 					</td>
 					<td id="delivered" class="bucket">
 						<div class="bmrcp-head">delivered to user</div>
-						<div class="tasks"></div>
+						<div class="tasks">
+							<!-- below is a example task to test the Task object -->
+							<table id="64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14" class="task yui3-dd-drop yui3-dd-draggable">
+								<tbody>
+									<tr>
+										<td><a href="#" class="collapsible">+</a></td>
+										<td class="title">add task detail expansion functionality</td>
+										<td class="statistic">0</td>
+									</tr>
+								</tbody>
+							</table>							
+						</div>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 		
 		<div class="bmrcp-head"></div>
+		
+
 		
 	</body>
 </html>

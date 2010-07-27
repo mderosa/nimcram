@@ -13,7 +13,7 @@
   :north-west "&#11009;"})
 
 (defn make-task [task] 
-  [:table {:class "task"}
+  [:table {:id (str (task "_id") "." (task "_rev")) :class "task"}
    [:tr
     [:td [:a {:href "#" :class "collapsible"} "+"]]
     [:td {:class "title"} (task "title")]
