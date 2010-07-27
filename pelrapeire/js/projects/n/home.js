@@ -18,10 +18,13 @@ Server.prototype = {
 	 * where the source form is the form from which to post data will come
 	 */
 	createTask: function(obj) {
+		var yui = this.config.yui;
 		var cfg = {
 			method: 'POST',
 			on: {
 				success: function(id, rsp, args) {
+					var json = yui.JSON.parse(rsp.responseText);
+					yui.fire('newtask:created', json);
 					console.log('success');
 				},
 				failure: function(id, rsp, args) {
@@ -69,7 +72,31 @@ TaskList.prototype = {
 	    Y.each(ns, function(v, k) {
 	        var drop = new Y.DD.Drop({node: v});       
 	    });
+	},
+	
+	addNewTask: function(data) {
+		var Y = this.config.yui;
+		var node = Y.Node.create('<table class="task">' +
+		'<tr>' +
+			'<td><a class="collapsible" href="#">+</a></td>' +
+			'<td class="title">' + data.title + '</td>' + 
+			'<td class="statistic">0</td>' +
+		'</tr></table>');
+		var nodTasks = this.config.root.one('div.tasks');
+		if (nodTasks.hasChildNodes()) {
+			nodTasks.prepend(node);
+		} else {
+			nodTasks.appendChild(node);
+		}
+		new Y.DD.Drag({
+	    		node: node,
+	    		target: {
+	    			border: '0 0 0 20'
+	    		}
+	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
+		new Y.DD.Drop({node: node}); 
 	}
+	
 };
 
 /**
@@ -143,7 +170,7 @@ NewTaskForm.prototype = {
 };
 
 
-YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', function(Y) {
+YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', function(Y) {
 	y = Y;
 	var server = new Server({yui: Y});
 	var newTaskForm = new NewTaskForm({
@@ -151,7 +178,7 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', function(Y) {
 		uri: "/projects/" + serverData['project-name'] + "/tasks",
 		server: server
 		});
-	var waitingTasks = new TaskList({
+	var proposedTasks = new TaskList({
 		root: Y.one('#proposed'),
 		dragSelector: 'div.tasks table.task',
 		dropSelector: 'table.task, div.bmrcp-head',
@@ -183,6 +210,10 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', function(Y) {
    
    Y.on('resize', function(e){
 	   resizeTasks();
+   });
+   
+   Y.on('newtask:created', function(json) {
+		proposedTasks.addNewTask(json);
    });
 
    Y.DD.DDM.on('drag:start', function(e) {

@@ -13,7 +13,7 @@
     			base: '../../yui/build/',
     			filter: "debug",
     			logInclude: { TestRunner: true}
-			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', function (Y) {
+			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', function (Y) {
 				
 				var testcase = new Y.Test.Case({
 					name: "home test",
@@ -65,6 +65,33 @@
 					testSimpleServerObjectCreation: function() {
 						var s = new Server();
 						Y.Assert.isNotNull(s);
+					},
+					//the create functionality should create one task that is both draggable
+					//and dropable
+					testShouldBeAbleToCreateANewTask: function() {
+						var proposedTasks = new TaskList({
+							root: Y.one('#proposed'),
+							dragSelector: 'div.tasks table.task',
+							dropSelector: 'table.task, div.bmrcp-head',
+							yui: Y
+							});
+						
+						var initialCount = Y.one('#proposed div.tasks').get('children').size();
+						proposedTasks.addNewTask({
+							"title":"find a good height for the task boxes",
+							"specification":"the task boxes should have at least twice the vertical height as they currently have",
+							"delivers-user-functionality":false,
+							"project":"PicoMinMin",
+							"type":"task",
+							"progress":"proposed",
+							"_rev":"1-fe84a1a782cd5dff145623efbc86e213",
+							"_id":"ec1d1fcfdf43deaa33b17499c2535154"}
+						);
+						var ns = Y.one('#proposed div.tasks').get('children');
+						var finalCount = ns.size();
+						Y.Assert.areEqual(initialCount + 1, finalCount);
+						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-drop'));
+						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-draggable'));
 					}
 
 				});
