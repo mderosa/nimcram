@@ -42,16 +42,17 @@ Server.prototype = {
 	},
 	/**
 	 * Does a post to update a task with additional information
-	 * {uri: String, task: Node} 
+	 * {uri: String, action: String, task: Node} 
 	 */
 	updateAppendTask: function(obj) {
-				var yui = this.config.yui;
+		var yui = this.config.yui;
 		var cfg = {
 			method: 'POST',
 			on: {
 				success: function(id, rsp, args) {
 					var json = yui.JSON.parse(rsp.responseText);
-					console.log('success');
+					obj.task.set('id', json.id + '.' + json.rev);
+					console.log('json');
 				},
 				failure: function(id, rsp, args) {
 					console.log('failure');
@@ -60,7 +61,7 @@ Server.prototype = {
 					console.log('complete');
 				}
 			},
-			data: obj.task.serialize()
+			data: obj.task.serialize(obj.action)
 		};
 		this.config.yui.io(obj.uri, cfg);
 	}
@@ -69,19 +70,29 @@ Server.prototype = {
 /**
  * A task definition
  * @param {Object} config
- * {node: Node, state: 'sync'|'unsync'}
+ * {node: Node}
  */
 var Task = function(config) {
 	this.config = config;
 };
 Task.prototype = {
-	serialize: function() {
+
+	/**
+	 * places the transitive content of a node into a json object
+	 * @param {Object} action if this object is going to be part of a post update reqest to the back
+	 * end then the user will want to set the action variable so that the backend code knows
+	 * what data is being updated
+	 */
+	serialize: function(action) {
 		var obj = {};
 		arrIdAndRev = this.config.node.get("id").split(".");
+		nodBucket = this.config.node.ancestor('.bucket');
 		obj._id = arrIdAndRev[0];
 		obj._rev = arrIdAndRev[1];
-		obj._state = this.config.state;
-		return {};
+		obj.progress = nodBucket.get('id');
+		obj.state = this.config.state;
+		obj.action = action;
+		return obj;
 	}
 };
 
@@ -270,6 +281,12 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', funct
    Y.DD.DDM.on('drag:end', function(e) {
 	    var drag = e.target;
 	    drag.get('node').setStyles({opacity: '1'});
+		
+//		var task = new Task({node: drag});
+//		server.updateAppendTask({
+//			uri: "/projects/" + serverData['project-name'] + "/tasks",
+//			task: task,
+//			action: 'update-progress'});
 	});
    
    Y.DD.DDM.on('drag:drophit', function(e) {

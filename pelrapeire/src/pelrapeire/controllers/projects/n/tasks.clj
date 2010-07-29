@@ -11,10 +11,17 @@
 			   (assoc submit-data "delivers-user-functionality" false))]
 	(fn-create-task conditioned-data)))
 
-(defn run [fn-create-task fn-get-task params]
-  (let [created-info (run-create-task fn-create-task params)
-	created-data (fn-get-task (created-info "id"))]
-    {:view :null
-     :layout :nulllayout
-     :content created-data}))
+(defn run [fn-create-task fn-update-task fn-get-task params]
+  (cond
+   (nil? (params "action"))
+   (let [created-info (run-create-task fn-create-task params)
+	 created-data (fn-get-task (created-info "id"))]
+     {:view :null
+      :layout :nulllayout
+      :content created-data})
+   (= "update-progress" (params "action"))
+   (let [updated-resp (fn-update-task {"progress" (params "progress")} :append)]
+     {:view :null
+      :layout :nulllayout
+      :content updated-resp})))
 

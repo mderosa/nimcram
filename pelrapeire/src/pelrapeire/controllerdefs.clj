@@ -16,5 +16,5 @@ request data object"}
 		    completed-project-tasks)
 	   :projects-n-tasks
 	   (partial pelrapeire.controllers.projects.n.tasks/run
-		    pel-create pel-get)
+		    pel-create pel-update pel-get)
 	   :test pelrapeire.controllers.test/run}))
