@@ -90,7 +90,6 @@ Task.prototype = {
 		obj._id = arrIdAndRev[0];
 		obj._rev = arrIdAndRev[1];
 		obj.progress = nodBucket.get('id');
-		obj.state = this.config.state;
 		obj.action = action;
 		return obj;
 	}
@@ -225,7 +224,7 @@ NewTaskForm.prototype = {
 };
 
 
-YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', function(Y) {
+YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function(Y) {
 	y = Y;
 	var server = new Server({yui: Y});
 	var newTaskForm = new NewTaskForm({
@@ -282,11 +281,11 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', funct
 	    var drag = e.target;
 	    drag.get('node').setStyles({opacity: '1'});
 		
-//		var task = new Task({node: drag});
-//		server.updateAppendTask({
-//			uri: "/projects/" + serverData['project-name'] + "/tasks",
-//			task: task,
-//			action: 'update-progress'});
+		var task = new Task({node: drag});
+		server.updateAppendTask({
+			uri: "/projects/" + serverData['project-name'] + "/tasks",
+			task: task,
+			action: 'update-progress'});
 	});
    
    Y.DD.DDM.on('drag:drophit', function(e) {
@@ -303,6 +302,12 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', funct
 	   } else if (ndDrop.get('tagName').toLowerCase() === 'div' && ndDrop.hasClass('bmrcp-head')) {
 		   ndDrop.get('nextSibling').prepend(ndDrag);
 	   }
+	   
+	   	var task = new Task({node: ndDrag});
+		server.updateAppendTask({
+			uri: "/projects/" + serverData['project-name'] + "/tasks",
+			task: task,
+			action: 'update-progress'});
    });
 
 	resizeTasks();

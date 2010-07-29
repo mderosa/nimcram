@@ -22,7 +22,7 @@ return information is a result set as well as sumary statistics"}
      (wrapper-create id map-data create-named-doc cfg)))
 
 (defn op-update [map-data mode cfg]
-  (wrapper-update map-data mode overwrite-doc cfg))
+  (wrapper-update map-data mode get-doc overwrite-doc cfg))
 
 (defn op-delete [map-data cfg]
   (wrapper-delete map-data delete-doc cfg))

@@ -14,7 +14,10 @@
 	      (vector-to-datetime (map-data "task-complete-date")) nil)]
     (condp = (map-data "progress")
       "proposed" 0
-      "in-progress" (. (Days/daysBetween start (DateTime.)) getDays)
+      "in-progress" (do
+		      (assert start)
+		      (. (Days/daysBetween start (DateTime.)) getDays))
       "delivered" (do
-		    (assert (not (nil? end)))
+		    (assert start)
+		    (assert end)
 		    (. (Days/daysBetween start end) getDays)))))

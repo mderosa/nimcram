@@ -11,6 +11,11 @@
 			   (assoc submit-data "delivers-user-functionality" false))]
 	(fn-create-task conditioned-data)))
 
+(defn 
+  #^{:doc "pulls out just the _id _rev and progress parameters and then adds a 
+'task-start-date' parameter."}
+  run-update-progress [fn-update params])
+
 (defn run [fn-create-task fn-update-task fn-get-task params]
   (cond
    (nil? (params "action"))
@@ -20,7 +25,7 @@
       :layout :nulllayout
       :content created-data})
    (= "update-progress" (params "action"))
-   (let [updated-resp (fn-update-task {"progress" (params "progress")} :append)]
+   (let [updated-resp (fn-update-task (select-keys params ["_id" "_rev" "progress"]) :append)]
      {:view :null
       :layout :nulllayout
       :content updated-resp})))
