@@ -15,9 +15,9 @@
   #^{:doc "return a vector of the form [:td [:span] [:span]..]"}
   make-priority-display [task] 
   (let [trans (fn [x] (if (= 1 x) 
-			[:img {:src "/img/star-on.gif"}]
-			[:img {:src "/img/star-off.gif"}]))]
-    (into [:td ] (cond
+			[:img {:src "/img/star-on.gif" :class "clickable"}]
+			[:img {:src "/img/star-off.gif" :class "clickable"}]))]
+    (into [:td {:class "priority"}] (cond
 		  (nil? (task "priority")) (map trans [0 0 0 ])
 		  (= 1 (task "priority")) (map trans [1 0 0 ])
 		  (= 2 (task "priority")) (map trans [1 1 0 ])

@@ -12,6 +12,10 @@
     border-bottom: 1px solid #CCC;
 }
 
+.clickable {
+	cursor: pointer;
+}
+
 body {
     margin-top: 10px;
     margin-left: 20px;
