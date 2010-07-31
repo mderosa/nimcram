@@ -1,4 +1,7 @@
-(ns pelrapeire.controllers.projects.n.tasks)
+(ns pelrapeire.controllers.projects.n.tasks
+  (:use clojure.contrib.trace
+	pelrapeire.app.convert)
+  (:import org.joda.time.DateTime))
 
 (defn 
   #^{:doc "does initial task creation returning an object like
@@ -12,9 +15,18 @@
 	(fn-create-task conditioned-data)))
 
 (defn 
-  #^{:doc "pulls out just the _id _rev and progress parameters and then adds a 
-'task-start-date' parameter."}
-  run-update-progress [fn-update params])
+  #^{:doc "pulls out '_id', '_rev', progress parameters and then adds a 
+'task-start-date' parameter or a task-complete-date"}
+  run-update-progress [fn-update params]
+  {:pre [(params "_id") (params "_rev" (#{"in-progress" "delivered"} (params "progress")))]}
+  (let [extract (select-keys params ["_id" "_rev" "progress"])
+	augmented (condp = (params "progress")
+		    "in-progress" (assoc extract "task-start-date" 
+					 (datetime-to-vector (DateTime.)))
+		    "delivered" (assoc extract "task-complete-date" 
+				       (datetime-to-vector (DateTime.))))]
+    (fn-update augmented :append)))
+
 
 (defn run [fn-create-task fn-update-task fn-get-task params]
   (cond
@@ -25,7 +37,7 @@
       :layout :nulllayout
       :content created-data})
    (= "update-progress" (params "action"))
-   (let [updated-resp (fn-update-task (select-keys params ["_id" "_rev" "progress"]) :append)]
+   (let [updated-resp (run-update-progress fn-update-task params)]
      {:view :null
       :layout :nulllayout
       :content updated-resp})))

@@ -52,7 +52,7 @@ exists key='_rev' and the rev is like '1_%w'"}
   wrapper-update
   #^{:pre [(not (nil? (map-data "_id"))) (not (nil? (map-data "_rev")))
 	   (or (= mode :append) (= mode :write))]
-     :post [(and (% "_id") (% "_rev"))]}
+     :post [(and (% "id") (% "rev"))]}
   [map-data mode fn-get fn-put db-config]
   (if (= mode :write)
     (let [str-json (fn-put (map-data "_id") (json-str map-data) db-config)]
