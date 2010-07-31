@@ -26,4 +26,5 @@
 	'task-start-date': 'Date',
 	'task-complete-date': 'Date',
 	'progress': "proposed|analysis in-progress|development in-progress|qa in-progress|delivered"
+	'priority': 1 | 2 | 3  (or (nil? (task "priority")) (#{1 2 3} (task "priority")) 
 }

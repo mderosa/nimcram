@@ -2,22 +2,27 @@
   (:use pelrapeire.pages.tiles
 	pelrapeire.app.taskstatistics))
 
-(def arrows
- {:north "&#8679;" 
-  :north-east "&#11008;"
-  :east "&#8680"
-  :south-east "&#11010;"
-  :south "&#8681;"
-  :south-west "&#11011;"
-  :west "&#8678;"
-  :north-west "&#11009;"})
-
 (defn make-task [task] 
   [:table {:id (str (task "_id") "." (task "_rev")) :class "task"}
    [:tr
     [:td [:a {:href "#" :class "collapsible"} "+"]]
     [:td {:class "title"} (task "title")]
-    [:td {:class "statistic"} (days-in-progress task)]]])
+    (if (= "proposed" (task "progress"))
+      (make-priority-display task)
+      [:td {:class "statistic"} (days-in-progress task)])]])
+
+(defn 
+  #^{:doc "return a vector of the form [:td [:span] [:span]..]"}
+  make-priority-display [task] 
+  (let [trans (fn [x] (if (= 1 x) 
+			[:img {:src "/img/star-on.gif"}]
+			[:img {:src "/img/star-off.gif"}]))]
+    (into [:td ] (cond
+		  (nil? (task "priority")) (map trans [0 0 0 ])
+		  (= 1 (task "priority")) (map trans [1 0 0 ])
+		  (= 2 (task "priority")) (map trans [1 1 0 ])
+		  (= 3 (task "priority")) (map trans [1 1 1 ])
+		  true (throw (IllegalArgumentException. "priority value is not valid"))))))
 
 (defn make-tasks [tasks progress]
   {:pre [(contains? #{"proposed" "in-progress" "delivered"} progress)]}

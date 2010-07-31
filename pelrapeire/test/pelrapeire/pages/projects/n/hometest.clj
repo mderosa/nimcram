@@ -1,5 +1,6 @@
 (ns pelrapeire.pages.projects.n.hometest
   (:use pelrapeire.pages.projects.n.home
+	clojure.contrib.trace
 	clojure.test))
 
 (def test-task 
@@ -16,9 +17,9 @@
       "type" "task"})
 
 (deftest test-make-tasks-none
-  (testing "we should return an empty vectory when there are no tasks in the 
+  (testing "we should return an empty vector when there are no tasks in the 
 task list that satisfy the progress designation"
-    (let [actual (make-tasks [test-task] "waiting")]
+    (let [actual (make-tasks [test-task] "proposed")]
       (is (= [] actual)))))
 
 (deftest test-make-tasks-one
@@ -28,5 +29,20 @@ task list that satisfy the progress designation"
       (is (= 1 (.size actual)))
       (is (= :table (first (first actual)))))))
 
+(deftest test-make-priority-display1
+  (testing "a nil value of 'priority' should show 3 off stars"
+    (let [actual (trace (make-priority-display {"_id" "3dkiee33"}))]
+      (is (= :td (first actual)))
+      (is (= "/img/star-off.gif" (:src (nth (nth actual 1) 1))))
+      (is (= 4 (count actual))))))
 
+(deftest test-make-priority-display2
+  (testing "a priority value of 2 should display 2 on and 1 off star, in that order"
+    (let [actual (trace (make-priority-display {"priority" 2}))]
+      (is (= "/img/star-on.gif" (:src (nth (nth actual 2) 1))))
+      (is (= "/img/star-off.gif" (:src (nth (nth actual 3) 1)))))))
+
+(deftest test-make-priority-display3
+  (testing "values less than 1 and greater than 3 are not allowed"
+    (is (thrown? IllegalArgumentException (trace (make-priority-display {"priority" 5}))))))
 
