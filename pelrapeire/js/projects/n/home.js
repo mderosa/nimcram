@@ -44,7 +44,7 @@ Server.prototype = {
 	 * Does a post to update a task with additional information.  The check for '_id' is necessary
 	 * as the event is fired multiple times once for the real node and twice for proxys.  This
 	 * should be generally safe as all task obj have a config'
-	 * {uri: String, action: String, task: Node} 
+	 * {uri: String, action: String, task: Task} 
 	 */
 	updateAppendTask: function(obj) {
 		if (obj.task.config.node.get("id")) {
@@ -89,12 +89,21 @@ Task.prototype = {
 	 */
 	serialize: function(action) {
 		var obj = {};
+		obj.action = action;
 		arrIdAndRev = this.config.node.get("id").split(".");
-		nodBucket = this.config.node.ancestor('.bucket');
 		obj._id = arrIdAndRev[0];
 		obj._rev = arrIdAndRev[1];
+		nodBucket = this.config.node.ancestor('.bucket');
 		obj.progress = nodBucket.get('id');
-		obj.action = action;
+		var priority = 0;
+		var ns = this.config.node.all('td.priority img');
+		ns.each(function(n){
+			if (n.get('src').match(/star-on.gif/)) {
+				priority++;	
+			}
+		});
+		obj.priority = priority;
+		
 		return obj;
 	}
 };
@@ -102,7 +111,7 @@ Task.prototype = {
 /**
  * This object represents a listing of tasks
  * <p>
- * config :: {root: Node, dragSelector: String, dropSelector: String, yui: Object}
+ * config :: {root: Node, dragSelector: String, dropSelector: String, server: Server, yui: Object}
  * root = the node that contains the contents of the table, right now this is a <td> 
  */
 var TaskList = function(config) {
@@ -123,12 +132,32 @@ TaskList.prototype = {
 	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
 	    });
 	},
-	
+	addPriorityEventHandlers : function() {
+		var Y = this.config.yui;
+		var ns = this.config.root.all('table.task');
+		Y.delegate('click', this._onPriorityDisplayClick, ns, 'img', this);
+	},	
+	_onPriorityDisplayClick: function(e) {
+		var Y = this.config.yui;
+		var ns = e.target.get('parentNode').get('children');
+		var imgName = '/img/star-on.gif';
+		ns.each(function(n){
+			n.set('src', imgName);
+			if (n === e.target) {
+				imgName = '/img/star-off.gif';
+			}
+		});
+		this.config.server.updateAppendTask({
+			uri: '/projects/' + serverData['project-name'] + '/tasks', 
+			action: 'update-priority', 
+			task: new Task({node: e.target.ancestor('table.task')})
+			});
+	},
 	_makeNodesDroppable: function(cfg) {
 		var Y = cfg.yui;
 		var ns = cfg.root.all(cfg.dropSelector);
 	    Y.each(ns, function(v, k) {
-	        var drop = new Y.DD.Drop({node: v});       
+	        var drop = new Y.DD.Drop({node: v});   
 	    });
 	},
 	
@@ -240,18 +269,22 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		root: Y.one('#proposed'),
 		dragSelector: 'div.tasks table.task',
 		dropSelector: 'table.task, div.bmrcp-head',
+		server: server,
 		yui: Y
 		});
+	proposedTasks.addPriorityEventHandlers();
 	var inProgressTasks = new TaskList({
 		root: Y.one('#in-progress'),
 		dragSelector: 'div.tasks table.task',
 		dropSelector: 'table.task, div.bmrcp-head',
+		server: server,
 		yui: Y
 		});
 	var deliveredTasks = new TaskList({
 		root: Y.one('#delivered'),
 		dragSelector: 'div.tasks table.task',
 		dropSelector: 'table.task, div.bmrcp-head',
+		server: server,
 		yui: Y
 		});
 

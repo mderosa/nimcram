@@ -25,3 +25,7 @@
 (deftest test-run-update-progress2
   (testing "should have a precondition that _id _rev and progress enum exist and valid"
     (is (thrown? AssertionError (run-update-progress (fn [x y] x) {:one 1 :two 2})))))
+
+(deftest test-unknow-actions-throw-errors
+  (testing "any action parameter that is not expected will cause a exception to be thrown"
+    (is (thrown? IllegalArgumentException (run 1 1 1 {"action" "unknown-req"})))))

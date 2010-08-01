@@ -107,8 +107,26 @@
 						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev, 'expect a rev');
 						Y.Assert.areEqual("delivered", json.progress, 'expect a value of delivered');
 						Y.Assert.areEqual("update-progress", json.action, 'should find an action');
+					},
+					/**
+					 * test that we can serialize the priority property of a task when it exists
+					 */
+					testSerializationOfTaskObjectsThatHavePriorities: function() {
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd});
+						var json = t.serialize('update-priority');
+						Y.Assert.areEqual(0, json.priority);
+						Y.Assert.areEqual('update-priority', json.action);
+						
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd});
+						var json = t.serialize('update-priority');
+						Y.Assert.areEqual(2, json.priority);
 					}
-
 				});
 		
 			    var yconsole = new Y.Console({newestOnTop: false});
@@ -125,7 +143,8 @@
 				<tr>
 					<td id="proposed" class="bucket">
 						<div class="bmrcp-head">waiting to start</div>
-						<div class="tasks"></div>
+						<div class="tasks">
+						</div>
 					</td>
 					<td id="in-progress" class="bucket">
 						<div class="bmrcp-head">work in progress</div>
@@ -151,6 +170,34 @@
 		</table>
 		
 		<div class="bmrcp-head"></div>
+		
+		<!-- a task nodes for testing serialization of priority values -->
+		<table>
+			<td id="test-bucket" class="bucket">
+				<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">
+					<tr>
+						<td><a class="collapsible" href="#">+</a></td>
+						<td class="title">password hashing for login</td>
+						<td class="priority">
+							<img class="clickable" src="/img/star-off.gif" title="low" />
+							<img class="clickable" src="/img/star-off.gif" title="medium" />
+							<img class="clickable" src="/img/star-off.gif" title="high" />
+						</td>
+					</tr>
+				</table>
+				<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cc">
+					<tr>
+						<td><a class="collapsible" href="#">+</a></td>
+						<td class="title">password hashing for login</td>
+						<td class="priority">
+							<img class="clickable" src="/img/star-on.gif" title="low" />
+							<img class="clickable" src="/img/star-on.gif" title="medium" />
+							<img class="clickable" src="/img/star-off.gif" title="high" />
+						</td>
+					</tr>
+				</table>				
+			</td>
+		</table>
 		
 
 		
