@@ -6,5 +6,6 @@
 		 [ring/ring-jetty-adapter "0.2.M"]
 		 [hiccup/hiccup "0.2.3"]
 		 [org.apache.httpcomponents/httpcore "4.0.1"]
-		 [org.apache.httpcomponents/httpclient "4.0.1"]]
+		 [org.apache.httpcomponents/httpclient "4.0.1"]
+		 [joda-time/joda-time "1.6"]]
   :dev-dependencies [[swank-clojure/swank-clojure "1.2.0-SNAPSHOT"]])

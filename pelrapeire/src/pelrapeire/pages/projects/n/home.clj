@@ -1,59 +1,62 @@
 (ns pelrapeire.pages.projects.n.home
-  (:use pelrapeire.pages.tiles))
-
-(def title "current project activity")
-
-(def arrows
- {:north "&#8679;" 
-  :north-east "&#11008;"
-  :east "&#8680"
-  :south-east "&#11010;"
-  :south "&#8681;"
-  :south-west "&#11011;"
-  :west "&#8678;"
-  :north-west "&#11009;"})
-
-(defn make-task [progress title days] 
-     [:table {:class "task"}
-      [:tr
-       [:td [:a {:href "#" :class "collapsible"} "+"]]
-       [:td {:class "title"} title]
-       [:td {:class "statistic"} (arrows progress)]
-       [:td {:class "statistic"} (str days)]]])
+  (:use pelrapeire.pages.tiles
+	pelrapeire.app.taskstatistics))
 
 (defn 
-  #^{:target-content-type "text/html"
-     :depends-on {:js ["/js/projects/n/home.js"]
-		  :css ["/css/pelrapeire.css"]
-		  }
-     }
-  show []
+  #^{:doc "return a vector of the form [:td [:span] [:span]..]"}
+  make-priority-display [task] 
+  (let [trans (fn [x y] (if (= 1 x) 
+			[:img {:src "/img/star-on.gif" :class "clickable" :title y}]
+			[:img {:src "/img/star-off.gif" :class "clickable" :title y}]))
+	priority-enum ["low" "medium" "high"]]
+    (into [:td {:class "priority"}] (cond
+		  (nil? (task "priority")) (map trans [0 0 0 ] priority-enum)
+		  (= 1 (task "priority")) (map trans [1 0 0 ] priority-enum)
+		  (= 2 (task "priority")) (map trans [1 1 0 ] priority-enum)
+		  (= 3 (task "priority")) (map trans [1 1 1 ] priority-enum)
+		  true (throw (IllegalArgumentException. "priority value is not valid"))))))
+
+(defn make-task [task] 
+  [:table {:id (str (task "_id") "." (task "_rev")) :class "task"}
+   [:tr
+    [:td [:a {:href "#" :class "collapsible"} "+"]]
+    [:td {:class "title"} (task "title")]
+    (if (= "proposed" (task "progress"))
+      (make-priority-display task)
+      [:td {:class "statistic"} (days-in-progress task)])]])
+
+(defn make-tasks [tasks progress]
+  {:pre [(contains? #{"proposed" "in-progress" "delivered"} progress)]}
+  (let [tasks-subset (filter #(= progress (% "progress")) tasks)]
+    (map make-task tasks-subset)))
+   
+(defn show [map-data]
+  (let [js "/js/projects/n/home.js"
+	css nil
+	title "current project activity"
+	content 
   [:table {:class "buckets"}
    [:tr
-    [:td {:id "backburner" :class "bucket"}
+    [:td {:id "proposed" :class "bucket"}
      [:div {:class "bmrcp-n"}
       [:div {:class "bmrcp-e"}
        [:div {:class "bmrcp-w"}]]]
-     [:div {:class "bmrcp-head"} "waiting to start"
+     [:div {:class "bmrcp-head"} "proposed"
       [:span
        [:a {:id "new" :href "#" :style "margin-left:20px"} "[new]"]]]
-     [:div {:class "tasks"}
-      (make-task :north-east "another task that has a really really really long title that takes up a lot of space and may push stuff out of the way" 0)
-      (make-task :north-east "some task here" 0)
-      (make-task :north-east "some task here2" 0)
-]]
-    [:td {:id "active" :class "bucket"}
+     (into [:div {:class "tasks"}] (make-tasks (:active map-data) "proposed"))]
+    [:td {:id "in-progress" :class "bucket"}
      [:div {:class "bmrcp-n"}
       [:div {:class "bmrcp-e"}
        [:div {:class "bmrcp-w"}]]]
      [:div {:class "bmrcp-head"} "work in progress"]
-     [:div {:class "tasks"}
-]]
-    [:td {:id "live" :class "bucket"}
+     (into [:div {:class "tasks"}] (make-tasks (:active map-data) "in-progress"))]
+    [:td {:id "delivered" :class "bucket"}
      [:div {:class "bmrcp-n"}
       [:div {:class "bmrcp-e"}
        [:div {:class "bmrcp-w"}]]]
      [:div {:class "bmrcp-head"} "delivered to user"]
-     [:div {:class "tasks"}
-]]]])
+     (into [:div {:class "tasks"}] (make-tasks (:completed map-data) "delivered"))
+]]]]
+    {:js js :css css :title title :content content :params (map-data :params)}))
      

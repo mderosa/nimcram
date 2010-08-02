@@ -29,7 +29,6 @@
      :throws "throws an HttpResponseException for response codes >= 400"
      }
   create-doc [#^String json cfg]
-  {:pre [(not (. json contains "_id")) (not (. json contains "_rev"))]}
   (let [http-client (DefaultHttpClient.)
 	entity (StringEntity. json)
 	post (doto (HttpPost. (:url cfg))
@@ -74,7 +73,8 @@
      :throws "throws an HttpResponseException for response codes >= 400"
      }
   overwrite-doc [#^String id json cfg]
-  {:pre [(not (. json contains "_id")) (. json contains "_rev")]}
+  {:pre [(not (nil? id))
+	 (not (. json contains "_id")) (. json contains "_rev")]}
   (let [http-client (DefaultHttpClient.)
 	entity (StringEntity. json)
 	put (doto (HttpPut. (str (:url cfg) id))

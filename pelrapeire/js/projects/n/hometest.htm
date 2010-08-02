@@ -3,43 +3,203 @@
 	<head>
 		<script type="text/javascript" charset="utf-8" src="../../yui/build/yui/yui-debug.js"></script>
 		<script type="text/javascript" charset="utf-8" src="./home.js" ></script>
+		<script>var serverData = {"project-name" : "PicoMinMin"};</script>
 	</head>
 	<body class="yui3-skin-sam">
-		<h1>title</h1>
+		<h1>home.js test</h1>
 		
 		<script type="text/javascript">
 			YUI({
     			base: '../../yui/build/',
     			filter: "debug",
     			logInclude: { TestRunner: true}
-			}).use('test','console', function (Y) {
+			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function (Y) {
 				
 				var testcase = new Y.Test.Case({
 					name: "home test",
 					
-					testNothing: function() {
-						Y.assert(true, "this should always pass");
+					testSuccessfulFormCreation: function() {
+						Y.one('#new').simulate('click');
+						var ndParent = Y.one('#proposed div.tasks');
+						Y.Assert.isNotNull(ndParent);
+						var ns = ndParent.get('children');
+						Y.Assert.areEqual(1, ns.size(), 'should have only one node')
+						Y.Assert.areEqual("newTaskForm", ns.item(0).get('id'), 'should find the root of the form');
+
 					},
 					
-					testNothingElse: function() {
-						Y.Assert.areEqual(1, 2);
-						Y.assert(false, "this should never pass");
-					}
+					testSuccessfulFormDestruction: function() {
+						var ancCancel = Y.one('#newTaskCanceler');
+						Y.Assert.isNotNull(ancCancel);  //i expect this to exist from the above test
+						ancCancel.simulate('click');
+						var ndParent = Y.one('#proposed div.tasks');
+						var ns = ndParent.get('children');
+						Y.Assert.areEqual(0, ns.size());
+					},
 					
+					testWeShouldOnlyBeAbleToCreateOneFormAtATime: function () {
+						Y.one('#new').simulate('click');
+						Y.one('#new').simulate('click');
+						var ndParent = Y.one('#proposed div.tasks');
+						var ns = ndParent.get('children');
+						Y.Assert.areEqual(1, ns.size(), 'we should not be able to create two forms at the same time');
+						Y.one('#newTaskCanceler').simulate('click');
+						ns = ndParent.get('children');
+						Y.Assert.areEqual(0, ns.size(), 'we should be able to destroy the form we just created');
+					},
+					/**
+					 * when we initialize a table the only nodes below the root node should take on
+					 * dragable or dropable class types
+					 */
+					testInitializeANodeList: function() {
+						var ns = Y.all('div.bmrcp-head');
+						var count = 0;
+						Y.each(ns, function(v, k){
+							if (v.test('.yui3-dd-drop')) {
+								count++;
+							}
+						});
+						Y.Assert.areEqual(4, ns.size(), 'there are 4 nodes total');
+						Y.Assert.areEqual(3, count, 'only three nodes should be droppable');
+					},
+					testSimpleServerObjectCreation: function() {
+						var s = new Server();
+						Y.Assert.isNotNull(s);
+					},
+					//the create functionality should create one task that is both draggable
+					//and dropable
+					testShouldBeAbleToCreateANewTask: function() {
+						var proposedTasks = new TaskList({
+							root: Y.one('#proposed'),
+							dragSelector: 'div.tasks table.task',
+							dropSelector: 'table.task, div.bmrcp-head',
+							yui: Y
+							});
+						
+						var initialCount = Y.one('#proposed div.tasks').get('children').size();
+						proposedTasks.addNewTask({
+							"title":"find a good height for the task boxes",
+							"specification":"the task boxes should have at least twice the vertical height as they currently have",
+							"delivers-user-functionality":false,
+							"project":"PicoMinMin",
+							"type":"task",
+							"progress":"proposed",
+							"_rev":"1-fe84a1a782cd5dff145623efbc86e213",
+							"_id":"ec1d1fcfdf43deaa33b17499c2535154"}
+						);
+						var ns = Y.one('#proposed div.tasks').get('children');
+						var finalCount = ns.size();
+						Y.Assert.areEqual(initialCount + 1, finalCount);
+						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-drop'));
+						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-draggable'));
+					},
+					/**
+					 * we want the task object to serialize at least its '_id' and
+					 * '_rev'; we also want it to serialize its 'progress' and lastly
+					 * whatever other info it can devine
+					 */
+					testSerializationOfTaskObject: function() {
+						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
+						var nd = Y.one(el);
+						var t = new Task({node: nd, state: 'unsync'});
+						var json = t.serialize("update-progress");
+						Y.Assert.areEqual("64dca73821060386b52188b6cc8e5a89", json._id, 'expect and id');
+						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev, 'expect a rev');
+						Y.Assert.areEqual("delivered", json.progress, 'expect a value of delivered');
+						Y.Assert.areEqual("update-progress", json.action, 'should find an action');
+					},
+					/**
+					 * test that we can serialize the priority property of a task when it exists
+					 */
+					testSerializationOfTaskObjectsThatHavePriorities: function() {
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd});
+						var json = t.serialize('update-priority');
+						Y.Assert.areEqual(0, json.priority);
+						Y.Assert.areEqual('update-priority', json.action);
+						
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd});
+						var json = t.serialize('update-priority');
+						Y.Assert.areEqual(2, json.priority);
+					}
 				});
-				
-				//initialize the console
-			    var yconsole = new Y.Console({
-			        newestOnTop: false                   
-			    });
+		
+			    var yconsole = new Y.Console({newestOnTop: false});
 			    yconsole.render('#logger');
-			 
-			    //run the tests
 				Y.Test.Runner.add(testcase);
 			    Y.Test.Runner.run();
 
 			});
 		</script>
+		
+		<a href="#" id="new">new</a>
+		<table class="buckets">
+			<tbody>
+				<tr>
+					<td id="proposed" class="bucket">
+						<div class="bmrcp-head">waiting to start</div>
+						<div class="tasks">
+						</div>
+					</td>
+					<td id="in-progress" class="bucket">
+						<div class="bmrcp-head">work in progress</div>
+						<div class="tasks"></div>
+					</td>
+					<td id="delivered" class="bucket">
+						<div class="bmrcp-head">delivered to user</div>
+						<div class="tasks">
+							<!-- below is a example task to test the Task object -->
+							<table id="64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14" class="task yui3-dd-drop yui3-dd-draggable">
+								<tbody>
+									<tr>
+										<td><a href="#" class="collapsible">+</a></td>
+										<td class="title">add task detail expansion functionality</td>
+										<td class="statistic">0</td>
+									</tr>
+								</tbody>
+							</table>							
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<div class="bmrcp-head"></div>
+		
+		<!-- a task nodes for testing serialization of priority values -->
+		<table>
+			<td id="test-bucket" class="bucket">
+				<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">
+					<tr>
+						<td><a class="collapsible" href="#">+</a></td>
+						<td class="title">password hashing for login</td>
+						<td class="priority">
+							<img class="clickable" src="/img/star-off.gif" title="low" />
+							<img class="clickable" src="/img/star-off.gif" title="medium" />
+							<img class="clickable" src="/img/star-off.gif" title="high" />
+						</td>
+					</tr>
+				</table>
+				<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cc">
+					<tr>
+						<td><a class="collapsible" href="#">+</a></td>
+						<td class="title">password hashing for login</td>
+						<td class="priority">
+							<img class="clickable" src="/img/star-on.gif" title="low" />
+							<img class="clickable" src="/img/star-on.gif" title="medium" />
+							<img class="clickable" src="/img/star-off.gif" title="high" />
+						</td>
+					</tr>
+				</table>				
+			</td>
+		</table>
+		
+
 		
 	</body>
 </html>

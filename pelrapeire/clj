@@ -1,5 +1,5 @@
 #!/bin/bash
 
-java -server -cp src:classes:lib/clojure-1.1.0.jar:lib/clojure-contrib-1.1.0.jar:lib/clout-0.2.0-20100308.145053-3.jar:lib/commons-codec-1.4.jar:lib/commons-fileupload-1.2.1.jar:lib/commons-io-1.4.jar:lib/compojure-0.4.0-20100308.145053-8.jar:lib/hiccup-0.2.3.jar:lib/jetty-6.1.14.jar:lib/jetty-util-6.1.14.jar:lib/ring-core-0.2.0.jar:lib/ring-jetty-adapter-0.2.M.jar:lib/ring-servlet-0.2.0.jar:lib/servlet-api-2.5-6.1.14.jar:lib/swank-clojure-1.2.0-20100308.145053-6.jar clojure.main $1
+java -server -cp src:classes:lib/clojure-1.1.0.jar:lib/clojure-contrib-1.1.0.jar:lib/clout-0.2.0-20100308.145053-3.jar:lib/commons-codec-1.4.jar:lib/commons-fileupload-1.2.1.jar:lib/commons-io-1.4.jar:lib/commons-logging-1.1.1.jar:lib/compojure-0.4.0-20100308.145053-8.jar:lib/hiccup-0.2.3.jar:lib/httpclient-4.0.1.jar:lib/httpcore-4.0.1.jar:lib/jetty-6.1.14.jar:lib/jetty-util-6.1.14.jar:lib/joda-time-1.6.jar:lib/ring-core-0.2.0.jar:lib/ring-jetty-adapter-0.2.M.jar:lib/ring-servlet-0.2.0.jar:lib/servlet-api-2.5-6.1.14.jar:lib/swank-clojure-1.2.0-20100308.145053-6.jar clojure.main $1
 
 #-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888

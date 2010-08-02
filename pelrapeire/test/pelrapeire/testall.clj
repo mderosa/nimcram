@@ -1,10 +1,19 @@
-
 (ns pelrapeire.testall
   (:use clojure.test)
-  (:require pelrapeire.pages.tilestest
+  (:require pelrapeire.coretest
+	    pelrapeire.controllers.projects.n.hometest
+	    pelrapeire.controllers.projects.n.taskstest
+	    pelrapeire.pages.projects.n.hometest
+	    pelrapeire.repository.dbpelrapeiretest
 	    pelrapeire.repository.db.dbapitest
-	    pelrapeire.repository.db.dbapiwrappertest))
+	    pelrapeire.repository.db.dbapiwrappertest
+	    pelrapeire.app.taskstatisticstest))
 
-(run-tests 'pelrapeire.pages.tilestest)
+(run-tests 'pelrapeire.coretest)
+(run-tests 'pelrapeire.controllers.projects.n.hometest)
+(run-tests 'pelrapeire.controllers.projects.n.taskstest)
+(run-tests 'pelrapeire.pages.projects.n.hometest)
+(run-tests 'pelrapeire.repository.dbpelrapeiretest)
 (run-tests 'pelrapeire.repository.db.dbapitest)
 (run-tests 'pelrapeire.repository.db.dbapiwrappertest)
+(run-tests 'pelrapeire.app.taskstatisticstest)
