@@ -1,5 +1,6 @@
 (ns pelrapeire.pages.projects.n.home
   (:use pelrapeire.pages.tiles
+	pelrapeire.app.uicontrol
 	pelrapeire.app.taskstatistics))
 
 (defn 
@@ -38,25 +39,18 @@
   [:table {:class "buckets"}
    [:tr
     [:td {:id "proposed" :class "bucket"}
-     [:div {:class "bmrcp-n"}
-      [:div {:class "bmrcp-e"}
-       [:div {:class "bmrcp-w"}]]]
+     (rounded-corner-crown)
      [:div {:class "bmrcp-head"} "proposed"
       [:span
        [:a {:id "new" :href "#" :style "margin-left:20px"} "[new]"]]]
      (into [:div {:class "tasks"}] (make-tasks (:active map-data) "proposed"))]
     [:td {:id "in-progress" :class "bucket"}
-     [:div {:class "bmrcp-n"}
-      [:div {:class "bmrcp-e"}
-       [:div {:class "bmrcp-w"}]]]
-     [:div {:class "bmrcp-head"} "work in progress"]
+     (rounded-corner-crown)
+     (rounded-corner-base "work in progress")
      (into [:div {:class "tasks"}] (make-tasks (:active map-data) "in-progress"))]
     [:td {:id "delivered" :class "bucket"}
-     [:div {:class "bmrcp-n"}
-      [:div {:class "bmrcp-e"}
-       [:div {:class "bmrcp-w"}]]]
-     [:div {:class "bmrcp-head"} "delivered to user"]
-     (into [:div {:class "tasks"}] (make-tasks (:completed map-data) "delivered"))
-]]]]
+     (rounded-corner-crown)
+     (rounded-corner-base "delivered to user")
+     (into [:div {:class "tasks"}] (make-tasks (:completed map-data) "delivered"))]]]]
     {:js js :css css :title title :content content :params (map-data :params)}))
      

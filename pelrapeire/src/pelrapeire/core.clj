@@ -31,14 +31,12 @@
 	(trace (fn-layout layout-data))))))
 
 (defroutes main-routes
+  (GET "/index" {params :params :as req}
+       (direct-to (:index @controllers) params))
   (GET "/projects/:project-name/home" {params :params :as req}
-       (do
-	 (println req)
-	 (direct-to (:projects-n-home @controllers) params)))
+       (direct-to (:projects-n-home @controllers) params))
   (POST "/projects/:project/tasks" {params :params :as req}
-	(do
-	  (println req)
-	  (direct-to (:projects-n-tasks @controllers) params)))
+	(direct-to (:projects-n-tasks @controllers) params))
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 

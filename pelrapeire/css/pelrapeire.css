@@ -98,11 +98,50 @@ table.task td.statistic {
     width: 10%;
 }
 
+#headline h2 {
+	color: #89B31F;
+	font-size: 220%;
+	margin: 0 0 0.4em;
+}
+
+#headline p {
+	text-align: left;	
+	font-size: 120%;
+	line-height: 1.5em;
+	margin-bottom: 1em;
+}
+
+#headline strong {
+	border-bottom: 1px solid #D9D9D9;
+	color: #666666;
+	font-size: 120%;
+	font-weight: bold;
+	margin: 1em 0 0.5em;
+	padding-bottom: 0.1em;
+}
+
+div#headline {
+	width: 40%;
+
+	margin: 1em 2em 1em 2em;
+}
+
+div#login {
+	width: 30%;
+}
+
+div#login form {
+	border-left: 1px solid #CCC;
+	border-right: 1px solid #CCC;
+	border-bottom: 1px solid #CCC;
+}
+
 form {
 	padding: 10px;
 }
 form label {
 	display: block;
+	text-align: left;
 }
 form input, form textarea {
 	width: 100%;
