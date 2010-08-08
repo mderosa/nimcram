@@ -5,22 +5,22 @@
   [:form {:method "POST" :action "/login"}
    [:p {:style "text-align: center"}
     [:a {:href "/users/new"} "create a new account"]]
-   [:label {:for "login-name"} "login:"]
-   [:input {:type "text" :id "login-name" :name "login-name"}]
+   [:label {:for "login-name"} "email:"]
+   [:input {:type "text" :id "email" :name "email"}]
    [:label {:for "password"} "password:"]
    [:input {:type "password" :id "password" :name "password" :class "fill"}]
    [:p {:style "text-align: center"}
     [:input {:type "submit" :id "submit" :name "submit" :value "login"}]]])
 
 (def txt-law-of-loop
-     " - We want to give you feedback on your loop time, the time from feature wanted to 
+     " - Hokulea gives you feedback on your loop time, the time from feature wanted to 
 feature delivered. If your working effectively your loop time is, first, consistent and,
-second, accelerating over time. If ones group cant close the loop, long term, it wont
-successfully produce the features people want. Can you loop with the big boys -- join 
+second, accelerating over time. If groups cant improve their loop, long term, they're not
+learning to produce the features people want. Can you loop with the best -- join 
 us and see where you stand.")
 
 (def txt-better-practices
-     " - We want this tool to remove work load and allow you to do things
+     " - Hokulea removes work load and allow you to do things
 you couldnt easily do before.  We
 are also a forum to help teams and individuals find out
 what works, and to guide them to better practices.  Are you ready to work
