@@ -1,14 +1,18 @@
 (ns pelrapeire.repository.db.couchresponsehandler
-  (:use clojure.contrib.json.read)
+  (:use clojure.contrib.json.read
+	pelrapeire.app.errormapping)
   (:import org.apache.http.client.ResponseHandler
 	   org.apache.http.util.EntityUtils
 	   org.apache.http.client.HttpResponseException))
 
-(def rsp-handler
+(def couch-rsp-handler
      (proxy [ResponseHandler] []
        (#^String handleResponse [rsp]
-		 (let [statusLine (. rsp getStatusLine)
+		 (let [statusCode (.. rsp getStatusLine getStatusCode)
 		       entity (. rsp getEntity)]
-		   (if (>= statusLine 300)
-		     (throw (HttpResponseException. 1 "test"))
+		   (if (>= statusCode 300)
+		     (let [error-info (read-json (EntityUtils/toString entity))
+			   reason (error-info "reason")
+			   code (error-to-code (error-info "error"))]
+		       (throw (HttpResponseException. code reason)))
 		     (and entity (EntityUtils/toString entity)))))))
