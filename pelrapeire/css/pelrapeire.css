@@ -12,6 +12,10 @@
     border-bottom: 1px solid #CCC;
 }
 
+.header sup {
+	font-size: 50%;
+}
+
 .clickable {
 	cursor: pointer;
 }

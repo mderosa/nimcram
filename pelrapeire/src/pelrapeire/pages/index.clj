@@ -8,7 +8,7 @@
    [:label {:for "login-name"} "login:"]
    [:input {:type "text" :id "login-name" :name "login-name"}]
    [:label {:for "password"} "password:"]
-   [:input {:type "text" :id "password" :name "password" :class "fill"}]
+   [:input {:type "password" :id "password" :name "password" :class "fill"}]
    [:p {:style "text-align: center"}
     [:input {:type "submit" :id "submit" :name "submit" :value "login"}]]])
 
@@ -34,7 +34,7 @@ better?  Its time.")
 	[:div
 	 [:div {:id "top"}
 	  [:div {:id "headline"}
-	   [:h2 "Its what counts"]
+	   [:h2 "Navigate well"]
 	   [:p 
 	    [:strong "The law of the loop"] txt-law-of-loop]
 	   [:p 
