@@ -2,5 +2,5 @@
 
 (defn run [params]
   {:view :index
-   :layout :projectlayout
+   :layout :minimallayout
    :params params})

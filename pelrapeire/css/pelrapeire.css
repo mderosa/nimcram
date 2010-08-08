@@ -121,13 +121,16 @@ table.task td.statistic {
 }
 
 div#headline {
-	width: 40%;
-
-	margin: 1em 2em 1em 2em;
+	width: 50%;
+	float: left;
+	margin: 1em 2em 3em 2em;
 }
 
 div#login {
-	width: 30%;
+	font-size: 120%;
+	width: 20em;
+	float: right;
+	margin: 1em 3em 1em 2em;
 }
 
 div#login form {
@@ -136,15 +139,20 @@ div#login form {
 	border-bottom: 1px solid #CCC;
 }
 
+div#steps {
+	clear: both;
+}
+
 form {
 	padding: 10px;
+	text-align: left;
 }
 form label {
 	display: block;
 	text-align: left;
 }
-form input, form textarea {
-	width: 100%;
+form input.fill, form textarea.fill {
+ 	width: 100%
 }
 form fieldset {
 	border: 1px solid #CCC;

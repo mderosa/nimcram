@@ -220,9 +220,9 @@ NewTaskForm.prototype = {
 		var nodNewTask = Y.Node.create(
 			'<form id="newTaskForm" >' +
 				'<label for="title">title:</label>' +
-				'<input type="text" id="title" name="title"></input>' +
+				'<input type="text" id="title" name="title" class="fill"></input>' +
 				'<label for="specification">specification:</label>' +
-				'<textarea id="specification" name="specification"></textarea>' +
+				'<textarea id="specification" name="specification" class="fill"></textarea>' +
 				'<fieldset><legend>delivers end user functionality</legend>' +
 					'<label>yes</label>' +
 					'<input type="radio" name="delivers-user-functionality" value="true" />' +
