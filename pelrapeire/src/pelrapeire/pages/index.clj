@@ -1,8 +1,10 @@
 (ns pelrapeire.pages.index
-  (:use pelrapeire.app.uicontrol))
+  (:use pelrapeire.app.uicontrol
+	clojure.contrib.trace))
 
-(defn login-form []
+(defn login-form [map-data]
   [:form {:method "POST" :action "/login"}
+   (error-list (:errors map-data))
    [:p {:style "text-align: center"}
     [:a {:href "/users/new"} "create a new account"]]
    [:label {:for "login-name"} "email:"]
@@ -42,7 +44,7 @@ better?  Its time.")
 	  [:div {:id "login"}
 	   (rounded-corner-crown)
 	   (rounded-corner-base "sign in now")
-	   (login-form)]]
+	   (trace (login-form map-data))]]
 	 [:div {:id "steps"}]]]
     {:js js :css css :title title :content content}))
 

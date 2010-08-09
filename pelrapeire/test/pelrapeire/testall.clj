@@ -8,7 +8,9 @@
 	    pelrapeire.repository.db.couchresponsehandlertest
 	    pelrapeire.repository.db.dbapitest
 	    pelrapeire.repository.db.dbapiwrappertest
-	    pelrapeire.app.taskstatisticstest))
+	    pelrapeire.app.taskstatisticstest
+	    pelrapeire.app.uicontroltest
+	    pelrapeire.app.converttest))
 
 (run-tests 'pelrapeire.coretest)
 (run-tests 'pelrapeire.controllers.projects.n.hometest)
@@ -19,3 +21,5 @@
 (run-tests 'pelrapeire.repository.db.dbapitest)
 (run-tests 'pelrapeire.repository.db.dbapiwrappertest)
 (run-tests 'pelrapeire.app.taskstatisticstest)
+(run-tests 'pelrapeire.app.uicontroltest)
+(run-tests 'pelrapeire.app.converttest)

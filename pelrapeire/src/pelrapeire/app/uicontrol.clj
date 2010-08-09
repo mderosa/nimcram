@@ -7,3 +7,15 @@
   
 (defn rounded-corner-base [header-title]
   [:div {:class "bmrcp-head"} header-title])
+
+(defn accumulate [base errors]
+  (if (or (nil? errors) (empty? errors))
+    base
+    (accumulate (conj base [:li (first errors)]) (rest errors))))
+
+(defn error-list [map-data]
+  (let [base [:ul {:class "errors"}]]
+    (accumulate base (:errors map-data))))
+
+
+

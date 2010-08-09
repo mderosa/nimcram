@@ -11,7 +11,7 @@
 	   (org.mortbay.jetty Server)))
 
 (deftrace direct-to [fn-controller any-data]
-  (let [view-data (trace (fn-controller any-data))
+  (let [view-data (fn-controller any-data)
 	fn-view (let [pages-key (:view view-data)
 		      pages-fn (do (assert pages-key)
 				   (pages-key pages))]
@@ -23,12 +23,12 @@
 		    (do	(assert layout-fn)
 			layout-fn))]
     (do 
-      (let [layout-data (trace (fn-view view-data))]
+      (let [layout-data (fn-view view-data)]
 	(assert (. layout-data containsKey :js))
 	(assert (. layout-data containsKey :css))
 	(assert (. layout-data containsKey :title))
 	(assert (. layout-data containsKey :content))
-	(trace (fn-layout layout-data))))))
+	(fn-layout layout-data)))))
 
 (defroutes main-routes
   (GET "/index" {params :params :as req}
