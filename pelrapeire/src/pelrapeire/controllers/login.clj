@@ -1,4 +1,5 @@
 (ns pelrapeire.controllers.login
+  (:use clojure.contrib.trace)
   (:import org.apache.http.client.HttpResponseException))
 
 (defn 
@@ -20,7 +21,7 @@
    (not= in-pwd (:password user)) {:errors '("incorrect password")}
    true user))
 
-(defn run [fn-db-get params]
+(deftrace run [fn-db-get params]
   (let [userA (query-user fn-db-get (params "email"))
 	userB (authenticate-password (params "password") userA)]
     (if (:errors userB)

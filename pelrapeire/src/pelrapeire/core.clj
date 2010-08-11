@@ -10,7 +10,7 @@
   (:import (org.mortbay.jetty.handler ResourceHandler HandlerList)
 	   (org.mortbay.jetty Server)))
 
-(deftrace direct-to [fn-controller any-data]
+(defn direct-to [fn-controller any-data]
   (let [view-data (fn-controller any-data)
 	fn-view (let [pages-key (:view view-data)
 		      pages-fn (do (assert pages-key)
@@ -33,6 +33,8 @@
 (defroutes main-routes
   (GET "/index" {params :params :as req}
        (direct-to (:index @controllers) params))
+  (POST "/login" {params :params :as req}
+	(direct-to (:login @controllers) params))
   (GET "/projects/:project-name/home" {params :params :as req}
        (direct-to (:projects-n-home @controllers) params))
   (POST "/projects/:project/tasks" {params :params :as req}

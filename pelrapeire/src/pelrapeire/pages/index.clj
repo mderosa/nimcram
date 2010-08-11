@@ -4,7 +4,7 @@
 
 (defn login-form [map-data]
   [:form {:method "POST" :action "/login"}
-   (error-list (:errors map-data))
+   (error-list map-data)
    [:p {:style "text-align: center"}
     [:a {:href "/users/new"} "create a new account"]]
    [:label {:for "login-name"} "email:"]

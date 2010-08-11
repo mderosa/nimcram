@@ -20,6 +20,12 @@
 	cursor: pointer;
 }
 
+ul.errors li {
+	color: red;
+	text-align: center;
+	font-size: 80%;
+}
+
 body {
     margin-top: 10px;
     margin-left: 20px;
