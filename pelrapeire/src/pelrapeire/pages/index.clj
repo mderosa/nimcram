@@ -44,7 +44,7 @@ better?  Its time.")
 	  [:div {:id "login"}
 	   (rounded-corner-crown)
 	   (rounded-corner-base "sign in now")
-	   (trace (login-form map-data))]]
+	   (login-form map-data)]]
 	 [:div {:id "steps"}]]]
     {:js js :css css :title title :content content}))
 

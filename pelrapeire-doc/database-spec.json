@@ -1,11 +1,12 @@
 
 //user example spec
 {
-	'_id': 'Uuid (email)',
+	'_id': 'Uuid',
 	'type': 'user',
 	'password': 'String'
 	'projects-im-contributing-to': ['Uuid']
 	'projects-im-following': ['Uuid']
+	'email' : 'Email'
 }
 
 //project

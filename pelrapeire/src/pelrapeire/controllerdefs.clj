@@ -4,6 +4,7 @@
 	    pelrapeire.controllers.login
 	    pelrapeire.controllers.projects.n.home
 	    pelrapeire.controllers.projects.n.tasks
+	    pelrapeire.controllers.users.n.projects
 	    pelrapeire.controllers.test))
 
 (def 
@@ -14,7 +15,7 @@ request data object"}
  controllers 
      (ref {:index pelrapeire.controllers.index/run
 	   :login 
-	   (partial pelrapeire.controllers.login/run pel-get)
+	   (partial pelrapeire.controllers.login/run users-by-email)
 	   :projects-n-home 
 	   (partial pelrapeire.controllers.projects.n.home/run 
 		    active-project-tasks
@@ -22,4 +23,6 @@ request data object"}
 	   :projects-n-tasks
 	   (partial pelrapeire.controllers.projects.n.tasks/run
 		    pel-create pel-update pel-get)
+	   :users-n-projects
+	   pelrapeire.controllers.users.n.projects/run
 	   :test pelrapeire.controllers.test/run}))

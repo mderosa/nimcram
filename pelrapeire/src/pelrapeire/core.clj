@@ -11,24 +11,26 @@
 	   (org.mortbay.jetty Server)))
 
 (defn direct-to [fn-controller any-data]
-  (let [view-data (fn-controller any-data)
-	fn-view (let [pages-key (:view view-data)
+  (let [cntr-ret-data (trace (fn-controller any-data))
+	fn-view (let [pages-key (:view cntr-ret-data)
 		      pages-fn (do (assert pages-key)
-				   (pages-key pages))]
+				   (trace (pages-key pages)))]
 		  (do (assert pages-fn)
 		      pages-fn))
-	fn-layout (let [layout-key (:layout view-data)
-			layout-fn (do (assert layout-key)
-				      (layout-key layouts))]
-		    (do	(assert layout-fn)
-			layout-fn))]
-    (do 
-      (let [layout-data (fn-view view-data)]
-	(assert (. layout-data containsKey :js))
-	(assert (. layout-data containsKey :css))
-	(assert (. layout-data containsKey :title))
-	(assert (. layout-data containsKey :content))
-	(fn-layout layout-data)))))
+	fn-layout (let [layout-key (:layout cntr-ret-data)]
+		    (if (nil? layout-key)
+		      nil
+		      (layout-key layouts)))
+	vw-ret-data (fn-view cntr-ret-data)]
+    (if (nil? fn-layout)
+      vw-ret-data
+      (do 
+	(let [vw-ret-data (fn-view cntr-ret-data)]
+	  (assert (. vw-ret-data containsKey :js))
+	  (assert (. vw-ret-data containsKey :css))
+	  (assert (. vw-ret-data containsKey :title))
+	  (assert (. vw-ret-data containsKey :content))
+	  (fn-layout vw-ret-data))))))
 
 ;;below we have defined a set of handlers functions formed by get / post whatever.  We will pass these
 ;;functions a request map which is formed from elements in the req. but we do not pass the request 
@@ -44,6 +46,8 @@
        (direct-to (:projects-n-home @controllers) params))
   (POST "/projects/:project/tasks" {params :params :as req}
 	(direct-to (:projects-n-tasks @controllers) params))
+  (GET "/users/:uid/projects" {params :params}
+       (direct-to (:users-n-projects @controllers) params))
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 

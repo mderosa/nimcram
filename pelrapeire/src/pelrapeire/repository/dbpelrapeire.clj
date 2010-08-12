@@ -33,6 +33,13 @@ a lot of tasks so be careful what you wish for."}
     (op-get-view loc db-config)))
 
 (defn
+  #^{}
+  users-by-email [#^String email]
+  {:pre [(not (s/blank? email))]}
+  (let [loc (str "_design/picominmin/_view/users?key=%22" email "%22")]
+    (op-get-view loc db-config)))
+
+(defn
   #^{:doc "returns a list of all the task associated with a project that do
 not have a task-complete-date"}
   active-project-tasks [#^String project-name]
