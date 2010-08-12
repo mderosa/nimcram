@@ -30,9 +30,14 @@
 	(assert (. layout-data containsKey :content))
 	(fn-layout layout-data)))))
 
+;;below we have defined a set of handlers functions formed by get / post whatever.  We will pass these
+;;functions a request map which is formed from elements in the req. but we do not pass the request 
+;;object itself nor does it seem that the handler has access to this function
+;;strictly speaking we would like our handlers to return a response map as they take a request
+;;map {:status ? :headers ? :body ?}
 (defroutes main-routes
   (GET "/index" {params :params :as req}
-       (direct-to (:index @controllers) params))
+	(direct-to (:index @controllers) params))
   (POST "/login" {params :params :as req}
 	(direct-to (:login @controllers) params))
   (GET "/projects/:project-name/home" {params :params :as req}

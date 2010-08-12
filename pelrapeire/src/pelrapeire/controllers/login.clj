@@ -26,4 +26,7 @@
 	userB (authenticate-password (params "password") userA)]
     (if (:errors userB)
       {:view :index :layout :minimallayout :errors (:errors userB)}
-      {:view :users-n-projects :layout :minimallayout :params params})))
+      (let [login-name (. (userB "email") substring 0 (. (userB "email") indexOf "@"))]
+	{:view :redirect 
+	 :layout :passthrough 
+	 :params {:url (str "/users/" login-name "/projects")}}))))
