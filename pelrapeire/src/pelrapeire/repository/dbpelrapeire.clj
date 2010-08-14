@@ -40,6 +40,27 @@ a lot of tasks so be careful what you wish for."}
     (op-get-view loc db-config)))
 
 (defn
+  #^{:doc "returns a list of all the task associated with a project that are proposed
+ordering them from 3 down to 0"}
+  proposed-project-tasks [#^String project-name]
+  {:pre [(not (s/blank? project-name))]}
+  (let [loc (str "_design/picominmin/_view/proposed-tasks?"
+		 "startKey=[%22" project-name "%22]&"
+		 "endKey=[%22" project-name "%22]&"
+		 "descending=true")]
+    (op-get-view loc db-config)))
+
+(defn
+  #^{:doc "returns a list of all the task associated with a project that do
+not have a task-complete-date"}
+  wip-project-tasks [#^String project-name]
+  {:pre [(not (s/blank? project-name))]}
+  (let [loc (str "_design/picominmin/_view/work-in-progress-tasks?"
+		 "startKey=[%22" project-name "%22]"
+		 "endKey=[%22" project-name "%22]")]
+    (op-get-view loc db-config)))
+
+(defn
   #^{:doc "returns a list of all the task associated with a project that do
 not have a task-complete-date"}
   active-project-tasks [#^String project-name]

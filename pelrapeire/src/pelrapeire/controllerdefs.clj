@@ -18,7 +18,8 @@ request data object"}
   (partial pelrapeire.controllers.login/run users-by-email)
   :projects-n-home 
   (partial pelrapeire.controllers.projects.n.home/run 
-	   active-project-tasks
+	   proposed-project-tasks
+	   wip-project-tasks
 	   completed-project-tasks)
   :projects-n-tasks
   (partial pelrapeire.controllers.projects.n.tasks/run

@@ -25,13 +25,12 @@ Server.prototype = {
 				success: function(id, rsp, args) {
 					var json = yui.JSON.parse(rsp.responseText);
 					yui.fire('newtask:created', json);
-					console.log('success');
 				},
 				failure: function(id, rsp, args) {
-					console.log('failure');
+
 				},
 				complete: function(id, rsp, args) {
-					console.log('complete');
+
 				}
 			},
 			form: {
@@ -55,13 +54,12 @@ Server.prototype = {
 					success: function(id, rsp, args){
 						var json = yui.JSON.parse(rsp.responseText);
 						obj.task.config.node.set('id', json.id + '.' + json.rev);
-						console.log('success');
 					},
 					failure: function(id, rsp, args){
-						console.log('failure');
+
 					},
 					complete: function(id, rsp, args){
-						console.log('complete');
+
 					}
 				},
 				data: obj.task.serialize(obj.action)

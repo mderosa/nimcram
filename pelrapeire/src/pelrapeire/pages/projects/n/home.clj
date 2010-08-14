@@ -51,11 +51,11 @@ function creates the classes for that designation"}
      [:div {:class "bmrcp-head"} "proposed"
       [:span
        [:a {:id "new" :href "#" :style "margin-left:20px"} "[new]"]]]
-     (into [:div {:class "tasks"}] (make-tasks (:active map-data) "proposed"))]
+     (into [:div {:class "tasks"}] (make-tasks (:proposed map-data) "proposed"))]
     [:td {:id "in-progress" :class "bucket"}
      (rounded-corner-crown)
      (rounded-corner-base "work in progress")
-     (into [:div {:class "tasks"}] (make-tasks (:active map-data) "in-progress"))]
+     (into [:div {:class "tasks"}] (make-tasks (:wip map-data) "in-progress"))]
     [:td {:id "delivered" :class "bucket"}
      (rounded-corner-crown)
      (rounded-corner-base "delivered to user")
