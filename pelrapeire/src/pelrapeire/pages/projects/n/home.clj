@@ -17,8 +17,16 @@
 		  (= 3 (task "priority")) (map trans [1 1 1 ] priority-enum)
 		  true (throw (IllegalArgumentException. "priority value is not valid"))))))
 
+(defn 
+  #^{:doc "we want a task to have a class type of 'task usr-func' or 'task n-user-func' this
+function creates the classes for that designation"}
+     make-task-class [task]
+     (if (task "delivers-user-functionality")
+       "task usr-func"
+       "task n-usr-func"))
+
 (defn make-task [task] 
-  [:table {:id (str (task "_id") "." (task "_rev")) :class "task"}
+  [:table {:id (str (task "_id") "." (task "_rev")) :class (make-task-class task)}
    [:tr
     [:td [:a {:href "#" :class "collapsible"} "+"]]
     [:td {:class "title"} (task "title")]

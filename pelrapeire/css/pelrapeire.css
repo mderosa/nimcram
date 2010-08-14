@@ -105,6 +105,10 @@ table.task td.title {
     width: 80%;
 }
 
+table.usr-func td.title {
+	font-weight: 600;
+}
+
 table.task td.statistic {
     width: 10%;
 }

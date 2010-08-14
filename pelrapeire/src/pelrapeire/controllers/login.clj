@@ -1,5 +1,6 @@
 (ns pelrapeire.controllers.login
-  (:use clojure.contrib.trace)
+  (:use clojure.contrib.trace
+	pelrapeire.app.encrypt)
   (:import org.apache.http.client.HttpResponseException))
 
 (defn 
@@ -15,7 +16,7 @@
   authenticate-password [in-pwd user]
   (cond
    (:errors user) user
-   (not= in-pwd (user "password")) {:errors '("incorrect password")}
+   (not= (trace (shaHash in-pwd)) (trace (user "password"))) {:errors '("incorrect password")}
    true user))
 
 (defn run [fn-db-get params]
