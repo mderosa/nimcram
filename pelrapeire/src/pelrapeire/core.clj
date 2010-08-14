@@ -39,15 +39,17 @@
 ;;map {:status ? :headers ? :body ?}
 (defroutes main-routes
   (GET "/index" {params :params :as req}
-	(direct-to (:index @controllers) params))
+	(direct-to (:index controllers) params))
   (POST "/login" {params :params :as req}
-	(direct-to (:login @controllers) params))
+	(direct-to (:login controllers) params))
   (GET "/projects/:project-name/home" {params :params :as req}
-       (direct-to (:projects-n-home @controllers) params))
+       (direct-to (:projects-n-home controllers) params))
   (POST "/projects/:project/tasks" {params :params :as req}
-	(direct-to (:projects-n-tasks @controllers) params))
-  (GET "/users/:uid/projects" {params :params}
-       (direct-to (:users-n-projects @controllers) params))
+	(direct-to (:projects-n-tasks controllers) params))
+  (GET "/users/:user-id/projects" {params :params}
+       (do
+	 (println params)
+	 (trace (direct-to (:users-n-projects controllers) params))))
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 

@@ -4,6 +4,7 @@
 	    pelrapeire.controllers.projects.n.hometest
 	    pelrapeire.controllers.projects.n.taskstest
 	    pelrapeire.pages.projects.n.hometest
+	    pelrapeire.pages.users.n.projectstest
 	    pelrapeire.repository.dbpelrapeiretest
 	    pelrapeire.repository.db.couchresponsehandlertest
 	    pelrapeire.repository.db.dbapitest
@@ -16,6 +17,7 @@
 (run-tests 'pelrapeire.controllers.projects.n.hometest)
 (run-tests 'pelrapeire.controllers.projects.n.taskstest)
 (run-tests 'pelrapeire.pages.projects.n.hometest)
+(run-tests 'pelrapeire.pages.users.n.projectstest)
 (run-tests 'pelrapeire.repository.dbpelrapeiretest)
 (run-tests 'pelrapeire.repository.db.couchresponsehandlertest)
 (run-tests 'pelrapeire.repository.db.dbapitest)

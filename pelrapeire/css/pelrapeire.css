@@ -97,6 +97,7 @@ table.task {
     border: 1px solid #CCC;
     margin: 0;
 	width: 100%;
+	height: 2em;
 }
 
 table.task td.title {
@@ -106,6 +107,11 @@ table.task td.title {
 
 table.task td.statistic {
     width: 10%;
+}
+
+table.task a.collapsible {
+	padding-left: 0.3em;
+	font-size: 120%;
 }
 
 #headline h2 {
@@ -151,6 +157,16 @@ div#login form {
 
 div#steps {
 	clear: both;
+}
+
+#projects h2 {
+	color: #89B31F;
+	font-size: 220%;
+	margin: 0 0 0.4em;
+}
+
+#projects a {
+	display: block;
 }
 
 form {
