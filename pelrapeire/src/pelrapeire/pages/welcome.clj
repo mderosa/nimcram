@@ -1,2 +1,0 @@
-
-(ns pelrapiere.pages.welcome)

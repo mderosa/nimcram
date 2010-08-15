@@ -33,6 +33,34 @@ a lot of tasks so be careful what you wish for."}
     (op-get-view loc db-config)))
 
 (defn
+  #^{}
+  users-by-email [#^String email]
+  {:pre [(not (s/blank? email))]}
+  (let [loc (str "_design/picominmin/_view/users?key=%22" email "%22")]
+    (op-get-view loc db-config)))
+
+(defn
+  #^{:doc "returns a list of all the task associated with a project that are proposed
+ordering them from 3 down to 0"}
+  proposed-project-tasks [#^String project-name]
+  {:pre [(not (s/blank? project-name))]}
+  (let [loc (str "_design/picominmin/_view/proposed-tasks?"
+		 "startkey=[%22" project-name "%22,3]&"
+		 "endkey=[%22" project-name "%22]&"
+		 "descending=true")]
+    (op-get-view loc db-config)))
+
+(defn
+  #^{:doc "returns a list of all the task associated with a project that do
+not have a task-complete-date"}
+  wip-project-tasks [#^String project-name]
+  {:pre [(not (s/blank? project-name))]}
+  (let [loc (str "_design/picominmin/_view/work-in-progress-tasks?"
+		 "startkey=[%22" project-name "%22]&"
+		 "endkey=[%22" project-name "%22,9999]")]
+    (op-get-view loc db-config)))
+
+(defn
   #^{:doc "returns a list of all the task associated with a project that do
 not have a task-complete-date"}
   active-project-tasks [#^String project-name]
@@ -48,11 +76,16 @@ not included in the returned list"}
   completed-project-tasks 
   ([#^String project-name]
      {:pre [(not (s/blank? project-name))]}
-     (let [loc (str "_design/picominmin/_view/completed-tasks?startkey=[%22" project-name "%22]")]
+     (let [loc (str "_design/picominmin/_view/completed-tasks?"
+		    "descending=true&"
+		    "endkey=[%22" project-name "%22]")]
        (op-get-view loc db-config)))
   ([#^String project-name #^DateTime cut-off-date]
      {:pre [(not (s/blank? project-name))]}
-     (let [loc (str "_design/picominmin/_view/completed-tasks?startkey=[%22" 
+     (let [loc (str "_design/picominmin/_view/completed-tasks?"
+		    "descending=true&"
+		    "startkkey=[%22" project-name "%22,9999]&"
+		    "endkey=[%22" 
 		    project-name "%22,"
 		    (.. cut-off-date year get) ","
 		    (.. cut-off-date monthOfYear get) ","

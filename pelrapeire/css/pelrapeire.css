@@ -12,8 +12,18 @@
     border-bottom: 1px solid #CCC;
 }
 
+.header sup {
+	font-size: 50%;
+}
+
 .clickable {
 	cursor: pointer;
+}
+
+ul.errors li {
+	color: red;
+	text-align: center;
+	font-size: 80%;
 }
 
 body {
@@ -87,6 +97,7 @@ table.task {
     border: 1px solid #CCC;
     margin: 0;
 	width: 100%;
+	height: 2em;
 }
 
 table.task td.title {
@@ -94,8 +105,17 @@ table.task td.title {
     width: 80%;
 }
 
+table.usr-func td.title {
+	font-weight: 600;
+}
+
 table.task td.statistic {
     width: 10%;
+}
+
+table.task a.collapsible {
+	padding-left: 0.3em;
+	font-size: 120%;
 }
 
 #headline h2 {
@@ -121,13 +141,16 @@ table.task td.statistic {
 }
 
 div#headline {
-	width: 40%;
-
-	margin: 1em 2em 1em 2em;
+	width: 50%;
+	float: left;
+	margin: 1em 2em 3em 2em;
 }
 
 div#login {
-	width: 30%;
+	font-size: 120%;
+	width: 20em;
+	float: right;
+	margin: 1em 3em 1em 2em;
 }
 
 div#login form {
@@ -136,15 +159,30 @@ div#login form {
 	border-bottom: 1px solid #CCC;
 }
 
+div#steps {
+	clear: both;
+}
+
+#projects h2 {
+	color: #89B31F;
+	font-size: 220%;
+	margin: 0 0 0.4em;
+}
+
+#projects a {
+	display: block;
+}
+
 form {
 	padding: 10px;
+	text-align: left;
 }
 form label {
 	display: block;
 	text-align: left;
 }
-form input, form textarea {
-	width: 100%;
+form input.fill, form textarea.fill {
+ 	width: 100%
 }
 form fieldset {
 	border: 1px solid #CCC;

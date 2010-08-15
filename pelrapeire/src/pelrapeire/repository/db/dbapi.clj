@@ -1,8 +1,8 @@
-
 (ns 
     #^{:doc "a low level string based api to couch db"}
   pelrapeire.repository.db.dbapi
-  (:use pelrapeire.repository.db.uuid)
+  (:use pelrapeire.repository.db.uuid
+	pelrapeire.repository.db.couchresponsehandler)
   (:import org.apache.http.HttpEntity
 	   (org.apache.http.client HttpClient ResponseHandler)
 	   (org.apache.http.client.methods HttpGet HttpPut HttpDelete HttpPost)
@@ -20,7 +20,7 @@
     (let [http-client (DefaultHttpClient.)
 	  get (doto (HttpGet. (str (:url cfg) id))
 		(.addHeader "Accept" "application/json"))
-	  rsp-handler (BasicResponseHandler.)]
+	  rsp-handler couch-rsp-handler]
     (. http-client execute get rsp-handler)))
 
 (defn 
@@ -35,7 +35,7 @@
 	      (.addHeader "Content-Type" "application/json")
 	      (.addHeader "Accept" "application/json")
 	      (.setEntity entity))
-	rsp-handler (BasicResponseHandler.)]
+	rsp-handler couch-rsp-handler]
     (. http-client execute post rsp-handler)))
 
 
@@ -53,7 +53,7 @@
 	      (.addHeader "Content-Type" "application/json")
 	      (.addHeader "Accept" "application/json")
 	      (.setEntity entity))
-	rsp-handler (BasicResponseHandler.)]
+	rsp-handler couch-rsp-handler]
     (. http-client execute put rsp-handler)))
 
 (defn 
@@ -64,7 +64,7 @@
   (let [http-client (DefaultHttpClient.)
 	del (doto (HttpDelete. (str (:url cfg) id "?rev=" rev))
 	      (.addHeader "Accept" "application/json"))
-	rsp-handler (BasicResponseHandler.)]
+	rsp-handler couch-rsp-handler]
     (. http-client execute del rsp-handler)))
 
 (defn 
@@ -81,5 +81,5 @@
 	      (.addHeader "Content-Type" "application/json")
 	      (.addHeader "Accept" "application/json")
 	      (.setEntity entity))
-	rsp-handler (BasicResponseHandler.)]
+	rsp-handler couch-rsp-handler]
     (. http-client execute put rsp-handler)))

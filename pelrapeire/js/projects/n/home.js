@@ -3,7 +3,7 @@ var y;
 /**
  * abstract server communications from other page controls
  * @param {Object} config
- * {yui: Object}
+ * {yui: Object, baseGetTaskUri: String}
  * where yui is the yui global object 
  */
 var Server = function(config) {
@@ -25,13 +25,12 @@ Server.prototype = {
 				success: function(id, rsp, args) {
 					var json = yui.JSON.parse(rsp.responseText);
 					yui.fire('newtask:created', json);
-					console.log('success');
 				},
 				failure: function(id, rsp, args) {
-					console.log('failure');
+
 				},
 				complete: function(id, rsp, args) {
-					console.log('complete');
+
 				}
 			},
 			form: {
@@ -55,19 +54,34 @@ Server.prototype = {
 					success: function(id, rsp, args){
 						var json = yui.JSON.parse(rsp.responseText);
 						obj.task.config.node.set('id', json.id + '.' + json.rev);
-						console.log('success');
 					},
 					failure: function(id, rsp, args){
-						console.log('failure');
+
 					},
 					complete: function(id, rsp, args){
-						console.log('complete');
+
 					}
 				},
 				data: obj.task.serialize(obj.action)
 			};
 			this.config.yui.io(obj.uri, cfg);
 		}
+	}, 
+	/**
+	 * gets all complete task information from a server
+	 * @param {id: String} obj
+	 */
+	getTask: function(obj) {
+		var uri = this.config.baseGetTaskUri + "/" + obj.id;
+		var cfg = {
+			method: 'GET',
+			on: {
+				success: function(id, rsp, args) {},
+				failure: function(id, rsp, args) {},
+				complete: function(id, rsp, args) {}
+			}
+		};
+		this.config.yui.io(uri, cfg);
 	}
 };
 
@@ -118,6 +132,7 @@ var TaskList = function(config) {
 	this.config = config;
 	this._makeNodesDraggable(config);
 	this._makeNodesDroppable(config);
+	this._addTaskExpandEventHandlers(config);
 };
 TaskList.prototype = {
 	_makeNodesDraggable : function(cfg) {
@@ -131,6 +146,22 @@ TaskList.prototype = {
 	    		}
 	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
 	    });
+	},
+	/**
+	 * Im not adding this to the table element because I want to remove this handler after 
+	 * a click so that users cant click this multiple times 
+	 */
+	_addTaskExpandEventHandlers : function(cfg) {
+		var Y = cfg.yui;
+		var ns = this.config.root.all('td > a.collapsible');
+        Y.on('click', this._onTaskExpand, ns, this);
+	},
+	_onTaskExpand : function(e) {
+		e.target.set('innerHTML', '-');
+		this.config.yui.detach('click', this._onTaskExpand, e.target);
+		
+		var id = e.target.ancestor('.task').get("id").split(".")[0];
+		this.config.server.getTask({id: id});
 	},
 	addPriorityEventHandlers : function() {
 		var Y = this.config.yui;
@@ -220,9 +251,9 @@ NewTaskForm.prototype = {
 		var nodNewTask = Y.Node.create(
 			'<form id="newTaskForm" >' +
 				'<label for="title">title:</label>' +
-				'<input type="text" id="title" name="title"></input>' +
+				'<input type="text" id="title" name="title" class="fill"></input>' +
 				'<label for="specification">specification:</label>' +
-				'<textarea id="specification" name="specification"></textarea>' +
+				'<textarea id="specification" name="specification" class="fill"></textarea>' +
 				'<fieldset><legend>delivers end user functionality</legend>' +
 					'<label>yes</label>' +
 					'<input type="radio" name="delivers-user-functionality" value="true" />' +
@@ -259,7 +290,10 @@ NewTaskForm.prototype = {
 
 YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function(Y) {
 	y = Y;
-	var server = new Server({yui: Y});
+	var server = new Server({
+		yui: Y,
+		baseGetTaskUri: "/projects/" + serverData['project-name'] + "/tasks"
+		});
 	var newTaskForm = new NewTaskForm({
 		root: Y.one('#proposed div.tasks'),
 		uri: "/projects/" + serverData['project-name'] + "/tasks",
