@@ -3,8 +3,9 @@
 	ring.adapter.jetty 
 	hiccup.core
 	pelrapeire.controllerdefs
-	pelrapeire.pages.pages
-	pelrapeire.layouts.layouts
+	pelrapeire.views.viewdefs
+	pelrapeire.layouts.layoutdefs
+	ring.middleware.reload
 	clojure.contrib.debug
 	clojure.contrib.trace)
   (:import (org.mortbay.jetty.handler ResourceHandler HandlerList)
@@ -46,6 +47,8 @@
        (direct-to (:projects-n-home controllers) params))
   (POST "/projects/:project/tasks" {params :params :as req}
 	(direct-to (:projects-n-tasks controllers) params))
+;;  (GET "/projects/:project-name/tasks/:task-id" {params :params :as req}
+;;       (direct-to (:projects-n-tasks-n controllers) params))
   (GET "/users/:user-id/projects" {params :params}
        (do
 	 (println params)
@@ -53,11 +56,14 @@
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 
+(def app
+     (-> #'main-routes
+	 (wrap-reload '[pelrapeire.core])))
 
 (defn start [] 
   (let [resource-handler (doto (ResourceHandler.) 
 			 (.setResourceBase "."))
-	request-handler (proxy-handler (var main-routes))
+	request-handler (proxy-handler (var app))
 	handler-list (doto (HandlerList.)
 		      (.addHandler resource-handler)
 		      (.addHandler request-handler))

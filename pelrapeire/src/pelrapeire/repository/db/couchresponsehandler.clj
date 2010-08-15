@@ -1,6 +1,6 @@
 (ns pelrapeire.repository.db.couchresponsehandler
   (:use clojure.contrib.json.read
-	pelrapeire.app.errormapping)
+	pelrapeire.app.error-mapping)
   (:import org.apache.http.client.ResponseHandler
 	   org.apache.http.util.EntityUtils
 	   org.apache.http.client.HttpResponseException))
