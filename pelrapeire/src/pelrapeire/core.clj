@@ -44,15 +44,13 @@
   (POST "/login" {params :params :as req}
 	(direct-to (:login controllers) params))
   (GET "/projects/:project-name/home" {params :params :as req}
-       (direct-to (:projects-n-home controllers) params))
+       (direct-to (:projects-uid-home controllers) params))
   (POST "/projects/:project/tasks" {params :params :as req}
-	(direct-to (:projects-n-tasks controllers) params))
-;;  (GET "/projects/:project-name/tasks/:task-id" {params :params :as req}
-;;       (direct-to (:projects-n-tasks-n controllers) params))
+	(direct-to (:projects-uid-tasks controllers) params))
+  (GET "/projects/:project-uid/tasks/:task-uid" {params :params :as req}
+       (direct-to (:projects-uid-tasks-uid controllers) params))
   (GET "/users/:user-id/projects" {params :params}
-       (do
-	 (println params)
-	 (trace (direct-to (:users-n-projects controllers) params))))
+	 (trace (direct-to (:users-uid-projects controllers) params)))
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 

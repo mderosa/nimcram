@@ -49,8 +49,8 @@ are required fields"
 
 
 (defn mock-ajax-controller [params] 
-  {:view :null
-     :layout :nulllayout
+  {:view :json-view
+     :layout :json-layout
      :content {"id" "1" "rev" "1_1" "title" "a title" }})
 (deftest test-direct-to-for-ajax
   (testing "an ajax call should return an ajax string"

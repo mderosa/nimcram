@@ -6,4 +6,4 @@
 (def layouts 
      {:projectlayout pelrapeire.layouts.project-layt/render
       :minimallayout pelrapeire.layouts.minimal-layt/render
-      :nulllayout pelrapeire.layouts.json-layt/render})
+      :json-layout pelrapeire.layouts.json-layt/render})

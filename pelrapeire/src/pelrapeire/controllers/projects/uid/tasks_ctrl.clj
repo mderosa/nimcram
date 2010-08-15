@@ -42,20 +42,20 @@
    (nil? (params "action"))
    (let [created-info (run-create-task fn-create-task params)
 	 created-data (fn-get-task (created-info "id"))]
-     {:view :null
-      :layout :nulllayout
+     {:view :json-view
+      :layout :json-layout
       :content created-data})
 
    (= "update-progress" (params "action"))
    (let [updated-resp (run-update-progress fn-update-task params)]
-     {:view :null
-      :layout :nulllayout
+     {:view :json-view
+      :layout :json-layout
       :content updated-resp})
 
    (= "update-priority" (params "action"))
    (let [updated-resp (run-update-priority fn-update-task params)]
-     {:view :null
-      :layout :nulllayout
+     {:view :json-view
+      :layout :json-layout
       :content updated-resp})
    true (throw (IllegalArgumentException. "request not properly specified"))))
 
