@@ -9,7 +9,7 @@
       "_rev" "3-f0c26eae64651811fffd4a1bf534ea23", 
       "delivers-user-functionality" true, 
       "progress" "delivered", 
-      "solution-team" ["marc.derosa@gmail.com"], 
+      "solutionTeam" ["marc.derosa@gmail.com"], 
       "title" "create project task view", 
       "project" "PicoMinMin", 
       "task-complete-date" [2010 7 6 22 21 0], 

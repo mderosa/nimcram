@@ -55,7 +55,7 @@ exists key='_rev' and the rev is like '1_%w'"}
      :post [(and (% "id") (% "rev"))]}
   [map-data mode fn-get fn-put db-config]
   (if (= mode :write)
-    (let [str-json (fn-put (map-data "_id") (json-str map-data) db-config)]
+    (let [str-json (fn-put (map-data "_id") (json-str (dissoc map-data "_id")) db-config)]
       (read-json str-json))
     (let [str-json-org (fn-get (map-data "_id") db-config)
 	  map-merged (dissoc (merge (read-json str-json-org) map-data) "_id")

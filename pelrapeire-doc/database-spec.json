@@ -22,11 +22,11 @@
 	'title': 'String', 
 	'specification': 'String',
 	'project': 'Uuid',
-	'solution-team': ['Uuid'],
+	'solutionTeam': ['Uuid'],
 	'delivers-user-functionality': 'Boolean'
-	'task-start-date': 'Date',
-	'task-complete-date': 'Date',
-	'progress': "proposed|analysis in-progress|development in-progress|qa in-progress|delivered"
+	'task-start-date': [Int, Int, Int, Int, Int, Int],
+	'task-complete-date': [Int, Int, Int, Int, Int, Int],
+	'progress': "proposed|in-progress|delivered"
 	'priority': 1 | 2 | 3  (or (nil? (task "priority")) (#{1 2 3} (task "priority"))
-	'namespace': [{"predicate" "value"}, ...] 
+	'namespace': [{"predicate" "value"}, ...] (this will be a vector but we will start with one)
 }

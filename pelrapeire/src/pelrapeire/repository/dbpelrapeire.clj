@@ -17,7 +17,11 @@
      {:pre [(not (nil? (map-data "type")))]}
      (op-create id map-data db-config)))
 
-(defn pel-update [map-data mode]
+(defn 
+  #^{:doc "to use the update function just pass the document object into the 
+function along with a mode, either :append or :write; the object should
+contain a '_id' and a '_rev'"}
+  pel-update [map-data mode]
   (op-update map-data mode db-config))
 
 (defn pel-delete [map-data]

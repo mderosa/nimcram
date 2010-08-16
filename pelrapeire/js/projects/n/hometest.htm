@@ -126,6 +126,27 @@
 						var t = new Task({node: nd});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(2, json.priority);
+					},
+					testWeShouldBeAbleToTransformATaskToAForm: function() {
+						var taskList = new TaskList({
+							root: Y.one('#test-bucket'),
+							dragSelector: 'div.tasks table.task',
+							dropSelector: 'table.task, div.bmrcp-head',
+							server: null,
+							yui: Y
+						});
+						var user = {
+							_id: '34c9c3adade7da214b70f96ea1418abb',
+							_rev: '1-d44f047f8b364777d96a8fa2b993de14',
+							type: 'task',
+							title: 'a test form title',
+							specification: 'this is a test specification',
+							project: 'PicoMinMin',
+							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
+							'delivers-user-functionality': true,
+							priority: null,
+							namespace: [{'release': 'e662.indexer-shj-01'}]
+						};
 					}
 				});
 		
@@ -171,7 +192,9 @@
 		
 		<div class="bmrcp-head"></div>
 		
-		<!-- a task nodes for testing serialization of priority values -->
+		<!-- a task nodes for testing serialization of priority values. Im also using
+		these to test task to form conversion so I am being destructive with the second
+		set of tests -->
 		<table>
 			<td id="test-bucket" class="bucket">
 				<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">

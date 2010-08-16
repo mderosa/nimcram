@@ -73,10 +73,14 @@ Server.prototype = {
 	 */
 	getTask: function(obj) {
 		var uri = this.config.baseGetTaskUri + "/" + obj.id;
+		var yui = this.config.yui;
 		var cfg = {
 			method: 'GET',
 			on: {
-				success: function(id, rsp, args) {},
+				success: function(id, rsp, args) {
+					var json = yui.JSON.parse(rsp.responseText);
+					yui.fire('taskdata:queried', json);
+				},
 				failure: function(id, rsp, args) {},
 				complete: function(id, rsp, args) {}
 			}
@@ -213,6 +217,14 @@ TaskList.prototype = {
 	    		}
 	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
 		new Y.DD.Drop({node: node}); 
+	},
+	
+	transformTaskToTaskForm: function (user) {
+		var n = this.config.yui.one('#' + user._id + "." + user.rev);
+	},
+	
+	transformTaskFormToTask: function () {
+		
 	}
 	
 };
@@ -252,6 +264,8 @@ NewTaskForm.prototype = {
 			'<form id="newTaskForm" >' +
 				'<label for="title">title:</label>' +
 				'<input type="text" id="title" name="title" class="fill"></input>' +
+				'<label for="namespace">namespace:</label>' +
+				'<input type="text" id="namespace" name="namespace" class="fill"></input>' +
 				'<label for="specification">specification:</label>' +
 				'<textarea id="specification" name="specification" class="fill"></textarea>' +
 				'<fieldset><legend>delivers end user functionality</legend>' +
@@ -277,6 +291,78 @@ NewTaskForm.prototype = {
 			
 			this._addSubmitHandler(Y);
 			this._addCancelHandler(Y);
+			this.visible = true;
+		}
+	},
+	destroy: function() {
+		this.config.root.one('#newTaskForm').remove();
+		this.visible = false;
+	}
+
+};
+
+/**
+ * This object represents a form which can be used to update a new task
+ * <p>
+ * config :: {root: Node, uri: String, server: Server}
+ * root = the node that will become the parent node of the form when it is created
+ * uri = the uri to submit form data to
+ * server = the server object defined on this page
+ */
+var TaskForm = function(config) {
+	this.config = config;
+	this.visible = false;
+}
+TaskForm.prototype = {
+	_addSubmitHandler: function(Y) {
+		var req = {
+			uri: this.config.uri,
+			sourceForm:	this.config.root.one('form'),
+			};
+		var that = this;
+		Y.one('form button.updating').on("click", function() {
+				that.config.server.updateAppendTask(req);	
+				
+			});
+	},
+	_addDeleteHandler: function(Y) {
+		var that = this;
+		var nodAnchor = Y.one("form a.deleting").on('click', function() {
+			
+		});
+	},
+	_buildFormHtml: function(Y) {
+		var nodNewTask = Y.Node.create(
+			'<form>' +
+				'<label for="title">title:</label>' +
+				'<input type="text" id="title" name="title" class="fill"></input>' +
+				'<label for="namespace">namespace:</label>' +
+				'<input type="text" id="namespace" name="namespace" class="fill"></input>' +
+				'<label for="specification">specification:</label>' +
+				'<textarea id="specification" name="specification" class="fill"></textarea>' +
+				'<fieldset><legend>delivers end user functionality</legend>' +
+					'<label>yes</label>' +
+					'<input type="radio" name="delivers-user-functionality" value="true" />' +
+					'<label>no</label>' +
+					'<input type="radio" name="delivers-user-functionality" value="false" />' +
+				'</fieldset>' +
+				'<button class="updating" type="button">update</button>' +
+				'&nbsp;&nbsp;<a class="deleting" href="#">delete</a>' +
+			'</form>');
+		return nodNewTask;
+	},
+	show : function(Y) {
+		if (this.visible == false) {
+			var nodNewTask = this._buildFormHtml(Y);
+			var nodTasks = this.config.root;
+			if (nodTasks.hasChildNodes()) {
+				nodTasks.prepend(nodNewTask);
+			} else {
+				nodTasks.appendChild(nodNewTask);
+			}
+			
+			this._addSubmitHandler(Y);
+			this._addDeleteHandler(Y);
 			this.visible = true;
 		}
 	},
@@ -339,6 +425,12 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
    
    Y.on('newtask:created', function(json) {
 		proposedTasks.addNewTask(json);
+   });
+   
+   Y.on('taskdata:queried', function(json) {
+   		//proposedTasks
+		//inProgressTasks
+		//deliveredTasks
    });
 
    Y.DD.DDM.on('drag:start', function(e) {
