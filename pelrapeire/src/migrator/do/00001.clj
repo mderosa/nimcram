@@ -1,4 +1,6 @@
-(ns migrator.do.00001
+(ns 
+    #^{:doc "adds a 'namespace' attribute to all tasks"}
+  migrator.do.00001
   (:use pelrapeire.repository.dbpelrapeire
 	pelrapeire.repository.dbconfig
 	pelrapeire.repository.db.dbops))

@@ -270,9 +270,9 @@ NewTaskForm.prototype = {
 				'<textarea id="specification" name="specification" class="fill"></textarea>' +
 				'<fieldset><legend>delivers end user functionality</legend>' +
 					'<label>yes</label>' +
-					'<input type="radio" name="delivers-user-functionality" value="true" />' +
+					'<input type="radio" name="deliversUserFunctionality" value="true" />' +
 					'<label>no</label>' +
-					'<input type="radio" name="delivers-user-functionality" value="false" />' +
+					'<input type="radio" name="deliversUserFunctionality" value="false" />' +
 				'</fieldset>' +
 				'<button id="newTaskSubmitter" type="button">create</button>' +
 				'&nbsp;&nbsp;<a id="newTaskCanceler" href="#">cancel</a>' +
@@ -342,9 +342,9 @@ TaskForm.prototype = {
 				'<textarea id="specification" name="specification" class="fill"></textarea>' +
 				'<fieldset><legend>delivers end user functionality</legend>' +
 					'<label>yes</label>' +
-					'<input type="radio" name="delivers-user-functionality" value="true" />' +
+					'<input type="radio" name="deliversUserFunctionality" value="true" />' +
 					'<label>no</label>' +
-					'<input type="radio" name="delivers-user-functionality" value="false" />' +
+					'<input type="radio" name="deliversUserFunctionality" value="false" />' +
 				'</fieldset>' +
 				'<button class="updating" type="button">update</button>' +
 				'&nbsp;&nbsp;<a class="deleting" href="#">delete</a>' +

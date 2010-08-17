@@ -9,9 +9,9 @@
   run-create-task [fn-create-task params]
   {:pre [(not (nil? (params "title")))]}
   (let [submit-data (assoc params "type" "task" "progress" "proposed")
-	conditioned-data (if (= "true" (submit-data "delivers-user-functionality"))
-			   (assoc submit-data "delivers-user-functionality" true)
-			   (assoc submit-data "delivers-user-functionality" false))]
+	conditioned-data (if (= "true" (submit-data "deliversUserFunctionality"))
+			   (assoc submit-data "deliversUserFunctionality" true)
+			   (assoc submit-data "deliversUserFunctionality" false))]
 	(fn-create-task conditioned-data)))
 
 (defn 

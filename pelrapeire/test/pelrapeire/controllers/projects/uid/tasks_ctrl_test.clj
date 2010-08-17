@@ -7,10 +7,10 @@
     (let [rslt (run-create-task (fn [x] x) 
 				{"title" "a title" 
 				 "specification" "a specification"
-				 "delivers-user-functionality" "false"})]
+				 "deliversUserFunctionality" "false"})]
       (is (not (nil? (rslt "type"))))
       (is (not (nil? (rslt "progress"))))
-      (is (= false (rslt "delivers-user-functionality"))))))
+      (is (= false (rslt "deliversUserFunctionality"))))))
 
 (deftest test-run-update-progress1
   (testing "that when we are sending _id _rev progress and task-start-date params to the db"

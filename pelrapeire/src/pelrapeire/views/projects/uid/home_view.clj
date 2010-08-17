@@ -20,7 +20,7 @@
   #^{:doc "we want a task to have a class type of 'task usr-func' or 'task n-user-func' this
 function creates the classes for that designation"}
      make-task-class [task]
-     (if (task "delivers-user-functionality")
+     (if (task "deliversUserFunctionality")
        "task usr-func"
        "task n-usr-func"))
 

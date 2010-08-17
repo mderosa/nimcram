@@ -7,7 +7,7 @@
      {"task-start-date" [2010 7 6 21 10 0], 
       "specification" "should be queryable so that give an project name we can obtain all the tasks for that project", 
       "_rev" "3-f0c26eae64651811fffd4a1bf534ea23", 
-      "delivers-user-functionality" true, 
+      "deliversUserFunctionality" true, 
       "progress" "delivered", 
       "solutionTeam" ["marc.derosa@gmail.com"], 
       "title" "create project task view", 
