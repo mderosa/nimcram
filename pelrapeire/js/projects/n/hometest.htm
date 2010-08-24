@@ -120,14 +120,17 @@
 						Y.Assert.areEqual(0, json.priority);
 						Y.Assert.areEqual('update-priority', json.action);
 						
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cc');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
 						var t = new Task({node: nd});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(2, json.priority);
 					},
-					testWeShouldBeAbleToTransformATaskToAForm: function() {
+					/**
+					 * given an id a task list should be able to return a task object to us
+					 */
+					testGetTaskFromATaskList: function() {
 						var taskList = new TaskList({
 							root: Y.one('#test-bucket'),
 							dragSelector: 'div.tasks table.task',
@@ -135,9 +138,20 @@
 							server: null,
 							yui: Y
 						});
-						var user = {
-							_id: '34c9c3adade7da214b70f96ea1418abb',
-							_rev: '1-d44f047f8b364777d96a8fa2b993de14',
+						var task = taskList.getTask('34c9c3adade7da214b70f96ea1418abc');
+						Y.Assert.isNotNull(task);
+						var actual = task.getRevision();
+						Y.Assert.areEqual(actual, '1-ca66e995fa34333d682f04a00e98c3cc');
+					},
+					testWeShouldBeAbleToTransformATaskBoxToATaskForm: function() {
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y});
+						
+						var taskData = {
+							_id: '34c9c3adade7da214b70f96ea1418abc',
+							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
 							type: 'task',
 							title: 'a test form title',
 							specification: 'this is a test specification',
@@ -147,7 +161,43 @@
 							priority: null,
 							namespace: [{'release': 'e662.indexer-shj-01'}]
 						};
+						t.renderAsTaskForm(taskData);
+						el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.areEqual("FORM", el.tagName);
+						Y.Assert.isTrue(t.isInFormMode());
+					},
+					testWeShouldBeAbleToTransformATaskFormToATaskBox: function() {
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y});
+						
+						var taskData = {
+							_id: '34c9c3adade7da214b70f96ea1418abc',
+							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
+							type: 'task',
+							title: 'a test form title',
+							specification: 'this is a test specification',
+							project: 'PicoMinMin',
+							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
+							'deliversUserFunctionality': true,
+							priority: null,
+							namespace: [{'release': 'e662.indexer-shj-01'}]
+						};
+						t.renderAsTaskForm(taskData);
+						el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.areEqual("FORM", el.tagName);
+					}, 
+					testRenderTaskFormNamespaces: function() {
+						var t = new Task({node: null, yui: Y});
+						var html = t._renderTaskFormNamespaces([{release: 'e662.indexer'}, {project: 'projectA.feature1'}]);
+						var matches = html.match(/release=e662.indexer/);
+						Y.Assert.isNotNull(matches);
+						matches = html.match(/project=projectA.feature1/);
+						Y.Assert.isNotNull(matches);
 					}
+					//when we add a new task we should also update the tasks in the task list
+					
 				});
 		
 			    var yconsole = new Y.Console({newestOnTop: false});
@@ -208,7 +258,7 @@
 						</td>
 					</tr>
 				</table>
-				<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cc">
+				<table class="task" id="34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc">
 					<tr>
 						<td><a class="collapsible" href="#">+</a></td>
 						<td class="title">password hashing for login</td>

@@ -92,13 +92,39 @@ Server.prototype = {
 /**
  * A task definition
  * @param {Object} config
- * {node: Node}
+ * {node: Node, yui: Y}
  */
 var Task = function(config) {
 	this.config = config;
+	this.taskData = null;
 };
 Task.prototype = {
-
+	_setOnExpandHandler: function(cfg) {
+		var Y = cfg.yui;
+		var ns = this.config.node.all('td > a.collapsible');
+        Y.on('click', this._onTaskExpand, ns, this);
+	},
+	_onTaskExpand : function(e) {
+		e.target.set('innerHTML', '-');
+		this.config.yui.detach('click', this._onTaskExpand, e.target);
+		
+		var id = e.target.ancestor('.task').get("id").split(".")[0];
+		this.config.server.getTask({id: id});
+	},
+	getId: function() {
+		var arrIdAndRev = this.config.node.get("id").split(".");
+		return arrIdAndRev[0];
+	},
+	getRevision: function() {
+		var arrIdAndRev = this.config.node.get("id").split(".");
+		return arrIdAndRev[1];
+	},
+	isInFormMode: function() {
+		return this.config.node.get('tagName') == 'FORM';
+	},
+	isInTableMode: function() {
+		return this.config.node.get('tagName') == 'TABLE';
+	},
 	/**
 	 * places the transitive content of a node into a json object
 	 * @param {Object} action if this object is going to be part of a post update reqest to the back
@@ -106,23 +132,66 @@ Task.prototype = {
 	 * what data is being updated
 	 */
 	serialize: function(action) {
-		var obj = {};
-		obj.action = action;
-		arrIdAndRev = this.config.node.get("id").split(".");
-		obj._id = arrIdAndRev[0];
-		obj._rev = arrIdAndRev[1];
-		nodBucket = this.config.node.ancestor('.bucket');
-		obj.progress = nodBucket.get('id');
-		var priority = 0;
-		var ns = this.config.node.all('td.priority img');
-		ns.each(function(n){
-			if (n.get('src').match(/star-on.gif/)) {
-				priority++;	
+		if (this.isInTableMode()) {
+			var obj = {};
+			obj.action = action;
+			arrIdAndRev = this.config.node.get("id").split(".");
+			obj._id = arrIdAndRev[0];
+			obj._rev = arrIdAndRev[1];
+			nodBucket = this.config.node.ancestor('.bucket');
+			obj.progress = nodBucket.get('id');
+			var priority = 0;
+			var ns = this.config.node.all('td.priority img');
+			ns.each(function(n){
+				if (n.get('src').match(/star-on.gif/)) {
+					priority++;
+				}
+			});
+			obj.priority = priority;
+			
+			return obj;
+		} else {
+			throw new Error('not implemented for form mode');
+		}
+	},
+	renderAsTaskForm : function(taskData) {
+		this.taskData = taskData;
+		var id = taskData._id + '.' + taskData._rev;
+		var frmNode = this.config.yui.Node.create(
+			'<form ' + 'id="' + id + '" >' +
+				'<label for="title">title:</label>' +
+				'<input type="text" id="title" name="title" class="fill" ' + 'value="' +
+					taskData.title + '" />' +
+				'<label for="namespace">namespace:</label>' +
+				this._renderTaskFormNamespaces(taskData.namespace) +
+				'<label for="specification">specification:</label>' +
+				'<textarea id="specification" name="specification" class="fill">' +
+					taskData.specification +
+				'</textarea>' +
+				'<fieldset><legend>delivers end user functionality</legend>' +
+					'<label>yes</label>' +
+					'<input type="radio" name="deliversUserFunctionality" value="true" />' +
+					'<label>no</label>' +
+					'<input type="radio" name="deliversUserFunctionality" value="false" />' +
+				'</fieldset>' +
+				'<button class="updating" type="button">update</button>' +
+				'&nbsp;&nbsp;<a class="deleting" href="#">collapse</a>' +
+			'</form>');
+		this.config.node.replace(frmNode);
+		this.config.node = frmNode;
+	},
+	_renderTaskFormNamespaces: function(arrNs) {
+		var html = "";
+		for (var i = 0; i < arrNs.length; i++) {
+			html += '<input type="text" name="namespace" class="fill" ';
+			for (nskey in arrNs[i]) {
+				html += 'value="' + nskey + "=" + arrNs[i][nskey] + '" />';
 			}
-		});
-		obj.priority = priority;
+		}
+		return html;
+	},
+	renderAsTaskTable: function(taskData) {
 		
-		return obj;
 	}
 };
 
@@ -134,11 +203,18 @@ Task.prototype = {
  */
 var TaskList = function(config) {
 	this.config = config;
+	this.tasks = [];
+	this._initTasks(config);
 	this._makeNodesDraggable(config);
 	this._makeNodesDroppable(config);
-	this._addTaskExpandEventHandlers(config);
 };
 TaskList.prototype = {
+	_initTasks: function(cfg) {
+		var ns = cfg.root.all('table.task');
+		ns.each(function(val, idx) {
+			this.tasks.push(new Task({node: val, yui: cfg.yui}))
+		}, this);
+	},
 	_makeNodesDraggable : function(cfg) {
 		var Y = cfg.yui;
 		var ns = cfg.root.all(cfg.dragSelector);
@@ -150,22 +226,6 @@ TaskList.prototype = {
 	    		}
 	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
 	    });
-	},
-	/**
-	 * Im not adding this to the table element because I want to remove this handler after 
-	 * a click so that users cant click this multiple times 
-	 */
-	_addTaskExpandEventHandlers : function(cfg) {
-		var Y = cfg.yui;
-		var ns = this.config.root.all('td > a.collapsible');
-        Y.on('click', this._onTaskExpand, ns, this);
-	},
-	_onTaskExpand : function(e) {
-		e.target.set('innerHTML', '-');
-		this.config.yui.detach('click', this._onTaskExpand, e.target);
-		
-		var id = e.target.ancestor('.task').get("id").split(".")[0];
-		this.config.server.getTask({id: id});
 	},
 	addPriorityEventHandlers : function() {
 		var Y = this.config.yui;
@@ -185,7 +245,7 @@ TaskList.prototype = {
 		this.config.server.updateAppendTask({
 			uri: '/projects/' + serverData['project-name'] + '/tasks', 
 			action: 'update-priority', 
-			task: new Task({node: e.target.ancestor('table.task')})
+			task: new Task({node: e.target.ancestor('table.task'), yui: Y})
 			});
 	},
 	_makeNodesDroppable: function(cfg) {
@@ -218,9 +278,18 @@ TaskList.prototype = {
 	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
 		new Y.DD.Drop({node: node}); 
 	},
-	
-	transformTaskToTaskForm: function (user) {
-		var n = this.config.yui.one('#' + user._id + "." + user.rev);
+	getTask: function(id) {
+		var task = null;
+		this.config.yui.each(this.tasks, function(val, idx) {
+			if (val.getId() == id) {
+				task = val; 
+				return;
+			}
+		});
+		return task;
+	},
+	transformTaskToTaskForm: function (taskData) {
+		var n = this.config.yui.one('#' + taskData._id + "." + taskData.rev);
 	},
 	
 	transformTaskFormToTask: function () {
@@ -305,7 +374,8 @@ NewTaskForm.prototype = {
  * This object represents a form which can be used to update a new task
  * <p>
  * config :: {root: Node, uri: String, server: Server}
- * root = the node that will become the parent node of the form when it is created
+ * root = the form tag that contains the form elements, this is at the same level as the table tags 
+ * that make up the task list
  * uri = the uri to submit form data to
  * server = the server object defined on this page
  */
@@ -444,7 +514,7 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 	    var drag = e.target;
 	    drag.get('node').setStyles({opacity: '1'});
 		
-		var task = new Task({node: drag});
+		var task = new Task({node: drag, yui: Y});
 		server.updateAppendTask({
 			uri: "/projects/" + serverData['project-name'] + "/tasks",
 			task: task,
@@ -466,7 +536,7 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		   ndDrop.get('nextSibling').prepend(ndDrag);
 	   }
 	   
-	   	var task = new Task({node: ndDrag});
+	   	var task = new Task({node: ndDrag, yui: Y});
 		server.updateAppendTask({
 			uri: "/projects/" + serverData['project-name'] + "/tasks",
 			task: task,

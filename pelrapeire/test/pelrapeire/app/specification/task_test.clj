@@ -40,4 +40,3 @@ like for it to be converted to a boolean"
 			       "deliversUserFunctionality" "true"})]
       (is (= true (actual "deliversUserFunctionality"))))))
 
-
