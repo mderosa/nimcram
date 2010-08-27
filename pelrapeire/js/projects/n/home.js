@@ -157,6 +157,13 @@ Task.prototype = {
 	renderAsTaskForm : function(taskData) {
 		this.taskData = taskData;
 		var id = taskData._id + '.' + taskData._rev;
+		var checked = function(taskData, ctrlValue) {
+			if (taskData.deliversUserFunctionality === ctrlValue) {
+				return '" checked="checked" ';
+			} else {
+				return '';
+			}
+		};
 		var frmNode = this.config.yui.Node.create(
 			'<form ' + 'id="' + id + '" >' +
 				'<label for="title">title:</label>' +
@@ -170,9 +177,9 @@ Task.prototype = {
 				'</textarea>' +
 				'<fieldset><legend>delivers end user functionality</legend>' +
 					'<label>yes</label>' +
-					'<input type="radio" name="deliversUserFunctionality" value="true" />' +
+					'<input type="radio" name="deliversUserFunctionality" value="true" ' + checked(taskData, true) + '/>' +
 					'<label>no</label>' +
-					'<input type="radio" name="deliversUserFunctionality" value="false" />' +
+					'<input type="radio" name="deliversUserFunctionality" value="false" ' + checked(taskData, false) + '/>' +
 				'</fieldset>' +
 				'<button class="updating" type="button">update</button>' +
 				'&nbsp;&nbsp;<a class="deleting" href="#">collapse</a>' +
