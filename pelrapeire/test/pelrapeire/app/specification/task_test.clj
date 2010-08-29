@@ -40,3 +40,45 @@ like for it to be converted to a boolean"
 			       "deliversUserFunctionality" "true"})]
       (is (= true (actual "deliversUserFunctionality"))))))
 
+(deftest test-create-with-namespace-info1
+  (testing "namespace infomation will come in as '', 'something=something', or
+as an array. when '' namespace should be an empty array"
+    (let [actual (create-task {"title" "a title" 
+			       "namespace" "" 
+			       "project" "project name"
+			       "deliversUserFunctionality" ""})]
+      (is (= [] (actual "namespace")))
+      (is (= false (actual "deliversUserFunctionality"))))))
+
+(deftest test-create-with-namespace-info2
+  (testing "namespace infomation will come in as '', 'something=something', or
+as an array. when 'x=y' namespace should be [{x y}]"
+    (let [actual (create-task {"title" "a title" 
+			       "namespace" "project=level1.level2" 
+			       "project" "project name"
+			       "deliversUserFunctionality" ""})]
+      (is (= [{"project" "level1.level2"}] (actual "namespace")))
+      (is (= false (actual "deliversUserFunctionality"))))))
+
+(deftest test-create-with-namespace-info3
+  (testing "namespace infomation will come in as '', 'something=something', or
+as an array. when 'xxxx' the namespace submission is invalid and should be []"
+    (let [actual (create-task {"title" "a title" 
+			       "namespace" "dkdkdkd" 
+			       "project" "project name"
+			       "deliversUserFunctionality" ""})]
+      (is (= [] (actual "namespace")))
+      (is (= false (actual "deliversUserFunctionality"))))))
+
+(deftest test-create-with-namespace-info4
+  (testing "namespace infomation will come in as '', 'something=something', or
+as an array. when multiple namespaces come in the parameter list they will be 
+sparated out and placed in maps"
+    (let [actual (create-task {"title" "a title" 
+			       "namespace" ["project=projectA" "release=e663"]
+			       "project" "project name"
+			       "deliversUserFunctionality" ""})]
+      (is (= [{"project" "projectA"} {"release" "e663"}] (actual "namespace"))))))
+
+
+
