@@ -1,5 +1,6 @@
 (ns pelrapeire.views.projects.uid.home-view
   (:use pelrapeire.app.ui-control
+	clojure.contrib.json
 	pelrapeire.app.task-statistics))
 
 (defn 
@@ -27,6 +28,7 @@ function creates the classes for that designation"}
 (defn make-task [task] 
   [:table {:id (str (task "_id") "." (task "_rev")) :class (make-task-class task)}
    [:tr
+    [:td {:class "rawData"} (json-str task) ]
     [:td [:a {:href "#" :class "collapsible"} "+"]]
     [:td {:class "title"} (task "title")]
     (if (= "proposed" (task "progress"))

@@ -2,6 +2,7 @@
 //user example spec
 {
 	'_id': 'Uuid',
+	'_rev': 'Uuid',
 	'type': 'user',
 	'password': 'String'
 	'projects-im-contributing-to': ['Uuid']
@@ -12,19 +13,21 @@
 //project
 {
 	'_id': 'Uuid (project name)'
+	'_rev': 'Uuid'
 	'type': 'project'	
 }
 
 //task
 {
 	'_id': 'Uuid',
+	'_rev': 'Uuid',
 	'type': 'task',
 	'title': 'String', 
 	'specification': 'String',
 	'project': 'Uuid',
 	'solutionTeam': ['Uuid'],
 	'deliversUserFunctionality': 'Boolean'
-	'taskCreateDate': [Int, Int, Int, Int, Int, Int]
+	'taskCreateDate': [Int, Int, Int, Int, Int, Int] //when not set this is null
 	'taskStartDate': [Int, Int, Int, Int, Int, Int],
 	'taskCompleteDate': [Int, Int, Int, Int, Int, Int],
 	'progress': "proposed|in-progress|delivered"

@@ -132,7 +132,7 @@
 					 */
 					testGetTaskFromATaskList: function() {
 						var taskList = new TaskList({
-							root: Y.one('#test-bucket'),
+							root: Y.one('#testBucket'),
 							dragSelector: 'div.tasks table.task',
 							dropSelector: 'table.task, div.bmrcp-head',
 							server: null,
@@ -225,8 +225,41 @@
 						Y.Assert.isNull(matches, "the priority is null so we dont want any stars 'on'");
 						matches = html.match(/off/);
 						Y.Assert.isNotNull(matches, "we should have three stars off");
-					}
+					},
 					//test _renderTaskTableDaysActive
+					testRenderTaskTableDaysActive: function() {
+						var t = new Task({node: null, yui: Y});
+						var taskData = {
+							_id: '34c9c3adade7da214b70f96ea1418abc',
+							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
+							type: 'task',
+							title: 'a test form title',
+							specification: 'this is a test specification',
+							project: 'PicoMinMin',
+							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
+							deliversUserFunctionality: true,
+							priority: null,
+							progress: 'proposed',
+							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}],
+							taskCreateDate: [2010, 8, 17, 12, 4, 23],  
+							taskStartDate: [2010, 8, 27, 9, 30, 12],
+							taskCompleteDate: null
+						};
+						var html = t._renderTaskTableDaysActive(taskData);
+						console.log(html);
+						var matches = html.match(/<td class="statistic">\d+</);
+						Y.Assert.isNotNull(matches, "should have a whole number in the td element");
+					},
+					testATaskShouldFullyInitializeOnStartup: function () {
+						var id = 'ff5e24a8b1351764edde8e98c74fc99d.7-e83166bf9a306826e1d2dbd4811e114e';
+						var el = document.getElementById(id);
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y});
+						Y.Assert.isNotNull(t.taskData);
+						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.taskData_id);
+						Y.Assert.areEqual('proposed', t.taskData.progress);
+					}
 					//when we add a new task we should also update the tasks in the task list
 					
 				});
@@ -277,32 +310,48 @@
 		these to test task to form conversion so I am being destructive with the second
 		set of tests -->
 		<table>
-			<td id="test-bucket" class="bucket">
-				<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">
-					<tr>
-						<td><a class="collapsible" href="#">+</a></td>
-						<td class="title">password hashing for login</td>
-						<td class="priority">
-							<img class="clickable" src="/img/star-off.gif" title="low" />
-							<img class="clickable" src="/img/star-off.gif" title="medium" />
-							<img class="clickable" src="/img/star-off.gif" title="high" />
-						</td>
-					</tr>
-				</table>
-				<table class="task" id="34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc">
-					<tr>
-						<td><a class="collapsible" href="#">+</a></td>
-						<td class="title">password hashing for login</td>
-						<td class="priority">
-							<img class="clickable" src="/img/star-on.gif" title="low" />
-							<img class="clickable" src="/img/star-on.gif" title="medium" />
-							<img class="clickable" src="/img/star-off.gif" title="high" />
-						</td>
-					</tr>
-				</table>				
+			<td id="testBucket" class="bucket">
+				<div class="tasks">
+					<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">
+						<tr>
+							<td><a class="collapsible" href="#">+</a></td>
+							<td class="title">password hashing for login</td>
+							<td class="priority">
+								<img class="clickable" src="/img/star-off.gif" title="low" />
+								<img class="clickable" src="/img/star-off.gif" title="medium" />
+								<img class="clickable" src="/img/star-off.gif" title="high" />
+							</td>
+						</tr>
+					</table>
+					<table class="task" id="34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc">
+						<tr>
+							<td><a class="collapsible" href="#">+</a></td>
+							<td class="title">password hashing for login</td>
+							<td class="priority">
+								<img class="clickable" src="/img/star-on.gif" title="low" />
+								<img class="clickable" src="/img/star-on.gif" title="medium" />
+								<img class="clickable" src="/img/star-off.gif" title="high" />
+							</td>
+						</tr>
+					</table>			
+				</div>	
 			</td>
 		</table>
 		
+		<table id="ff5e24a8b1351764edde8e98c74fc99d.7-e83166bf9a306826e1d2dbd4811e114e" class="task usr-func yui3-dd-drop yui3-dd-draggable">
+			<tbody>
+				<tr>
+					<td class="rawData">{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}</td>
+					<td><a href="#" class="collapsible">+</a></td>
+					<td class="title">we want to add tagging to the tasks</td>
+					<td class="priority">
+						<img title="low" src="/img/star-on.gif" class="clickable">
+						<img title="medium" src="/img/star-on.gif" class="clickable">
+						<img title="high" src="/img/star-off.gif" class="clickable">
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
 		
 	</body>

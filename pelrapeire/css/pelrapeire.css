@@ -20,6 +20,10 @@
 	cursor: pointer;
 }
 
+.rawData {
+	display: none;
+}
+
 ul.errors li {
 	color: red;
 	text-align: center;

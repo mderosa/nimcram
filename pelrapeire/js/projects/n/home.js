@@ -96,9 +96,18 @@ Server.prototype = {
  */
 var Task = function(config) {
 	this.config = config;
-	this.taskData = null;
+	this._initTaskData(config);
 };
 Task.prototype = {
+	_initTaskData : function(cfg) {
+		if (cfg.node) {
+			var dataNode = cfg.node.one('.rawData');
+			if (dataNode) {
+				this.taskData = cfg.yui.JSON.parse(dataNode.get('innerHTML'));
+				dataNode.remove();
+			}
+		}
+	},
 	_setOnExpandHandler: function(cfg) {
 		var Y = cfg.yui;
 		var ns = this.config.node.all('td > a.collapsible');
@@ -216,6 +225,8 @@ Task.prototype = {
 				'</tr>' + 
 				'</tbody>' + 
 			'</table>');
+		this.config.node.replace(tblNode);
+		this.config.node = tblNode;
 	},
 	_renderTaskTablePriorities: function(taskData) {
 		var onOff = [0,0,0];
@@ -229,10 +240,21 @@ Task.prototype = {
 					'</td>';
 		return temp;
 	},
+	/**
+	 * calculates the number of days a task has been active
+	 * @param {Object} taskData
+	 */
 	_renderTaskTableDaysActive: function(taskData) {
-		var d0 = taskData.taskStartDate; var now = new Date();
-		var dtStart = new Date().UTC(d0[0], d0[1], d0[2], d0[3], d0[4], d0[5], 0);
-		var diff = (now.getTime() - dtStart.getTime()) / (1000 * 60 * 60 * 24);
+		var d0 = taskData.taskStartDate;
+		var d1 = taskData.taskCompleteDate; 
+		var dtStart = new Date(Date.UTC(d0[0], d0[1] - 1, d0[2], d0[3], d0[4], d0[5], 0));
+		var dtEnd = null;
+		if (d1) {
+			dtEnd = new Date(Date.UTC(d1[0], d1[1] - 1, d1[2], d1[3], d1[4], d1[5], 0));
+		} else {
+			dtEnd = new Date();
+		}
+		var diff = Math.floor((dtEnd.getTime() - dtStart.getTime()) / (1000 * 60 * 60 * 24));
 		return '<td class="statistic">' + diff + '</td>';
 	}
 };
