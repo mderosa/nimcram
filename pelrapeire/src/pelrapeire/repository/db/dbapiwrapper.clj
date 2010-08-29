@@ -2,8 +2,7 @@
     #^{:doc "this is a high level api that insulates clojure from
 having to interact with couch db through strings"}
   pelrapeire.repository.db.dbapiwrapper
-  (:use clojure.contrib.json.read
-	clojure.contrib.json.write))
+  (:use clojure.contrib.json))
 
 (defn 
   #^{:doc "this is a view specific wrapper.  we need it because view results dont
@@ -12,14 +11,14 @@ satisfy the post condition of a simple get wrapper"}
   {:pre [(not (nil? loc))]
    :post [(and (% "total_rows") (% "rows"))]}
   (let [str-json (fn-access loc db-config)]
-    (read-json str-json)))
+    (read-json str-json false)))
 
 (defn wrapper-get
   #^{:pre [(not (nil? id))]
      :post [(and (% "_id") (% "_rev"))]}
   [#^String id fn-access db-config]
   (let [json-data (fn-access id db-config)]
-    (read-json json-data)))
+    (read-json json-data false)))
 
 (defn 
   #^{:doc "determines if a give map is an initial revision based on the logic
@@ -38,7 +37,7 @@ exists key='_rev' and the rev is like '1_%w'"}
    [map access-fn db-config]
      (let [json-in (json-str map)
 	   json-out (access-fn json-in db-config)]
-	 (read-json json-out)))
+	 (read-json json-out false)))
   (#^{:pre [(not (nil? id))
 	    (and (nil? (map "_id")) (nil? (map "_rev")))]
       :post [(and (% "id") (% "rev"))
@@ -46,7 +45,7 @@ exists key='_rev' and the rev is like '1_%w'"}
    [id map access-fn db-config]
      (let [json-in (json-str map)
 	   json-out (access-fn id json-in db-config)]
-       (read-json json-out))))
+       (read-json json-out false))))
 
 (defn 
   wrapper-update
@@ -56,15 +55,15 @@ exists key='_rev' and the rev is like '1_%w'"}
   [map-data mode fn-get fn-put db-config]
   (if (= mode :write)
     (let [str-json (fn-put (map-data "_id") (json-str (dissoc map-data "_id")) db-config)]
-      (read-json str-json))
+      (read-json str-json false))
     (let [str-json-org (fn-get (map-data "_id") db-config)
-	  map-merged (dissoc (merge (read-json str-json-org) map-data) "_id")
+	  map-merged (dissoc (merge (read-json str-json-org false) map-data) "_id")
 	  str-json-out (fn-put (map-data "_id") (json-str map-merged) db-config)]
-      (read-json str-json-out))))
+      (read-json str-json-out false))))
 
 (defn 
   wrapper-delete
   #^{:pre [(not (nil? (map-data "_id"))) (not (nil? (map-data "_rev")))]
      :post (nil? %)}
   [map-data fn-del db-config]
-  (read-json (fn-del (map-data "_id") (map-data "_rev") db-config)))
+  (read-json (fn-del (map-data "_id") (map-data "_rev") db-config) false))

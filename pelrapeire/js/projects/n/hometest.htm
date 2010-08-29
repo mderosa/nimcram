@@ -143,6 +143,10 @@
 						var actual = task.getRevision();
 						Y.Assert.areEqual(actual, '1-ca66e995fa34333d682f04a00e98c3cc');
 					},
+					/**
+					 * this is a destructive test that takes a task table and transforms it into a task form.
+					 * its inverse test will be run below.
+					 */
 					testWeShouldBeAbleToTransformATaskBoxToATaskForm: function() {
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
@@ -166,6 +170,10 @@
 						Y.Assert.areEqual("FORM", el.tagName);
 						Y.Assert.isTrue(t.isInFormMode());
 					},
+					/**
+					 * this is a destructive test that takes a task form and changes it into a task table. It should
+					 * does the inverse of the above test, set all handlers
+					 */
 					testWeShouldBeAbleToTransformATaskFormToATaskBox: function() {
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
@@ -182,11 +190,12 @@
 							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
 							deliversUserFunctionality: true,
 							priority: null,
-							namespace: [{'release': 'e662.indexer-shj-01'}]
+							progress: 'proposed',
+							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}]
 						};
-						t.renderAsTaskForm(taskData);
+						t.renderAsTaskTable(taskData);
 						el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
-						Y.Assert.areEqual("FORM", el.tagName);
+						Y.Assert.areEqual("TABLE", el.tagName);
 					}, 
 					testRenderTaskFormNamespaces: function() {
 						var t = new Task({node: null, yui: Y});
@@ -195,7 +204,29 @@
 						Y.Assert.isNotNull(matches);
 						matches = html.match(/project=projectA.feature1/);
 						Y.Assert.isNotNull(matches);
+					},
+					testRenderTaskTablePriorities: function() {
+						var t = new Task({node: null, yui: Y});
+						var taskData = {
+							_id: '34c9c3adade7da214b70f96ea1418abc',
+							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
+							type: 'task',
+							title: 'a test form title',
+							specification: 'this is a test specification',
+							project: 'PicoMinMin',
+							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
+							deliversUserFunctionality: true,
+							priority: null,
+							progress: 'proposed',
+							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}]
+						};
+						var html = t._renderTaskTablePriorities(taskData);
+						var matches = html.match(/star-on.gif/);
+						Y.Assert.isNull(matches, "the priority is null so we dont want any stars 'on'");
+						matches = html.match(/off/);
+						Y.Assert.isNotNull(matches, "we should have three stars off");
 					}
+					//test _renderTaskTableDaysActive
 					//when we add a new task we should also update the tasks in the task list
 					
 				});

@@ -154,6 +154,10 @@ Task.prototype = {
 			throw new Error('not implemented for form mode');
 		}
 	},
+	/**
+	 * 我的想法是task的对象有权威的信息，代码可以那对象以不同的方式显示在页面上但是总是现对象-》显示
+	 * @param {Object} taskData 一个完整的后台对象
+	 */
 	renderAsTaskForm : function(taskData) {
 		this.taskData = taskData;
 		var id = taskData._id + '.' + taskData._rev;
@@ -198,7 +202,38 @@ Task.prototype = {
 		return html;
 	},
 	renderAsTaskTable: function(taskData) {
-		
+		this.taskData = taskData;
+		var id = taskData._id + '.' + taskData._rev;
+		var usrFunc = taskData.deliversUserFunctionality ? "usr-func" : "";
+		var fnTd3 = (taskData.progress == 'proposed') ? this._renderTaskTablePriorities : this.renderTaskTableDaysActive;
+		var tblNode = this.config.yui.Node.create(
+			'<table id="' + id + '" class="task ' + usrFunc + ' yui3-dd-drop yui3-dd-draggable">' +
+				'<tbody>' + 
+				'<tr>' + 
+					'<td><a href="#" class="collapsible">+</a></td>' + 
+					'<td class="title">' + taskData.title + '</td>' + 
+					fnTd3(taskData) + 
+				'</tr>' + 
+				'</tbody>' + 
+			'</table>');
+	},
+	_renderTaskTablePriorities: function(taskData) {
+		var onOff = [0,0,0];
+		for (var i = 0; i < taskData.priority; i++) {
+			onOff[i] = 1;
+		}
+		var temp = '<td class="priority">' + 
+						'<img title="low" src="/img/star-' + (onOff[0] ? 'on' : 'off') + '.gif" class="clickable">' + 
+						'<img title="medium" src="/img/star-' + (onOff[1] ? 'on' : 'off') + '.gif" class="clickable">' + 
+						'<img title="high" src="/img/star-' + (onOff[2] ? 'on' : 'off') + '.gif" class="clickable">' + 
+					'</td>';
+		return temp;
+	},
+	_renderTaskTableDaysActive: function(taskData) {
+		var d0 = taskData.taskStartDate; var now = new Date();
+		var dtStart = new Date().UTC(d0[0], d0[1], d0[2], d0[3], d0[4], d0[5], 0);
+		var diff = (now.getTime() - dtStart.getTime()) / (1000 * 60 * 60 * 24);
+		return '<td class="statistic">' + diff + '</td>';
 	}
 };
 

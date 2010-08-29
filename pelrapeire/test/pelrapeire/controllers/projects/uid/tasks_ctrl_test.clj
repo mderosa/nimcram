@@ -5,7 +5,8 @@
 (deftest test-run-create-task []
   (testing "inbound data should be augmented with type and progress info"
     (let [rslt (run-create-task (fn [x] x) 
-				{"title" "a title" 
+				{"title" "a title"
+				 "project" "projectA"
 				 "specification" "a specification"
 				 "deliversUserFunctionality" "false"})]
       (is (not (nil? (rslt "type"))))

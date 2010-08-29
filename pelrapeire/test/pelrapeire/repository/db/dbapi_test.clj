@@ -1,8 +1,7 @@
 (ns pelrapeire.repository.db.dbapi-test
   (:use clojure.test
 	clojure.contrib.trace
-	clojure.contrib.json.read
-	clojure.contrib.json.write
+	clojure.contrib.json
 	pelrapeire.repository.dbconfig
 	pelrapeire.repository.db.dbapi)
   (:import org.apache.http.client.HttpResponseException))
@@ -42,7 +41,7 @@
 
 (deftest test-overwrite
   (testing "we should be able to overwrite an existing record"
-    (let [original (read-json-string (get-doc "101" db-config-int))
+    (let [original (read-json (get-doc "101" db-config-int) false)
 	  org-mod (dissoc original "_id")
 	  rsp (overwrite-doc (original "_id") (json-str org-mod) db-config-int)]
       (is (not (= (original "_rev") (extract-rev rsp)))))))

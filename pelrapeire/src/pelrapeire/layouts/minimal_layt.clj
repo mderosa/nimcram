@@ -1,6 +1,6 @@
 (ns pelrapeire.layouts.minimal-layt
   (:use hiccup.core
-	clojure.contrib.json.write))
+	clojure.contrib.json))
 
 (defn header []
   [:div
