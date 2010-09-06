@@ -92,7 +92,7 @@ Server.prototype = {
 /**
  * A task definition
  * @param {Object} config
- * {node: Node, yui: Y}
+ * {node: Node, yui: Y, server: Server}
  */
 var Task = function(config) {
 	this.config = config;
@@ -168,7 +168,7 @@ Task.prototype = {
 	 * 我的想法是task的对象有权威的信息，代码可以那对象以不同的方式显示在页面上但是总是现对象-》显示
 	 * @param {Object} taskData 一个完整的后台对象
 	 */
-	renderAsTaskForm : function() {
+	renderAsTaskForm : function(e) {
 		var id = this.taskData._id + '.' + this.taskData._rev;
 		var checked = function(taskData, ctrlValue) {
 			if (taskData.deliversUserFunctionality === ctrlValue) {
@@ -202,6 +202,8 @@ Task.prototype = {
 		
 		var collapse = this.config.node.one('.deleting');
 		this.config.yui.on('click', this.renderAsTaskTable, collapse, this, this.taskData);
+		var updating = this.config.node.one('.updating');
+		//this.config.yui.on('click', this.config.server.updateAppendTask, updating, server);
 	},
 	_renderTaskFormNamespaces: function(arrNs) {
 		var html = "";
@@ -282,7 +284,7 @@ TaskList.prototype = {
 	_initTasks: function(cfg) {
 		var ns = cfg.root.all('table.task');
 		ns.each(function(val, idx) {
-			this.tasks.push(new Task({node: val, yui: cfg.yui}))
+			this.tasks.push(new Task({node: val, yui: cfg.yui, server: cfg.server}))
 		}, this);
 	},
 	_makeNodesDraggable : function(cfg) {
@@ -604,7 +606,7 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		   ndDrop.get('nextSibling').prepend(ndDrag);
 	   }
 	   
-		var task = new Task({node: ndDrag, yui: Y});
+		var task = new Task({node: ndDrag, yui: Y, server: server});
 		server.updateAppendTask({
 			uri: "/projects/" + serverData['project-name'] + "/tasks",
 			task: task,
