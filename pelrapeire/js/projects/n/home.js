@@ -46,7 +46,7 @@ Server.prototype = {
 	 * {uri: String, action: String, task: Task} 
 	 */
 	updateAppendTask: function(obj) {
-		if (obj.task.config.node.get("id")) {
+		if (obj.task.isValid()) {
 			var yui = this.config.yui;
 			var cfg = {
 				method: 'POST',
@@ -97,10 +97,11 @@ Server.prototype = {
 var Task = function(config) {
 	this.config = config;
 	this._initTaskData(config);
+	this._setOnExpandHandler(config);
 };
 Task.prototype = {
 	_initTaskData : function(cfg) {
-		if (cfg.node) {
+		if (cfg.node && cfg.node.one) {
 			var dataNode = cfg.node.one('.rawData');
 			if (dataNode) {
 				this.taskData = cfg.yui.JSON.parse(dataNode.get('innerHTML'));
@@ -110,15 +111,10 @@ Task.prototype = {
 	},
 	_setOnExpandHandler: function(cfg) {
 		var Y = cfg.yui;
-		var ns = this.config.node.all('td > a.collapsible');
-        Y.on('click', this._onTaskExpand, ns, this);
-	},
-	_onTaskExpand : function(e) {
-		e.target.set('innerHTML', '-');
-		this.config.yui.detach('click', this._onTaskExpand, e.target);
-		
-		var id = e.target.ancestor('.task').get("id").split(".")[0];
-		this.config.server.getTask({id: id});
+		if (cfg.node && cfg.node.all) {
+			var ns = cfg.node.all('td > a.collapsible');
+			Y.on('click', this.renderAsTaskForm, ns, this);
+		}
 	},
 	getId: function() {
 		var arrIdAndRev = this.config.node.get("id").split(".");
@@ -133,6 +129,11 @@ Task.prototype = {
 	},
 	isInTableMode: function() {
 		return this.config.node.get('tagName') == 'TABLE';
+	},
+	isValid: function() {
+		var valid = this.isInTableMode() || this.isInFormMode();
+		var id = this.config.node.get("id");
+		return valid && /[0-9a-f]{32}\.\d-[0-9a-f]{32}/.test(id);
 	},
 	/**
 	 * places the transitive content of a node into a json object
@@ -167,9 +168,8 @@ Task.prototype = {
 	 * 我的想法是task的对象有权威的信息，代码可以那对象以不同的方式显示在页面上但是总是现对象-》显示
 	 * @param {Object} taskData 一个完整的后台对象
 	 */
-	renderAsTaskForm : function(taskData) {
-		this.taskData = taskData;
-		var id = taskData._id + '.' + taskData._rev;
+	renderAsTaskForm : function() {
+		var id = this.taskData._id + '.' + this.taskData._rev;
 		var checked = function(taskData, ctrlValue) {
 			if (taskData.deliversUserFunctionality === ctrlValue) {
 				return '" checked="checked" ';
@@ -178,21 +178,21 @@ Task.prototype = {
 			}
 		};
 		var frmNode = this.config.yui.Node.create(
-			'<form ' + 'id="' + id + '" >' +
+			'<form ' + 'id="' + id + '" class="task">' +
 				'<label for="title">title:</label>' +
 				'<input type="text" id="title" name="title" class="fill" ' + 'value="' +
-					taskData.title + '" />' +
+					this.taskData.title + '" />' +
 				'<label for="namespace">namespace:</label>' +
-				this._renderTaskFormNamespaces(taskData.namespace) +
+				this._renderTaskFormNamespaces(this.taskData.namespace) +
 				'<label for="specification">specification:</label>' +
 				'<textarea id="specification" name="specification" class="fill">' +
-					taskData.specification +
+					this.taskData.specification +
 				'</textarea>' +
 				'<fieldset><legend>delivers end user functionality</legend>' +
 					'<label>yes</label>' +
-					'<input type="radio" name="deliversUserFunctionality" value="true" ' + checked(taskData, true) + '/>' +
+					'<input type="radio" name="deliversUserFunctionality" value="true" ' + checked(this.taskData, true) + '/>' +
 					'<label>no</label>' +
-					'<input type="radio" name="deliversUserFunctionality" value="false" ' + checked(taskData, false) + '/>' +
+					'<input type="radio" name="deliversUserFunctionality" value="false" ' + checked(this.taskData, false) + '/>' +
 				'</fieldset>' +
 				'<button class="updating" type="button">update</button>' +
 				'&nbsp;&nbsp;<a class="deleting" href="#">collapse</a>' +
@@ -322,8 +322,8 @@ TaskList.prototype = {
 	
 	addNewTask: function(data) {
 		var Y = this.config.yui;
-		var node = Y.Node.create('<table class="task">' +
-		'<tr id="' + data._id + '.' + data._rev + '">' +
+		var node = Y.Node.create('<table id="' + data._id + '.' + data._rev + '" ' + 'class="task">' +
+		'<tr>' +
 			'<td><a class="collapsible" href="#">+</a></td>' +
 			'<td class="title">' + data.title + '</td>' + 
 			'<td class="statistic">0</td>' +
@@ -574,15 +574,13 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 	    drag.get('dragNode').setStyles({opacity: '.65'});
 	});
    
+   /**
+    * note: for newly created or page loaded tasks I dont see any situation where we need
+    * to call updateAppendTask from here...the drag target is never a real node.
+    */
    Y.DD.DDM.on('drag:end', function(e) {
 	    var drag = e.target;
 	    drag.get('node').setStyles({opacity: '1'});
-		
-		var task = new Task({node: drag, yui: Y});
-		server.updateAppendTask({
-			uri: "/projects/" + serverData['project-name'] + "/tasks",
-			task: task,
-			action: 'update-progress'});
 	});
    
    Y.DD.DDM.on('drag:drophit', function(e) {
@@ -600,7 +598,7 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		   ndDrop.get('nextSibling').prepend(ndDrag);
 	   }
 	   
-	   	var task = new Task({node: ndDrag, yui: Y});
+		var task = new Task({node: ndDrag, yui: Y});
 		server.updateAppendTask({
 			uri: "/projects/" + serverData['project-name'] + "/tasks",
 			task: task,

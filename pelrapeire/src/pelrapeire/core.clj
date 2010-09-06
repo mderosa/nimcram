@@ -40,7 +40,9 @@
 ;;map {:status ? :headers ? :body ?}
 (defroutes main-routes
   (GET "/index" {params :params :as req}
-	(direct-to (:index controllers) params))
+       (do
+	 (println params)
+	(direct-to (:index controllers) params)))
   (POST "/login" {params :params :as req}
 	(direct-to (:login controllers) params))
   (GET "/projects/:project-name/home" {params :params :as req}

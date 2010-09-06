@@ -101,7 +101,7 @@
 					testSerializationOfTaskObject: function() {
 						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
 						var nd = Y.one(el);
-						var t = new Task({node: nd, state: 'unsync'});
+						var t = new Task({node: nd, yui: Y});
 						var json = t.serialize("update-progress");
 						Y.Assert.areEqual("64dca73821060386b52188b6cc8e5a89", json._id, 'expect and id');
 						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev, 'expect a rev');
@@ -115,7 +115,7 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd});
+						var t = new Task({node: nd, yui: Y});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(0, json.priority);
 						Y.Assert.areEqual('update-priority', json.action);
@@ -123,7 +123,7 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd});
+						var t = new Task({node: nd, yui: Y});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(2, json.priority);
 					},
@@ -152,8 +152,7 @@
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
 						var t = new Task({node: nd, yui: Y});
-						
-						var taskData = {
+						t.taskData =  {
 							_id: '34c9c3adade7da214b70f96ea1418abc',
 							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
 							type: 'task',
@@ -165,7 +164,7 @@
 							priority: null,
 							namespace: [{'release': 'e662.indexer-shj-01'}]
 						};
-						t.renderAsTaskForm(taskData);
+						t.renderAsTaskForm();
 						el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.areEqual("FORM", el.tagName);
 						Y.Assert.isTrue(t.isInFormMode());
@@ -228,8 +227,13 @@
 					},
 					//test _renderTaskTableDaysActive
 					testRenderTaskTableDaysActive: function() {
-						var t = new Task({node: null, yui: Y});
-						var taskData = {
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y});
+						Y.Assert.isTrue(t.isValid());
+						
+						t.taskData = {
 							_id: '34c9c3adade7da214b70f96ea1418abc',
 							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
 							type: 'task',
@@ -245,8 +249,7 @@
 							taskStartDate: [2010, 8, 27, 9, 30, 12],
 							taskCompleteDate: null
 						};
-						var html = t._renderTaskTableDaysActive(taskData);
-						console.log(html);
+						var html = t._renderTaskTableDaysActive(t.taskData);
 						var matches = html.match(/<td class="statistic">\d+</);
 						Y.Assert.isNotNull(matches, "should have a whole number in the td element");
 					},
@@ -256,8 +259,9 @@
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
 						var t = new Task({node: nd, yui: Y});
+						Y.Assert.isTrue(t.isValid());
 						Y.Assert.isNotNull(t.taskData);
-						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.taskData_id);
+						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.taskData._id);
 						Y.Assert.areEqual('proposed', t.taskData.progress);
 					}
 					//when we add a new task we should also update the tasks in the task list
@@ -347,6 +351,21 @@
 					<td class="priority">
 						<img title="low" src="/img/star-on.gif" class="clickable">
 						<img title="medium" src="/img/star-on.gif" class="clickable">
+						<img title="high" src="/img/star-off.gif" class="clickable">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<table id="f6c73e27c5e4258c8457e8bfaf1a79c4.1-b81de00d061621947aac747f794b01af" class="task usr-func yui3-dd-drop yui3-dd-draggable">
+			<tbody
+				><tr>
+					<td class="rawData">{"specification":"store all the dates as UCT that way there are no issues depending on where in the world people are using the application","priority":null,"_rev":"1-b81de00d061621947aac747f794b01af","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,28,12,54,56],"deliversUserFunctionality":true,"solutionTeam":[],"title":"store dates as UCT","project":"PicoMinMin","_id":"f6c73e27c5e4258c8457e8bfaf1a79c4","type":"task","namespace":"project=database"}</td>
+					<td><a href="#" class="collapsible">+</a></td>
+					<td class="title">store dates as UCT</td>
+					<td class="priority">
+						<img title="low" src="/img/star-off.gif" class="clickable">
+						<img title="medium" src="/img/star-off.gif" class="clickable">
 						<img title="high" src="/img/star-off.gif" class="clickable">
 					</td>
 				</tr>

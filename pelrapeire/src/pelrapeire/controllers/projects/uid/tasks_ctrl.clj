@@ -1,6 +1,7 @@
 (ns pelrapeire.controllers.projects.uid.tasks-ctrl
   (:use clojure.contrib.trace
 	pelrapeire.app.convert
+	pelrapeire.app.validators
 	pelrapeire.app.specification.task)
   (:import org.joda.time.DateTime))
 
@@ -16,7 +17,7 @@
   #^{:doc "pulls out '_id', '_rev', progress parameters and then adds a 
 'taskStartDate' parameter or a taskCompleteDate"}
   run-update-progress [fn-update params]
-  {:pre [(params "_id") (params "_rev") (#{"in-progress" "delivered"} (params "progress"))]}
+  {:pre [(params "_id") (revision? (params "_rev")) (#{"in-progress" "delivered"} (params "progress"))]}
   (let [extract (select-keys params ["_id" "_rev" "progress"])
 	augmented (condp = (params "progress")
 		    "in-progress" (assoc extract "taskStartDate" 
@@ -28,7 +29,7 @@
 (defn 
   #^{:doc "pulls out '_id', '_rev', priority parameters"}
   run-update-priority [fn-update params]
-  {:pre [(params "_id") (params "_rev") (#{"1" "2" "3"} (params "priority"))]}
+  {:pre [(params "_id") (revision? (params "_rev")) (#{"1" "2" "3"} (params "priority"))]}
   (let [extract (assoc 
 		    (select-keys params ["_id" "_rev"]) 
 		  "priority" (Integer/parseInt (params "priority")))]
