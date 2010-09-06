@@ -199,6 +199,9 @@ Task.prototype = {
 			'</form>');
 		this.config.node.replace(frmNode);
 		this.config.node = frmNode;
+		
+		var collapse = this.config.node.one('.deleting');
+		this.config.yui.on('click', this.renderAsTaskTable, collapse, this, this.taskData);
 	},
 	_renderTaskFormNamespaces: function(arrNs) {
 		var html = "";
@@ -210,7 +213,7 @@ Task.prototype = {
 		}
 		return html;
 	},
-	renderAsTaskTable: function(taskData) {
+	renderAsTaskTable: function(e, taskData) {
 		this.taskData = taskData;
 		var id = taskData._id + '.' + taskData._rev;
 		var usrFunc = taskData.deliversUserFunctionality ? "usr-func" : "";
@@ -227,6 +230,9 @@ Task.prototype = {
 			'</table>');
 		this.config.node.replace(tblNode);
 		this.config.node = tblNode;
+		
+		var collapsible = this.config.node.one('.collapsible');
+		this.config.yui.on('click', this.renderAsTaskForm, collapsible, this);
 	},
 	_renderTaskTablePriorities: function(taskData) {
 		var onOff = [0,0,0];
