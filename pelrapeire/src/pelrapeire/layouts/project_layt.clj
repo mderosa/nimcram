@@ -1,5 +1,6 @@
 (ns pelrapeire.layouts.project-layt
   (:use hiccup.core
+	pelrapeire.app.ui-control
 	clojure.contrib.json))
       
 (defn header []
@@ -43,7 +44,7 @@ surrounds the node with a layout"}
      [:link {:href "/js/yui/build/cssgrids/grids.css" :type "text/css" :rel "stylesheet"}]
      [:link {:href "/css/pelrapeire.css" :type "text/css" :rel "stylesheet"}]
      [:script {:src "/js/yui/build/yui/yui-debug.js"}]
-     [:script {:src (:js map-data)}]
+     (include-js (:js map-data))
      [:script (str "var serverData = " (json-str (:params map-data)) ";")]
      [:title (:title map-data)]]
     [:body
