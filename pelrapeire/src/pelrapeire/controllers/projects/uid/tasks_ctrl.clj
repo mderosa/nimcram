@@ -1,6 +1,8 @@
 (ns pelrapeire.controllers.projects.uid.tasks-ctrl
   (:use clojure.contrib.trace
-	pelrapeire.app.convert)
+	pelrapeire.app.convert
+	pelrapeire.app.validators
+	pelrapeire.app.specification.task)
   (:import org.joda.time.DateTime))
 
 (defn 
@@ -8,29 +10,26 @@
 {'ok' true 'id' xxx 'rev' yyy}"}
   run-create-task [fn-create-task params]
   {:pre [(not (nil? (params "title")))]}
-  (let [submit-data (assoc params "type" "task" "progress" "proposed")
-	conditioned-data (if (= "true" (submit-data "delivers-user-functionality"))
-			   (assoc submit-data "delivers-user-functionality" true)
-			   (assoc submit-data "delivers-user-functionality" false))]
-	(fn-create-task conditioned-data)))
+  (let [new-task (create-task params)]
+	(fn-create-task new-task)))
 
 (defn 
   #^{:doc "pulls out '_id', '_rev', progress parameters and then adds a 
-'task-start-date' parameter or a task-complete-date"}
+'taskStartDate' parameter or a taskCompleteDate"}
   run-update-progress [fn-update params]
-  {:pre [(params "_id") (params "_rev") (#{"in-progress" "delivered"} (params "progress"))]}
+  {:pre [(params "_id") (revision? (params "_rev")) (#{"in-progress" "delivered"} (params "progress"))]}
   (let [extract (select-keys params ["_id" "_rev" "progress"])
 	augmented (condp = (params "progress")
-		    "in-progress" (assoc extract "task-start-date" 
+		    "in-progress" (assoc extract "taskStartDate" 
 					 (datetime-to-vector (DateTime.)))
-		    "delivered" (assoc extract "task-complete-date" 
+		    "delivered" (assoc extract "taskCompleteDate" 
 				       (datetime-to-vector (DateTime.))))]
     (fn-update augmented :append)))
 
 (defn 
   #^{:doc "pulls out '_id', '_rev', priority parameters"}
   run-update-priority [fn-update params]
-  {:pre [(params "_id") (params "_rev") (#{"1" "2" "3"} (params "priority"))]}
+  {:pre [(params "_id") (revision? (params "_rev")) (#{"1" "2" "3"} (params "priority"))]}
   (let [extract (assoc 
 		    (select-keys params ["_id" "_rev"]) 
 		  "priority" (Integer/parseInt (params "priority")))]

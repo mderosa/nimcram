@@ -1,5 +1,5 @@
 (ns pelrapeire.repository.db.couchresponsehandler
-  (:use clojure.contrib.json.read
+  (:use clojure.contrib.json
 	pelrapeire.app.error-mapping)
   (:import org.apache.http.client.ResponseHandler
 	   org.apache.http.util.EntityUtils
@@ -11,7 +11,7 @@
 		 (let [statusCode (.. rsp getStatusLine getStatusCode)
 		       entity (. rsp getEntity)]
 		   (if (>= statusCode 300)
-		     (let [error-info (read-json (EntityUtils/toString entity))
+		     (let [error-info (read-json (EntityUtils/toString entity) false)
 			   reason (error-info "reason")
 			   code (error-to-code (error-info "error"))]
 		       (throw (HttpResponseException. code reason)))

@@ -46,7 +46,7 @@ Server.prototype = {
 	 * {uri: String, action: String, task: Task} 
 	 */
 	updateAppendTask: function(obj) {
-		if (obj.task.config.node.get("id")) {
+		if (obj.task.isValid()) {
 			var yui = this.config.yui;
 			var cfg = {
 				method: 'POST',
@@ -73,10 +73,14 @@ Server.prototype = {
 	 */
 	getTask: function(obj) {
 		var uri = this.config.baseGetTaskUri + "/" + obj.id;
+		var yui = this.config.yui;
 		var cfg = {
 			method: 'GET',
 			on: {
-				success: function(id, rsp, args) {},
+				success: function(id, rsp, args) {
+					var json = yui.JSON.parse(rsp.responseText);
+					yui.fire('taskdata:queried', json);
+				},
 				failure: function(id, rsp, args) {},
 				complete: function(id, rsp, args) {}
 			}
@@ -85,42 +89,7 @@ Server.prototype = {
 	}
 };
 
-/**
- * A task definition
- * @param {Object} config
- * {node: Node}
- */
-var Task = function(config) {
-	this.config = config;
-};
-Task.prototype = {
 
-	/**
-	 * places the transitive content of a node into a json object
-	 * @param {Object} action if this object is going to be part of a post update reqest to the back
-	 * end then the user will want to set the action variable so that the backend code knows
-	 * what data is being updated
-	 */
-	serialize: function(action) {
-		var obj = {};
-		obj.action = action;
-		arrIdAndRev = this.config.node.get("id").split(".");
-		obj._id = arrIdAndRev[0];
-		obj._rev = arrIdAndRev[1];
-		nodBucket = this.config.node.ancestor('.bucket');
-		obj.progress = nodBucket.get('id');
-		var priority = 0;
-		var ns = this.config.node.all('td.priority img');
-		ns.each(function(n){
-			if (n.get('src').match(/star-on.gif/)) {
-				priority++;	
-			}
-		});
-		obj.priority = priority;
-		
-		return obj;
-	}
-};
 
 /**
  * This object represents a listing of tasks
@@ -130,11 +99,18 @@ Task.prototype = {
  */
 var TaskList = function(config) {
 	this.config = config;
+	this.tasks = [];
+	this._initTasks(config);
 	this._makeNodesDraggable(config);
 	this._makeNodesDroppable(config);
-	this._addTaskExpandEventHandlers(config);
 };
 TaskList.prototype = {
+	_initTasks: function(cfg) {
+		var ns = cfg.root.all('table.task');
+		ns.each(function(val, idx) {
+			this.tasks.push(new Task({node: val, yui: cfg.yui, server: cfg.server}))
+		}, this);
+	},
 	_makeNodesDraggable : function(cfg) {
 		var Y = cfg.yui;
 		var ns = cfg.root.all(cfg.dragSelector);
@@ -146,22 +122,6 @@ TaskList.prototype = {
 	    		}
 	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
 	    });
-	},
-	/**
-	 * Im not adding this to the table element because I want to remove this handler after 
-	 * a click so that users cant click this multiple times 
-	 */
-	_addTaskExpandEventHandlers : function(cfg) {
-		var Y = cfg.yui;
-		var ns = this.config.root.all('td > a.collapsible');
-        Y.on('click', this._onTaskExpand, ns, this);
-	},
-	_onTaskExpand : function(e) {
-		e.target.set('innerHTML', '-');
-		this.config.yui.detach('click', this._onTaskExpand, e.target);
-		
-		var id = e.target.ancestor('.task').get("id").split(".")[0];
-		this.config.server.getTask({id: id});
 	},
 	addPriorityEventHandlers : function() {
 		var Y = this.config.yui;
@@ -181,7 +141,7 @@ TaskList.prototype = {
 		this.config.server.updateAppendTask({
 			uri: '/projects/' + serverData['project-name'] + '/tasks', 
 			action: 'update-priority', 
-			task: new Task({node: e.target.ancestor('table.task')})
+			task: new Task({node: e.target.ancestor('table.task'), yui: Y})
 			});
 	},
 	_makeNodesDroppable: function(cfg) {
@@ -194,8 +154,8 @@ TaskList.prototype = {
 	
 	addNewTask: function(data) {
 		var Y = this.config.yui;
-		var node = Y.Node.create('<table class="task">' +
-		'<tr id="' + data._id + '.' + data._rev + '">' +
+		var node = Y.Node.create('<table id="' + data._id + '.' + data._rev + '" ' + 'class="task">' +
+		'<tr>' +
 			'<td><a class="collapsible" href="#">+</a></td>' +
 			'<td class="title">' + data.title + '</td>' + 
 			'<td class="statistic">0</td>' +
@@ -213,6 +173,23 @@ TaskList.prototype = {
 	    		}
 	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
 		new Y.DD.Drop({node: node}); 
+	},
+	getTask: function(id) {
+		var task = null;
+		this.config.yui.each(this.tasks, function(val, idx) {
+			if (val.getId() == id) {
+				task = val; 
+				return;
+			}
+		});
+		return task;
+	},
+	transformTaskToTaskForm: function (taskData) {
+		var n = this.config.yui.one('#' + taskData._id + "." + taskData.rev);
+	},
+	
+	transformTaskFormToTask: function () {
+		
 	}
 	
 };
@@ -252,13 +229,15 @@ NewTaskForm.prototype = {
 			'<form id="newTaskForm" >' +
 				'<label for="title">title:</label>' +
 				'<input type="text" id="title" name="title" class="fill"></input>' +
+				'<label for="namespace">namespace:</label>' +
+				'<input type="text" id="namespace" name="namespace" class="fill"></input>' +
 				'<label for="specification">specification:</label>' +
 				'<textarea id="specification" name="specification" class="fill"></textarea>' +
 				'<fieldset><legend>delivers end user functionality</legend>' +
 					'<label>yes</label>' +
-					'<input type="radio" name="delivers-user-functionality" value="true" />' +
+					'<input type="radio" name="deliversUserFunctionality" value="true" />' +
 					'<label>no</label>' +
-					'<input type="radio" name="delivers-user-functionality" value="false" />' +
+					'<input type="radio" name="deliversUserFunctionality" value="false" />' +
 				'</fieldset>' +
 				'<button id="newTaskSubmitter" type="button">create</button>' +
 				'&nbsp;&nbsp;<a id="newTaskCanceler" href="#">cancel</a>' +
@@ -286,7 +265,6 @@ NewTaskForm.prototype = {
 	}
 
 };
-
 
 YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function(Y) {
 	y = Y;
@@ -340,6 +318,12 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
    Y.on('newtask:created', function(json) {
 		proposedTasks.addNewTask(json);
    });
+   
+   Y.on('taskdata:queried', function(json) {
+   		//proposedTasks
+		//inProgressTasks
+		//deliveredTasks
+   });
 
    Y.DD.DDM.on('drag:start', function(e) {
 	    var drag = e.target;
@@ -348,15 +332,13 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 	    drag.get('dragNode').setStyles({opacity: '.65'});
 	});
    
+   /**
+    * note: for newly created or page loaded tasks I dont see any situation where we need
+    * to call updateAppendTask from here...the drag target is never a real node.
+    */
    Y.DD.DDM.on('drag:end', function(e) {
 	    var drag = e.target;
 	    drag.get('node').setStyles({opacity: '1'});
-		
-		var task = new Task({node: drag});
-		server.updateAppendTask({
-			uri: "/projects/" + serverData['project-name'] + "/tasks",
-			task: task,
-			action: 'update-progress'});
 	});
    
    Y.DD.DDM.on('drag:drophit', function(e) {
@@ -374,7 +356,7 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		   ndDrop.get('nextSibling').prepend(ndDrag);
 	   }
 	   
-	   	var task = new Task({node: ndDrag});
+		var task = new Task({node: ndDrag, yui: Y, server: server});
 		server.updateAppendTask({
 			uri: "/projects/" + serverData['project-name'] + "/tasks",
 			task: task,

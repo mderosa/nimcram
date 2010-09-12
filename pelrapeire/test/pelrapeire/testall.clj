@@ -11,6 +11,7 @@
 	    pelrapeire.repository.db.dbapiwrapper-test
 	    pelrapeire.app.task-statistics-test
 	    pelrapeire.app.ui-control-test
+	    pelrapeire.app.validators-test
 	    pelrapeire.app.convert-test))
 
 (run-tests 'pelrapeire.core-test)
@@ -24,4 +25,5 @@
 (run-tests 'pelrapeire.repository.db.dbapiwrapper-test)
 (run-tests 'pelrapeire.app.task-statistics-test)
 (run-tests 'pelrapeire.app.ui-control-test)
+(run-tests 'pelrapeire.app.validators-test)
 (run-tests 'pelrapeire.app.convert-test)

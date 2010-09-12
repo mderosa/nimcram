@@ -7,7 +7,7 @@
 		<script>var serverData = {"project-name" : "PicoMinMin"};</script>
 	</head>
 	<body class="yui3-skin-sam">
-		<h1>home.js test</h1>
+		<h1>task.js test</h1>
 		
 		<script type="text/javascript">
 			YUI({
@@ -17,83 +17,8 @@
 			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function (Y) {
 				
 				var testcase = new Y.Test.Case({
-					name: "home test",
+					name: "task test",
 					
-					testSuccessfulFormCreation: function() {
-						Y.one('#new').simulate('click');
-						var ndParent = Y.one('#proposed div.tasks');
-						Y.Assert.isNotNull(ndParent);
-						var ns = ndParent.get('children');
-						Y.Assert.areEqual(1, ns.size(), 'should have only one node')
-						Y.Assert.areEqual("newTaskForm", ns.item(0).get('id'), 'should find the root of the form');
-
-					},
-					
-					testSuccessfulFormDestruction: function() {
-						var ancCancel = Y.one('#newTaskCanceler');
-						Y.Assert.isNotNull(ancCancel);  //i expect this to exist from the above test
-						ancCancel.simulate('click');
-						var ndParent = Y.one('#proposed div.tasks');
-						var ns = ndParent.get('children');
-						Y.Assert.areEqual(0, ns.size());
-					},
-					
-					testWeShouldOnlyBeAbleToCreateOneFormAtATime: function () {
-						Y.one('#new').simulate('click');
-						Y.one('#new').simulate('click');
-						var ndParent = Y.one('#proposed div.tasks');
-						var ns = ndParent.get('children');
-						Y.Assert.areEqual(1, ns.size(), 'we should not be able to create two forms at the same time');
-						Y.one('#newTaskCanceler').simulate('click');
-						ns = ndParent.get('children');
-						Y.Assert.areEqual(0, ns.size(), 'we should be able to destroy the form we just created');
-					},
-					/**
-					 * when we initialize a table the only nodes below the root node should take on
-					 * dragable or dropable class types
-					 */
-					testInitializeANodeList: function() {
-						var ns = Y.all('div.bmrcp-head');
-						var count = 0;
-						Y.each(ns, function(v, k){
-							if (v.test('.yui3-dd-drop')) {
-								count++;
-							}
-						});
-						Y.Assert.areEqual(4, ns.size(), 'there are 4 nodes total');
-						Y.Assert.areEqual(3, count, 'only three nodes should be droppable');
-					},
-					testSimpleServerObjectCreation: function() {
-						var s = new Server();
-						Y.Assert.isNotNull(s);
-					},
-					//the create functionality should create one task that is both draggable
-					//and dropable
-					testShouldBeAbleToCreateANewTask: function() {
-						var proposedTasks = new TaskList({
-							root: Y.one('#proposed'),
-							dragSelector: 'div.tasks table.task',
-							dropSelector: 'table.task, div.bmrcp-head',
-							yui: Y
-							});
-						
-						var initialCount = Y.one('#proposed div.tasks').get('children').size();
-						proposedTasks.addNewTask({
-							"title":"find a good height for the task boxes",
-							"specification":"the task boxes should have at least twice the vertical height as they currently have",
-							"deliversUserFunctionality":false,
-							"project":"PicoMinMin",
-							"type":"task",
-							"progress":"proposed",
-							"_rev":"1-fe84a1a782cd5dff145623efbc86e213",
-							"_id":"ec1d1fcfdf43deaa33b17499c2535154"}
-						);
-						var ns = Y.one('#proposed div.tasks').get('children');
-						var finalCount = ns.size();
-						Y.Assert.areEqual(initialCount + 1, finalCount);
-						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-drop'));
-						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-draggable'));
-					},
 					/**
 					 * we want the task object to serialize at least its '_id' and
 					 * '_rev'; we also want it to serialize its 'progress' and lastly
@@ -129,22 +54,126 @@
 						Y.Assert.areEqual(2, json.priority);
 					},
 					/**
-					 * given an id a task list should be able to return a task object to us
+					 * this is a destructive test that takes a task table and transforms it into a task form.
+					 * its inverse test will be run below.
 					 */
-					testGetTaskFromATaskList: function() {
-						var taskList = new TaskList({
-							root: Y.one('#testBucket'),
-							dragSelector: 'div.tasks table.task',
-							dropSelector: 'table.task, div.bmrcp-head',
-							server: null,
-							yui: Y
-						});
-						var task = taskList.getTask('34c9c3adade7da214b70f96ea1418abc');
-						Y.Assert.isNotNull(task);
-						var actual = task.getRevision();
-						Y.Assert.areEqual(actual, '1-ca66e995fa34333d682f04a00e98c3cc');
+					testWeShouldBeAbleToTransformATaskBoxToATaskForm: function() {
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y});
+						t.taskData =  {
+							_id: '34c9c3adade7da214b70f96ea1418abc',
+							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
+							type: 'task',
+							title: 'a test form title',
+							specification: 'this is a test specification',
+							project: 'PicoMinMin',
+							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
+							deliversUserFunctionality: true,
+							priority: null,
+							namespace: [{'release': 'e662.indexer-shj-01'}]
+						};
+						t.renderAsTaskForm();
+						el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.areEqual("FORM", el.tagName);
+						Y.Assert.isTrue(t.isInFormMode());
+					},
+					/**
+					 * this is a destructive test that takes a task form and changes it into a task table. It should
+					 * does the inverse of the above test, set all handlers
+					 */
+					testWeShouldBeAbleToTransformATaskFormToATaskBox: function() {
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y});
+						
+						var taskData = {
+							_id: '34c9c3adade7da214b70f96ea1418abc',
+							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
+							type: 'task',
+							title: 'a test form title',
+							specification: 'this is a test specification',
+							project: 'PicoMinMin',
+							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
+							deliversUserFunctionality: true,
+							priority: null,
+							progress: 'proposed',
+							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}]
+						};
+						t.renderAsTaskTable(null, taskData);
+						el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.areEqual("TABLE", el.tagName);
+					}, 
+					testRenderTaskFormNamespaces: function() {
+						var t = new Task({node: null, yui: Y});
+						var html = t._renderTaskFormNamespaces([{release: 'e662.indexer'}, {project: 'projectA.feature1'}]);
+						var matches = html.match(/release=e662.indexer/);
+						Y.Assert.isNotNull(matches);
+						matches = html.match(/project=projectA.feature1/);
+						Y.Assert.isNotNull(matches);
+					},
+					testRenderTaskTablePriorities: function() {
+						var t = new Task({node: null, yui: Y});
+						var taskData = {
+							_id: '34c9c3adade7da214b70f96ea1418abc',
+							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
+							type: 'task',
+							title: 'a test form title',
+							specification: 'this is a test specification',
+							project: 'PicoMinMin',
+							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
+							deliversUserFunctionality: true,
+							priority: null,
+							progress: 'proposed',
+							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}]
+						};
+						var html = t._renderTaskTablePriorities(taskData);
+						var matches = html.match(/star-on.gif/);
+						Y.Assert.isNull(matches, "the priority is null so we dont want any stars 'on'");
+						matches = html.match(/off/);
+						Y.Assert.isNotNull(matches, "we should have three stars off");
+					},
+					//test _renderTaskTableDaysActive
+					testRenderTaskTableDaysActive: function() {
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y});
+						Y.Assert.isTrue(t.isValid());
+						
+						t.taskData = {
+							_id: '34c9c3adade7da214b70f96ea1418abc',
+							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
+							type: 'task',
+							title: 'a test form title',
+							specification: 'this is a test specification',
+							project: 'PicoMinMin',
+							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
+							deliversUserFunctionality: true,
+							priority: null,
+							progress: 'proposed',
+							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}],
+							taskCreateDate: [2010, 8, 17, 12, 4, 23],  
+							taskStartDate: [2010, 8, 27, 9, 30, 12],
+							taskCompleteDate: null
+						};
+						var html = t._renderTaskTableDaysActive(t.taskData);
+						var matches = html.match(/<td class="statistic">\d+</);
+						Y.Assert.isNotNull(matches, "should have a whole number in the td element");
+					},
+					testATaskShouldFullyInitializeOnStartup: function () {
+						var id = 'ff5e24a8b1351764edde8e98c74fc99d.7-e83166bf9a306826e1d2dbd4811e114e';
+						var el = document.getElementById(id);
+						Y.Assert.isNotNull(el);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y});
+						Y.Assert.isTrue(t.isValid());
+						Y.Assert.isNotNull(t.taskData);
+						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.taskData._id);
+						Y.Assert.areEqual('proposed', t.taskData.progress);
 					}
-
 					//when we add a new task we should also update the tasks in the task list
 					
 				});

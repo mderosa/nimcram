@@ -17,7 +17,11 @@
      {:pre [(not (nil? (map-data "type")))]}
      (op-create id map-data db-config)))
 
-(defn pel-update [map-data mode]
+(defn 
+  #^{:doc "to use the update function just pass the document object into the 
+function along with a mode, either :append or :write; the object should
+contain a '_id' and a '_rev'"}
+  pel-update [map-data mode]
   (op-update map-data mode db-config))
 
 (defn pel-delete [map-data]
@@ -52,7 +56,7 @@ ordering them from 3 down to 0"}
 
 (defn
   #^{:doc "returns a list of all the task associated with a project that do
-not have a task-complete-date"}
+not have a taskCompleteDate"}
   wip-project-tasks [#^String project-name]
   {:pre [(not (s/blank? project-name))]}
   (let [loc (str "_design/picominmin/_view/work-in-progress-tasks?"
@@ -62,7 +66,7 @@ not have a task-complete-date"}
 
 (defn
   #^{:doc "returns a list of all the task associated with a project that do
-not have a task-complete-date"}
+not have a taskCompleteDate"}
   active-project-tasks [#^String project-name]
   {:pre [(not (s/blank? project-name))]}
   (let [loc (str "_design/picominmin/_view/project-tasks?key=%22" project-name "%22")]
@@ -70,8 +74,8 @@ not have a task-complete-date"}
 
 ;;http://localhost:5984/picominmin/_design/picominmin/_view/completed-tasks?startkey=[%22PicoMinMin%22,2011]
 (defn
-  #^{:doc "returns a list of completed tasks (not (nil? task-complete-date)).  if a
-cut off date is supplied then projects where (< task-complete-date cut-off-date) are
+  #^{:doc "returns a list of completed tasks (not (nil? taskCompleteDate)).  if a
+cut off date is supplied then projects where (< taskCompleteDate cut-off-date) are
 not included in the returned list"}
   completed-project-tasks 
   ([#^String project-name]

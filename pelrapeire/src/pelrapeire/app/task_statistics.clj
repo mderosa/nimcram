@@ -8,10 +8,10 @@
 	    (= "in-progress" (map-data "progress"))
 	    (= "delivered" (map-data "progress")))]
    :post [(>= % 0)]}
-  (let [start (if (map-data "task-start-date")
-		(vector-to-datetime (map-data "task-start-date")) nil)
-	end (if (map-data "task-complete-date")
-	      (vector-to-datetime (map-data "task-complete-date")) nil)]
+  (let [start (if (map-data "taskStartDate")
+		(vector-to-datetime (map-data "taskStartDate")) nil)
+	end (if (map-data "taskCompleteDate")
+	      (vector-to-datetime (map-data "taskCompleteDate")) nil)]
     (condp = (map-data "progress")
       "proposed" 0
       "in-progress" (do

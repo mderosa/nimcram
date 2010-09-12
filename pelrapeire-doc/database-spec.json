@@ -2,6 +2,7 @@
 //user example spec
 {
 	'_id': 'Uuid',
+	'_rev': 'Uuid',
 	'type': 'user',
 	'password': 'String'
 	'projects-im-contributing-to': ['Uuid']
@@ -12,21 +13,24 @@
 //project
 {
 	'_id': 'Uuid (project name)'
+	'_rev': 'Uuid'
 	'type': 'project'	
 }
 
 //task
 {
 	'_id': 'Uuid',
+	'_rev': 'Uuid',
 	'type': 'task',
 	'title': 'String', 
 	'specification': 'String',
 	'project': 'Uuid',
-	'solution-team': ['Uuid'],
-	'delivers-user-functionality': 'Boolean'
-	'task-start-date': 'Date',
-	'task-complete-date': 'Date',
-	'progress': "proposed|analysis in-progress|development in-progress|qa in-progress|delivered"
+	'solutionTeam': ['Uuid'],
+	'deliversUserFunctionality': 'Boolean'
+	'taskCreateDate': [Int, Int, Int, Int, Int, Int] //when not set this is null
+	'taskStartDate': [Int, Int, Int, Int, Int, Int],
+	'taskCompleteDate': [Int, Int, Int, Int, Int, Int],
+	'progress': "proposed|in-progress|delivered"
 	'priority': 1 | 2 | 3  (or (nil? (task "priority")) (#{1 2 3} (task "priority"))
-	'namespace': [{"predicate" "value"}, ...] 
+	'namespace': [{"predicate" "value"}, ...] (this will be a vector but we will start with one)
 }

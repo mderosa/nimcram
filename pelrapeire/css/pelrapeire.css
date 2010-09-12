@@ -20,6 +20,10 @@
 	cursor: pointer;
 }
 
+.rawData {
+	display: none;
+}
+
 ul.errors li {
 	color: red;
 	text-align: center;
@@ -93,6 +97,9 @@ td.bucket table.yui3-dd-drop-over, td.bucket div.yui3-dd-drop-over.bmrcp-head {
     border-bottom: 2px solid black;
 }
 
+form.task {
+	border: 1px solid #CCC;
+}
 table.task {
     border: 1px solid #CCC;
     margin: 0;

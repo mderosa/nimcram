@@ -17,5 +17,7 @@
   (let [base [:ul {:class "errors"}]]
     (accumulate base (:errors map-data))))
 
-
+(defn include-js [js]
+  (for [j js]
+    [:script {:type "text/javascript", :src j}]))
 
