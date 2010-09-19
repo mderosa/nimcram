@@ -43,11 +43,12 @@ Server.prototype = {
 	 * Does a post to update a task with additional information.  The check for '_id' is necessary
 	 * as the event is fired multiple times once for the real node and twice for proxys.  This
 	 * should be generally safe as all task obj have a config'
-	 * {uri: String, action: String, task: Task} 
+	 * {action: String, task: Task} 
 	 */
 	updateAppendTask: function(obj) {
 		if (obj.task.isValid()) {
 			var yui = this.config.yui;
+			var uri = this.config.baseTaskUri + '/' + obj.task.getId();
 			var cfg = {
 				method: 'POST',
 				on: {
@@ -64,7 +65,7 @@ Server.prototype = {
 				},
 				data: obj.task.serialize(obj.action)
 			};
-			this.config.yui.io(obj.uri, cfg);
+			this.config.yui.io(uri, cfg);
 		}
 	}, 
 	/**
@@ -339,7 +340,6 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 	   	}
 		if (task) {
 			server.updateAppendTask({
-				uri: "/projects/" + serverData['project-name'] + "/tasks",
 				task: task,
 				action: 'update-progress'
 			});

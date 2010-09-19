@@ -198,7 +198,6 @@ Task.prototype = {
 			}
 		});
 		this.config.server.updateAppendTask({
-			uri: '/projects/' + serverData['project-name'] + '/tasks', 
 			action: 'update-priority', 
 			task: this
 			});

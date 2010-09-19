@@ -3,6 +3,7 @@
   (:require pelrapeire.core-test
 	    pelrapeire.controllers.projects.uid.home-ctrl-test
 	    pelrapeire.controllers.projects.uid.tasks-ctrl-test
+	    pelrapeire.controllers.projects.uid.tasks.uid-ctrl-test
 	    pelrapeire.views.projects.uid.home-view-test
 	    pelrapeire.views.users.uid.projects-view-test
 	    pelrapeire.repository.dbpelrapeire-test
@@ -17,6 +18,7 @@
 (run-tests 'pelrapeire.core-test)
 (run-tests 'pelrapeire.controllers.projects.uid.home-ctrl-test)
 (run-tests 'pelrapeire.controllers.projects.uid.tasks-ctrl-test)
+(run-tests 'pelrapeire.controllers.projects.uid.tasks.uid-ctrl-test)
 (run-tests 'pelrapeire.views.projects.uid.home-view-test)
 (run-tests 'pelrapeire.views.users.uid.projects-view-test)
 (run-tests 'pelrapeire.repository.dbpelrapeire-test)
