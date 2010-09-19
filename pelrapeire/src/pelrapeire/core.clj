@@ -12,10 +12,10 @@
 	   (org.mortbay.jetty Server)))
 
 (defn direct-to [fn-controller any-data]
-  (let [cntr-ret-data (trace (fn-controller any-data))
+  (let [cntr-ret-data (fn-controller any-data)
 	fn-view (let [pages-key (:view cntr-ret-data)
 		      pages-fn (do (assert pages-key)
-				   (trace (pages-key pages)))]
+				   (pages-key pages))]
 		  (do (assert pages-fn)
 		      pages-fn))
 	fn-layout (let [layout-key (:layout cntr-ret-data)]
@@ -41,8 +41,8 @@
 (defroutes main-routes
   (GET "/index" {params :params :as req}
        (do
-	 (println params)
-	(direct-to (:index controllers) params)))
+	 (println req)
+	 (direct-to (:index controllers) params)))
   (POST "/login" {params :params :as req}
 	(direct-to (:login controllers) params))
   (GET "/projects/:project-name/home" {params :params :as req}
@@ -50,9 +50,9 @@
   (POST "/projects/:project/tasks" {params :params :as req}
 	(direct-to (:projects-uid-tasks controllers) params))
   (GET "/projects/:project-uid/tasks/:task-uid" {params :params :as req}
-       (direct-to (:projects-uid-tasks-uid controllers) params))
+       (direct-to (:projects-uid-tasks-uid controllers) req))
   (GET "/users/:user-id/projects" {params :params}
-	 (trace (direct-to (:users-uid-projects controllers) params)))
+       (direct-to (:users-uid-projects controllers) params))
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 

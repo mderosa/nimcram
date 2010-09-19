@@ -3,7 +3,7 @@ var y;
 /**
  * abstract server communications from other page controls
  * @param {Object} config
- * {yui: Object, baseGetTaskUri: String}
+ * {yui: Object, baseTaskUri: String}
  * where yui is the yui global object 
  */
 var Server = function(config) {
@@ -14,7 +14,7 @@ Server.prototype = {
 	/**
 	 * Creates a task
 	 * @param {Object} obj
-	 * {uri: String, sourceForm: Node}
+	 * {sourceForm: Node}
 	 * where the source form is the form from which to post data will come
 	 */
 	createTask: function(obj) {
@@ -37,7 +37,7 @@ Server.prototype = {
 				id: obj.sourceForm
 			}
 		};
-		this.config.yui.io(obj.uri, cfg);
+		this.config.yui.io(this.config.baseTaskUri, cfg);
 	},
 	/**
 	 * Does a post to update a task with additional information.  The check for '_id' is necessary
@@ -72,7 +72,7 @@ Server.prototype = {
 	 * @param {id: String} obj
 	 */
 	getTask: function(obj) {
-		var uri = this.config.baseGetTaskUri + "/" + obj.id;
+		var uri = this.config.baseTaskUri + "/" + obj.id;
 		var yui = this.config.yui;
 		var cfg = {
 			method: 'GET',
@@ -188,7 +188,6 @@ var NewTaskForm = function(config) {
 NewTaskForm.prototype = {
 	_addSubmitHandler: function(Y) {
 		var req = {
-			uri: this.config.uri,
 			sourceForm:	this.config.root.one('#newTaskForm'),
 			};
 		var that = this;
@@ -249,11 +248,10 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 	y = Y;
 	var server = new Server({
 		yui: Y,
-		baseGetTaskUri: "/projects/" + serverData['project-name'] + "/tasks"
+		baseTaskUri: "/projects/" + serverData['project-name'] + "/tasks"
 		});
 	var newTaskForm = new NewTaskForm({
 		root: Y.one('#proposed div.tasks'),
-		uri: "/projects/" + serverData['project-name'] + "/tasks",
 		server: server
 		});
 	var proposedTasks = new TaskList({

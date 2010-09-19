@@ -119,7 +119,7 @@ Task.prototype = {
 		var collapse = this.config.node.one('.deleting');
 		this.config.yui.on('click', this.renderAsTaskTable, collapse, this, this.taskData);
 		var updating = this.config.node.one('.updating');
-		//this.config.yui.on('click', this.config.server.updateAppendTask, updating, server);
+		//this.config.yui.on('click', this.config.server.updateAppendTask, updating, this.config.server);
 	},
 	_renderTaskFormNamespaces: function(arrNs) {
 		var html = "";

@@ -16,7 +16,7 @@
   authenticate-password [in-pwd user]
   (cond
    (:errors user) user
-   (not= (trace (shaHash in-pwd)) (trace (user "password"))) {:errors '("incorrect password")}
+   (not= (shaHash in-pwd) (user "password")) {:errors '("incorrect password")}
    true user))
 
 (defn run [fn-db-get params]
