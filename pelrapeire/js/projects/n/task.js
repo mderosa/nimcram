@@ -1,13 +1,19 @@
 
 /**
- * A task definition
+ * A task definition.  The data associated with this task can be provided either as part of the 
+ * markup from the server or as an argument to the constructor 
  * @param {Object} config
  * {node: Node, yui: Y, server: Server}
  */
-var Task = function(config) {
+var Task = function(config, rawData) {
 	this.config = config;
-	this._initTaskData(config);
+	if (!rawData) {
+		this._initTaskData(config);
+	} else {
+		this.taskData = rawData;
+	}
 	this._setOnExpandHandler(config);
+	this._setOnPriorityEventHandlers(config);
 };
 Task.prototype = {
 	_initTaskData : function(cfg) {
@@ -129,7 +135,7 @@ Task.prototype = {
 		this.taskData = taskData;
 		var id = taskData._id + '.' + taskData._rev;
 		var usrFunc = taskData.deliversUserFunctionality ? "usr-func" : "";
-		var fnTd3 = (taskData.progress == 'proposed') ? this._renderTaskTablePriorities : this.renderTaskTableDaysActive;
+		var fnTd3 = (taskData.progress == 'proposed') ? this._renderTaskTablePriorities : this._renderTaskTableDaysActive;
 		var tblNode = this.config.yui.Node.create(
 			'<table id="' + id + '" class="task ' + usrFunc + ' yui3-dd-drop yui3-dd-draggable">' +
 				'<tbody>' + 
@@ -174,5 +180,27 @@ Task.prototype = {
 		}
 		var diff = Math.floor((dtEnd.getTime() - dtStart.getTime()) / (1000 * 60 * 60 * 24));
 		return '<td class="statistic">' + diff + '</td>';
+	},
+	_setOnPriorityEventHandlers : function(cfg) {
+		var Y = cfg.yui;
+		if (this.taskData.progress == 'proposed') {
+			Y.delegate('click', this._onPriorityDisplayClick, cfg.node, 'img', this);
+		}
+	},	
+	_onPriorityDisplayClick: function(e) {
+		var Y = this.config.yui;
+		var ns = e.target.get('parentNode').get('children');
+		var imgName = '/img/star-on.gif';
+		ns.each(function(n){
+			n.set('src', imgName);
+			if (n === e.target) {
+				imgName = '/img/star-off.gif';
+			}
+		});
+		this.config.server.updateAppendTask({
+			uri: '/projects/' + serverData['project-name'] + '/tasks', 
+			action: 'update-priority', 
+			task: this
+			});
 	}
 };

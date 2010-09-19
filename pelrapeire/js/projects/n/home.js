@@ -123,27 +123,6 @@ TaskList.prototype = {
 	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
 	    });
 	},
-	addPriorityEventHandlers : function() {
-		var Y = this.config.yui;
-		var ns = this.config.root.all('table.task');
-		Y.delegate('click', this._onPriorityDisplayClick, ns, 'img', this);
-	},	
-	_onPriorityDisplayClick: function(e) {
-		var Y = this.config.yui;
-		var ns = e.target.get('parentNode').get('children');
-		var imgName = '/img/star-on.gif';
-		ns.each(function(n){
-			n.set('src', imgName);
-			if (n === e.target) {
-				imgName = '/img/star-off.gif';
-			}
-		});
-		this.config.server.updateAppendTask({
-			uri: '/projects/' + serverData['project-name'] + '/tasks', 
-			action: 'update-priority', 
-			task: new Task({node: e.target.ancestor('table.task'), yui: Y})
-			});
-	},
 	_makeNodesDroppable: function(cfg) {
 		var Y = cfg.yui;
 		var ns = cfg.root.all(cfg.dropSelector);
@@ -284,7 +263,6 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		server: server,
 		yui: Y
 		});
-	proposedTasks.addPriorityEventHandlers();
 	var inProgressTasks = new TaskList({
 		root: Y.one('#in-progress'),
 		dragSelector: 'div.tasks table.task',
@@ -356,11 +334,18 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		   ndDrop.get('nextSibling').prepend(ndDrag);
 	   }
 	   
-		var task = new Task({node: ndDrag, yui: Y, server: server});
-		server.updateAppendTask({
-			uri: "/projects/" + serverData['project-name'] + "/tasks",
-			task: task,
-			action: 'update-progress'});
+		var nodeId = ndDrag.get('id').split('.')[0];	   
+		var task = proposedTasks.getTask(nodeId);
+		if (!task) {
+	  		task = inProgressTasks.getTask(nodeId)
+	   	}
+		if (task) {
+			server.updateAppendTask({
+				uri: "/projects/" + serverData['project-name'] + "/tasks",
+				task: task,
+				action: 'update-progress'
+			});
+		}
    });
 
 	resizeTasks();

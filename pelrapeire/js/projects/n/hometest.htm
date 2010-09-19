@@ -94,40 +94,7 @@
 						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-drop'));
 						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-draggable'));
 					},
-					/**
-					 * we want the task object to serialize at least its '_id' and
-					 * '_rev'; we also want it to serialize its 'progress' and lastly
-					 * whatever other info it can devine
-					 */
-					testSerializationOfTaskObject: function() {
-						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
-						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
-						var json = t.serialize("update-progress");
-						Y.Assert.areEqual("64dca73821060386b52188b6cc8e5a89", json._id, 'expect and id');
-						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev, 'expect a rev');
-						Y.Assert.areEqual("delivered", json.progress, 'expect a value of delivered');
-						Y.Assert.areEqual("update-progress", json.action, 'should find an action');
-					},
-					/**
-					 * test that we can serialize the priority property of a task when it exists
-					 */
-					testSerializationOfTaskObjectsThatHavePriorities: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb');
-						Y.Assert.isNotNull(el);
-						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
-						var json = t.serialize('update-priority');
-						Y.Assert.areEqual(0, json.priority);
-						Y.Assert.areEqual('update-priority', json.action);
-						
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
-						Y.Assert.isNotNull(el);
-						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
-						var json = t.serialize('update-priority');
-						Y.Assert.areEqual(2, json.priority);
-					},
+
 					/**
 					 * given an id a task list should be able to return a task object to us
 					 */
@@ -177,6 +144,9 @@
 							<table id="64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14" class="task yui3-dd-drop yui3-dd-draggable">
 								<tbody>
 									<tr>
+										<td class="rawData">
+											{"specification":"","priority":2,"_rev":"1-d44f047f8b364777d96a8fa2b993de14","taskStartDate":null,"taskCompleteDate":null,"progress":"delivered","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"64dca73821060386b52188b6cc8e5a89","type":"task","namespace":[]}
+										</td>										
 										<td><a href="#" class="collapsible">+</a></td>
 										<td class="title">add task detail expansion functionality</td>
 										<td class="statistic">0</td>
@@ -195,32 +165,40 @@
 		these to test task to form conversion so I am being destructive with the second
 		set of tests -->
 		<table>
-			<td id="testBucket" class="bucket">
-				<div class="tasks">
-					<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">
-						<tr>
-							<td><a class="collapsible" href="#">+</a></td>
-							<td class="title">password hashing for login</td>
-							<td class="priority">
-								<img class="clickable" src="/img/star-off.gif" title="low" />
-								<img class="clickable" src="/img/star-off.gif" title="medium" />
-								<img class="clickable" src="/img/star-off.gif" title="high" />
-							</td>
-						</tr>
-					</table>
-					<table class="task" id="34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc">
-						<tr>
-							<td><a class="collapsible" href="#">+</a></td>
-							<td class="title">password hashing for login</td>
-							<td class="priority">
-								<img class="clickable" src="/img/star-on.gif" title="low" />
-								<img class="clickable" src="/img/star-on.gif" title="medium" />
-								<img class="clickable" src="/img/star-off.gif" title="high" />
-							</td>
-						</tr>
-					</table>			
-				</div>	
-			</td>
+			<tr>
+				<td id="testBucket" class="bucket">
+					<div class="tasks">
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">
+							<tr>
+								<td class="rawData">
+									{"specification":"","priority":2,"_rev":"1-ca66e995fa34333d682f04a00e98c3cb","taskStartDate":null,"taskCompleteDate":null,"progress":"delivered","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"34c9c3adade7da214b70f96ea1418abb","type":"task","namespace":[]}
+								</td>								
+								<td><a class="collapsible" href="#">+</a></td>
+								<td class="title">password hashing for login</td>
+								<td class="priority">
+									<img class="clickable" src="/img/star-off.gif" title="low" />
+									<img class="clickable" src="/img/star-off.gif" title="medium" />
+									<img class="clickable" src="/img/star-off.gif" title="high" />
+								</td>
+							</tr>
+						</table>
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc">
+							<tr>
+								<td class="rawData">
+									{"specification":"","priority":2,"_rev":"1-ca66e995fa34333d682f04a00e98c3cc","taskStartDate":null,"taskCompleteDate":null,"progress":"delivered","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"34c9c3adade7da214b70f96ea1418abc","type":"task","namespace":[]}
+								</td>								
+								<td><a class="collapsible" href="#">+</a></td>
+								<td class="title">password hashing for login</td>
+								<td class="priority">
+									<img class="clickable" src="/img/star-on.gif" title="low" />
+									<img class="clickable" src="/img/star-on.gif" title="medium" />
+									<img class="clickable" src="/img/star-off.gif" title="high" />
+								</td>
+							</tr>
+						</table>			
+					</div>	
+				</td>
+			</tr>
 		</table>
 		
 		<table id="ff5e24a8b1351764edde8e98c74fc99d.7-e83166bf9a306826e1d2dbd4811e114e" class="task usr-func yui3-dd-drop yui3-dd-draggable">
