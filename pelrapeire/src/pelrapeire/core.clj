@@ -52,7 +52,9 @@
   (GET "/projects/:project-uid/tasks/:task-uid" {params :params :as req}
        (direct-to (:projects-uid-tasks-uid controllers) req))
   (POST "/projects/:project-uid/tasks/:task-uid" {params :params :as req}
-       (direct-to (:projects-uid-tasks-uid controllers) req))
+	(do
+	  (println req)
+	  (direct-to (:projects-uid-tasks-uid controllers) req)))
   (GET "/users/:user-id/projects" {params :params}
        (direct-to (:users-uid-projects controllers) params))
   (ANY "*" []

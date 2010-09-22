@@ -66,6 +66,8 @@
 						var t = new Task({node: nd, yui: Y, server: mockServer});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(2, json.priority);
+						Y.Assert.areEqual(json._id, '34c9c3adade7da214b70f96ea1418abc');
+						Y.Assert.areEqual(json._rev, '1-ca66e995fa34333d682f04a00e98c3cc');
 					},
 					/**
 					 * this is a destructive test that takes a task table and transforms it into a task form.
@@ -177,8 +179,7 @@
 						Y.Assert.isNotNull(t.taskData);
 						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.taskData._id);
 						Y.Assert.areEqual('proposed', t.taskData.progress);
-					}
-					,
+					},
 					testPriorityDisplayHandler: function() {
 						var id = 'f6c73e27c5e4258c8457e8bfaf1a79c5.1-b81de00d061621947aac747f794b01af';
 						var el = document.getElementById(id);
@@ -187,6 +188,17 @@
 						Y.Assert.isNotNull(t);
 						nd.one('#tpdh_low').simulate('click');
 						Y.Assert.areEqual('updateAppendTask', mockServer.called);
+					},
+					/**
+					 * test form serialization when we are showing days in process stats
+					 */
+					testGetIdForForms: function() {
+						var id = 'a5ce4479660b9334deeb288eb5166f60.3-6db398380e045d2b6d208cddeca84979';
+						var el = document.getElementById(id);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y, server: mockServer});
+						t.renderAsTaskForm();
+						Y.Assert.areEqual('a5ce4479660b9334deeb288eb5166f60', t.getId());
 					}
 					
 				});
@@ -379,7 +391,17 @@
 				</tr>
 			</tbody>
 		</table>
+		<!-- for test form serialization -->
+		<table class="task usr-func yui3-dd-drop yui3-dd-draggable" id="a5ce4479660b9334deeb288eb5166f60.3-6db398380e045d2b6d208cddeca84979">
+			<tbody>
+				<tr>
+					<td class="rawData">{"_id": "a5ce4479660b9334deeb288eb5166f60", "_rev": "3-6db398380e045d2b6d208cddeca84979", "specification": "on task update we should first update the remote store", "priority": 2, "taskStartDate": [2010, 9, 19, 21, 9, 9], "taskCompleteDate": null, "progress": "in-progress", "taskCreateDate": [2010, 9, 19, 17, 4, 12], "deliversUserFunctionality": true, "solutionTeam": [], "title": "on task update update the remote store", "project": "PicoMinMin", "type": "task", "namespace": []}</td>
+					<td><a class="collapsible" href="#">+</a></td>
+					<td class="title">on task update update the remote store</td>
+					<td class="statistic">0</td>
+				</tr>
+			</tbody>
+		</table>
 
-		
 	</body>
 </html>

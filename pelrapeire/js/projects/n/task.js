@@ -58,12 +58,12 @@ Task.prototype = {
 	 * what data is being updated
 	 */
 	serialize: function(action) {
+		var obj = {};
+		var id = this.getId();
 		if (this.isInTableMode()) {
-			var obj = {};
 			obj.action = action;
-			arrIdAndRev = this.config.node.get("id").split(".");
-			obj._id = arrIdAndRev[0];
-			obj._rev = arrIdAndRev[1];
+			obj._id = this.getId();
+			obj._rev = this.getRevision();
 			nodBucket = this.config.node.ancestor('.bucket');
 			obj.progress = nodBucket.get('id');
 			var priority = 0;
@@ -74,11 +74,10 @@ Task.prototype = {
 				}
 			});
 			obj.priority = priority;
-			
-			return obj;
 		} else {
-			throw new Error('not implemented for form mode');
+			throw new Error('mode not implemented');
 		}
+		return obj;
 	},
 	/**
 	 * 我的想法是task的对象有权威的信息，代码可以那对象以不同的方式显示在页面上但是总是现对象-》显示
@@ -95,6 +94,8 @@ Task.prototype = {
 		};
 		var frmNode = this.config.yui.Node.create(
 			'<form ' + 'id="' + id + '" class="task">' +
+				'<input type="hidden" name="_id" value="' + this.getId() + '" />' +
+				'<input type="hidden" name="_rev" value="' + this.getRevision() + '" />' +
 				'<label for="title">title:</label>' +
 				'<input type="text" id="title" name="title" class="fill" ' + 'value="' +
 					this.taskData.title + '" />' +
@@ -119,14 +120,25 @@ Task.prototype = {
 		var collapse = this.config.node.one('.deleting');
 		this.config.yui.on('click', this.renderAsTaskTable, collapse, this, this.taskData);
 		var updating = this.config.node.one('.updating');
-		//this.config.yui.on('click', this.config.server.updateAppendTask, updating, this.config.server);
+		this.config.yui.on('click', 
+			function(e, obj) {
+				this.config.server.updateAppendTaskFromForm(obj);
+			},
+			updating, 
+			this,
+			{id: this.getId(), sourceForm: this.config.node});
 	},
 	_renderTaskFormNamespaces: function(arrNs) {
 		var html = "";
-		for (var i = 0; i < arrNs.length; i++) {
-			html += '<input type="text" name="namespace" class="fill" ';
-			for (nskey in arrNs[i]) {
-				html += 'value="' + nskey + "=" + arrNs[i][nskey] + '" />';
+		if (arrNs.length == 0) {
+			html += '<input type="text" id="namespace" name="namespace" class="fill" />';
+		}
+		else {
+			for (var i = 0; i < arrNs.length; i++) {
+				html += '<input type="text" id="namespace" name="namespace" class="fill" ';
+				for (nskey in arrNs[i]) {
+					html += 'value="' + nskey + "=" + arrNs[i][nskey] + '" />';
+				}
 			}
 		}
 		return html;

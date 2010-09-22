@@ -17,7 +17,7 @@ Server.prototype = {
 	 * {sourceForm: Node}
 	 * where the source form is the form from which to post data will come
 	 */
-	createTask: function(obj) {
+	createTaskFromForm: function(obj) {
 		var yui = this.config.yui;
 		var cfg = {
 			method: 'POST',
@@ -38,6 +38,32 @@ Server.prototype = {
 			}
 		};
 		this.config.yui.io(this.config.baseTaskUri, cfg);
+	},
+	/**
+	 * updates a task given form data
+	 * @param {Object} obj of the form {id: String, sourceForm: Node}
+	 */
+	updateAppendTaskFromForm: function(obj) {
+		var yui = this.config.yui;
+		var cfg = {
+			method: 'POST',
+			on: {
+				success: function(id, rsp, args) {
+					var json = yui.JSON.parse(rsp.responseText);
+					yui.fire('task:updated', json);
+				},
+				failure: function(id, rsp, args) {
+
+				},
+				complete: function(id, rsp, args) {
+
+				}
+			},
+			form: {
+				id: obj.sourceForm
+			}
+		};
+		this.config.yui.io(this.config.baseTaskUri + '/' + obj.id, cfg);
 	},
 	/**
 	 * Does a post to update a task with additional information.  The check for '_id' is necessary
@@ -163,15 +189,7 @@ TaskList.prototype = {
 			}
 		});
 		return task;
-	},
-	transformTaskToTaskForm: function (taskData) {
-		var n = this.config.yui.one('#' + taskData._id + "." + taskData.rev);
-	},
-	
-	transformTaskFormToTask: function () {
-		
 	}
-	
 };
 
 /**
@@ -193,7 +211,7 @@ NewTaskForm.prototype = {
 			};
 		var that = this;
 		Y.one('#newTaskSubmitter').on("click", function() {
-				that.config.server.createTask(req);	
+				that.config.server.createTaskFromForm(req);	
 				that.destroy();
 			});
 	},

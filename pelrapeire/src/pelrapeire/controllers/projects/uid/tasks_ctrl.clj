@@ -5,7 +5,7 @@
   #^{:doc "does initial task creation returning an object like
 {'ok' true 'id' xxx 'rev' yyy}"}
   run-create-task [fn-create-task params]
-  {:pre [(not (nil? (params "title")))]}
+  {:pre [(not (nil? (params "title"))) (not (= 0 (.. (params "title") trim length)))]}
   (let [new-task (create-task params)]
 	(fn-create-task new-task)))
 

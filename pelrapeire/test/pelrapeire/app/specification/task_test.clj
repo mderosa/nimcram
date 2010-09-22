@@ -40,6 +40,13 @@ like for it to be converted to a boolean"
 			       "deliversUserFunctionality" "true"})]
       (is (= true (actual "deliversUserFunctionality"))))))
 
+(deftest test-create7
+  (testing "both title a project should be supplied and be non empty"
+    (is (thrown? AssertionError (create-task {"title" "  "
+			       "project" "   "
+			       "specification" "some specification"
+			       "deliversUserFunctionality" "true"})))))
+
 (deftest test-create-with-namespace-info1
   (testing "namespace infomation will come in as '', 'something=something', or
 as an array. when '' namespace should be an empty array"

@@ -34,10 +34,20 @@ object"}
 		  "priority" (Integer/parseInt (params "priority")))]
     (fn-update extract :append)))
 
+(defn
+  #^{:doc "take object as supplied by the front end and append it"}
+  run-update-all [fn-update params]
+  (println params))
+
 (defn 
   #^{:doc "handles a post request and returns a full task object"}
   run-post [fn-update-task params] 
   (cond
+   (nil? (params "action"))
+   (let [updated-resp (run-update-all fn-update-task params)]
+     {:view :json-view
+      :layout :json-layout
+      :content updated-resp})     
    (= "update-progress" (params "action"))
    (let [updated-resp (run-update-progress fn-update-task params)]
      {:view :json-view
