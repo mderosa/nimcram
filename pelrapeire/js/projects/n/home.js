@@ -47,16 +47,24 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 	   resizeTasks();
    });
    
-   Y.on('newtask:created', function(json) {
-		proposedTasks.addNewTask(json);
+   Y.on('newtask:created', function(objTask) {
+		proposedTasks.addNewTask(objTaskn);
    });
    
-   Y.on('taskdata:queried', function(json) {
-   		//proposedTasks
-		//inProgressTasks
-		//deliveredTasks
+   Y.on('task:updated', function(objTask) {
+   		var task = proposedTasks.getTask(objTask._id);
+		if (task == null) {
+			task = inProgressTasks.getTask(objTask._id);
+			if (task == null) {
+				task = deliveredTasks.getTask(objTask._id);
+				if (task == null) {
+					throw new Error("unable to resolve task " + objTask._id);
+				}
+			}
+		}
+		task.renderAsTaskTable(null, objTask);
    });
-
+   
    Y.DD.DDM.on('drag:start', function(e) {
 	    var drag = e.target;
 	    drag.get('node').setStyle('opacity', '.25');

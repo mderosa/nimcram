@@ -61,6 +61,10 @@ TaskList.prototype = {
 	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
 		new Y.DD.Drop({node: node}); 
 	},
+	/**
+	 * getTask :: String -> Task
+	 * @param {Object} id corresponds to couchdb '_id' 
+	 */
 	getTask: function(id) {
 		var task = null;
 		this.config.yui.each(this.tasks, function(val, idx) {

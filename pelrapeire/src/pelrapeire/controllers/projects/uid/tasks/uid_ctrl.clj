@@ -45,13 +45,14 @@ object"}
 
 (defn 
   #^{:doc "handles a post request and returns a full task object"}
-  run-post [fn-update-task params] 
+  run-post [fn-get fn-update-task params] 
   (cond
    (nil? (params "action"))
-   (let [updated-resp (run-update-all fn-update-task params)]
+   (let [ok-err-resp (run-update-all fn-update-task params)
+	 task (fn-get (params "task-uid"))]
      {:view :json-view
       :layout :json-layout
-      :content updated-resp})     
+      :content task})
    (= "update-progress" (params "action"))
    (let [updated-resp (run-update-progress fn-update-task params)]
      {:view :json-view
@@ -68,4 +69,4 @@ object"}
 (defn run [fn-get fn-update req]
   (condp = (:request-method req)
     :get (run-get (:params req))
-    :post (run-post fn-update (:params req))))
+    :post (run-post fn-get fn-update (:params req))))
