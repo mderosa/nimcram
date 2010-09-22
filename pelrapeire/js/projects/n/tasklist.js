@@ -19,23 +19,23 @@ TaskList.prototype = {
 		}, this);
 	},
 	_makeNodesDraggable : function(cfg) {
-		var Y = cfg.yui;
-		var ns = cfg.root.all(cfg.dragSelector);
-    	Y.each(ns, function(v, k) {
-	    	var drag = new Y.DD.Drag({
-	    		node: v,
-	    		target: {
-	    			border: '0 0 0 20'
-	    		}
-	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
-	    });
+//		var Y = cfg.yui;
+//		var ns = cfg.root.all(cfg.dragSelector);
+//    	Y.each(ns, function(v, k) {
+//	    	var drag = new Y.DD.Drag({
+//	    		node: v,
+//	    		target: {
+//	    			border: '0 0 0 20'
+//	    		}
+//	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
+//	    });
 	},
 	_makeNodesDroppable: function(cfg) {
-		var Y = cfg.yui;
-		var ns = cfg.root.all(cfg.dropSelector);
-	    Y.each(ns, function(v, k) {
-	        var drop = new Y.DD.Drop({node: v});   
-	    });
+//		var Y = cfg.yui;
+//		var ns = cfg.root.all(cfg.dropSelector);
+//	    Y.each(ns, function(v, k) {
+//	        var drop = new Y.DD.Drop({node: v});   
+//	    });
 	},
 	
 	addNewTask: function(data) {
@@ -53,13 +53,13 @@ TaskList.prototype = {
 			server: this.config.server
 		}, data);
 		task.renderAsTaskTable(null, data);
-		new Y.DD.Drag({
-	    		node: node,
-	    		target: {
-	    			border: '0 0 0 20'
-	    		}
-	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
-		new Y.DD.Drop({node: node}); 
+//		new Y.DD.Drag({
+//	    		node: node,
+//	    		target: {
+//	    			border: '0 0 0 20'
+//	    		}
+//	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
+//		new Y.DD.Drop({node: node}); 
 	},
 	/**
 	 * getTask :: String -> Task

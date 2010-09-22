@@ -122,3 +122,27 @@ sparated out and placed in maps"
       (is (= (actual "namespace") [{"project" "build"}]))
       (is (= (actual "deliversUserFunctionality") true)))))
 
+(deftest test-condition-task-unknown-keys
+  (testing "in general inbound requests will probably have a bit of extra information
+in them if we have something that is not part of the specification then make sure
+that (condition-task) will ignore that key"
+    (let [actual (condition-task {"_id" "a5ce4479660b9334deeb288eb5166f60"
+				  "_rev" "3-6db398380e045d2b6d208cddeca84979"
+				  "title" "a title"
+				  "firefly" "yo baby"
+				  "project" "a project"
+				  "namespace" ["project=build" "badnamespace"]
+				  "deliversUserFunctionality" "true"})]
+      (is (nil? (actual "firefly"))))))
+
+(deftest test-condition-priority
+  (testing "we should only accept the values of nil '1' '2' '3'"
+    (is (thrown? AssertionError (condition-priority 5)))))
+
+(deftest test-condition-priority-conversion
+  (testing "priority comes in as a string as has be be converted to a number"
+    (is (= 1 (condition-priority "1")))))
+
+(deftest test-condition-progress
+  (testing "we should only accept the values of 'proposed' 'in-progress' 'delivered'"
+    (is (thrown? AssertionError (condition-progress "yo")))))

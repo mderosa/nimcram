@@ -28,20 +28,16 @@ object"}
     (fn-update augmented :append)))
 
 (defn 
-  #^{:doc "pulls out '_id', '_rev', priority parameters"}
+  #^{:doc "this can be merged with (run-update-all)"}
   run-update-priority [fn-update params]
-  {:pre [(params "_id") (revision? (params "_rev")) (#{"1" "2" "3"} (params "priority"))]}
-  (let [extract (assoc 
-		    (select-keys params ["_id" "_rev"]) 
-		  "priority" (Integer/parseInt (params "priority")))]
-    (fn-update extract :append)))
+  (let [conditioned-data (condition-task params)]
+    (fn-update conditioned-data :append)))
 
 (defn
   #^{:doc "take object as supplied by the front end and append it"}
   run-update-all [fn-update params]
-  (let [clean-params (dissoc params "project-uid" "task-uid")
-	add-proj-params (assoc clean-params "project" (params "project-uid"))]
-  (fn-update (condition-task add-proj-params) :append)))
+  (let [conditioned-data (condition-task params)]
+    (fn-update conditioned-data :append)))
 
 (defn 
   #^{:doc "handles a post request and returns a full task object"}

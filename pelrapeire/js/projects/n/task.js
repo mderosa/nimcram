@@ -14,6 +14,7 @@ var Task = function(config, rawData) {
 	}
 	this._setOnExpandHandler(config);
 	this._setOnPriorityEventHandlers(config);
+	this._makeNodeDragAndDroppable(config);
 };
 Task.prototype = {
 	_initTaskData : function(cfg) {
@@ -55,13 +56,16 @@ Task.prototype = {
 	 * places the transitive content of a node into a json object
 	 * @param {Object} action if this object is going to be part of a post update reqest to the back
 	 * end then the user will want to set the action variable so that the backend code knows
-	 * what data is being updated
+	 * what data is being updated.  This is only used for priority updates for the rest of the
+	 * updates it is not used
 	 */
 	serialize: function(action) {
 		var obj = {};
 		var id = this.getId();
 		if (this.isInTableMode()) {
-			obj.action = action;
+			if (action) {
+				obj.action = action;
+			}
 			obj._id = this.getId();
 			obj._rev = this.getRevision();
 			nodBucket = this.config.node.ancestor('.bucket');
@@ -73,7 +77,7 @@ Task.prototype = {
 					priority++;
 				}
 			});
-			obj.priority = priority;
+			obj.priority = priority == 0 ? null : priority;
 		} else {
 			throw new Error('mode not implemented');
 		}
@@ -163,6 +167,7 @@ Task.prototype = {
 		
 		this._setOnExpandHandler(this.config);
 		this._setOnPriorityEventHandlers(this.config);
+		this._makeNodeDragAndDroppable(this.config);
 	},
 	_renderTaskTablePriorities: function(taskData) {
 		var onOff = [0,0,0];
@@ -210,8 +215,16 @@ Task.prototype = {
 			}
 		});
 		this.config.server.updateAppendTask({
-			action: 'update-priority', 
 			task: this
 			});
+	},
+	_makeNodeDragAndDroppable: function(cfg) {
+		new cfg.yui.DD.Drag({
+	    		node: cfg.node,
+	    		target: {
+	    			border: '0 0 0 20'
+	    		}
+	    	}).plug(cfg.yui.Plugin.DDProxy, {moveOnEnd: false});
+		new cfg.yui.DD.Drop({node: cfg.node});
 	}
 };

@@ -6,6 +6,20 @@
   (:import org.joda.time.DateTime
 	   org.joda.time.DateTimeZone))
 
+(def template-task
+     {"type" "task" 
+      "title" nil
+      "specification" nil
+      "project" nil
+      "solutionTeam" []
+      "deliversUserFunctionality" false
+      "taskCreateDate" nil
+      "taskStartDate" nil
+      "taskCompleteDate" nil
+      "progress" "proposed"
+      "priority" nil
+      "namespace" nil})
+
 (defn ns-string-to-map [ns]
   (if (s/blank? ns) 
     nil
@@ -22,36 +36,48 @@
      (string? ns) (ns-param-to-vector-map [ns])
      (vector? ns) (filter #(not (nil? %)) (map ns-string-to-map ns))))
 
+(defn condition-priority [p]
+  {:pre [(or (nil? p) (#{"1" "2" "3"} p))]}
+  (Integer/parseInt p))
+
+(defn condition-progress [p]
+  {:pre [(#{"proposed" "in-progress" "delivered"} p)]}
+   p)
+
 (def condition-fns
-     {"_id" (fn [s] s)
-      "_rev" (fn [s] s)
+     {"_id" (fn [s] {:pre (id? s)} s)
+      "_rev" (fn [s] {:pre (revision? s)} s)
+      "title" (fn [t] (. t trim))
       "specification" (fn [s]
 			(if (s/blank? s) nil (. s trim)))
+      "project" (fn [p] p)
       "deliversUserFunctionality" (fn [f]
 				    (if (= "true" f) true false))
-      "namespace" ns-param-to-vector-map
-      "title" (fn [t] (. t trim))
-      "project" (fn [p] p)})
+      "progress" condition-priority
+      "priority" condition-progress
+      "namespace" ns-param-to-vector-map}
+     )
 
 (defn 
   #^{:doc "this function is responsible for preprocessing task data before that task data
-is sent to the backend for update"}
+is sent to the backend for update. Conditioning should only be done for data that already
+exists in the database and is presently undergoing a update"}
   condition-task [map-data]
-  {:pre [(not (s/blank? (map-data "title"))) 
-	 (not (s/blank? (map-data "project")))
-	 (id? (map-data "_id"))
+  {:pre [(id? (map-data "_id"))
 	 (revision? (map-data "_rev"))]}
   (loop [unprocessed-data map-data 
 	 processed-data {}]
     (let [current-key (first (first unprocessed-data))
-	  current-val (second (first unprocessed-data))]
+	  current-val (second (first unprocessed-data))
+	  conditioning-fn (condition-fns current-key)]
       (if (and (nil? current-key) (nil? current-val))
 	processed-data
-	(recur 
-	 (rest unprocessed-data) 
-	 (assoc processed-data 
-	   current-key
-	   ((condition-fns current-key) current-val)))))))
+	(recur (rest unprocessed-data) 
+	       (if (nil? conditioning-fn)
+		 processed-data
+		 (assoc processed-data 
+		   current-key
+		   ((condition-fns current-key) current-val))))))))
 
 (defn 
   #^{:doc "this function is responsible for creating a task that meets
@@ -68,20 +94,8 @@ specifications"}
 	conditioned-data (assoc map-data "specification" spec
 				"deliversUserFunctionality" user-func
 				"namespace" nm-space
-				"taskCreateDate" create-dt)
-	default {"type" "task" 
-		 "title" nil
-		 "specification" nil
-		 "project" nil
-		 "solutionTeam" []
-		 "deliversUserFunctionality" false
-		 "taskCreateDate" nil
-		 "taskStartDate" nil
-		 "taskCompleteDate" nil
-		 "progress" "proposed"
-		 "priority" nil
-		 "namespace" nm-space}]
-    (conj default conditioned-data)))
+				"taskCreateDate" create-dt)]
+    (conj template-task conditioned-data)))
 
 
 
