@@ -139,6 +139,7 @@ NewTaskForm.prototype = {
 			this._addSubmitHandler(Y);
 			this._addCancelHandler(Y);
 			this.visible = true;
+			nodNewTask.one('#title').focus();
 		}
 	},
 	destroy: function() {

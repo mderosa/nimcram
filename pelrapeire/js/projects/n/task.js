@@ -161,8 +161,8 @@ Task.prototype = {
 		this.config.node.replace(tblNode);
 		this.config.node = tblNode;
 		
-		var collapsible = this.config.node.one('.collapsible');
-		this.config.yui.on('click', this.renderAsTaskForm, collapsible, this);
+		this._setOnExpandHandler(this.config);
+		this._setOnPriorityEventHandlers(this.config);
 	},
 	_renderTaskTablePriorities: function(taskData) {
 		var onOff = [0,0,0];

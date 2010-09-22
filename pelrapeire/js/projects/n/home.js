@@ -48,7 +48,7 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
    });
    
    Y.on('newtask:created', function(objTask) {
-		proposedTasks.addNewTask(objTaskn);
+		proposedTasks.addNewTask(objTask);
    });
    
    Y.on('task:updated', function(objTask) {
