@@ -87,5 +87,38 @@ sparated out and placed in maps"
 			       "deliversUserFunctionality" ""})]
       (is (= [{"project" "projectA"} {"release" "e663"}] (actual "namespace"))))))
 
+(deftest test-empty-namespace
+  (testing "an empty namespace should be conditioned to nil"
+    (let [actual (ns-string-to-map "")]
+    (is (nil? actual)))))
 
+(deftest test-malformed-namespace
+  (testing "a namespace that is malformed should be ingnored"
+    (let [actual (ns-string-to-map " = ")]
+    (is (nil? actual)))))
+
+(deftest test-condition-task-wsp
+  (testing "we should remove any whitespace before when we condition task data"
+    (let [actual (condition-task {"_id" "a5ce4479660b9334deeb288eb5166f60"
+				  "_rev" "3-6db398380e045d2b6d208cddeca84979"
+				  "title" " this is a title "
+				  "deliversUserFunctionality" "false"
+				  "specification" " a spec "
+				  "project" " a project"})]
+      (is (= (actual "_id") "a5ce4479660b9334deeb288eb5166f60"))
+      (is (= (actual "_rev") "3-6db398380e045d2b6d208cddeca84979"))
+      (is (= (actual "title") "this is a title"))
+      (is (= (actual "specification") "a spec"))
+      (is (= (actual "project" " a project"))))))
+
+(deftest test-condition-ns-info
+  (testing "test that we do namespace conversions properly"
+    (let [actual (condition-task {"_id" "a5ce4479660b9334deeb288eb5166f60"
+				  "_rev" "3-6db398380e045d2b6d208cddeca84979"
+				  "title" "a title"
+				  "project" "a project"
+				  "namespace" ["project=build" "badnamespace"]
+				  "deliversUserFunctionality" "true"})]
+      (is (= (actual "namespace") [{"project" "build"}]))
+      (is (= (actual "deliversUserFunctionality") true)))))
 

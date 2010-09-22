@@ -20,3 +20,17 @@
 (deftest test-unknow-actions-throw-errors
   (testing "any action parameter that is not expected will cause a exception to be thrown"
     (is (thrown? IllegalArgumentException (run 1 1 1 {"action" "unknown-req"})))))
+
+(deftest test-run-update-all 
+  (testing "just run a normal input"
+    (let [actual (run-update-all (fn [x y] x) {"_id" "96f8f20ae415eab09b962332c188a8c0"
+					     "_rev" "2-77d0f3aca83127bfc2b7a76d7858dff4"
+					     "project-uid" "PicoMinMin"
+					     "task-uid" "96f8f20ae415eab09b962332c188a8c0"
+					     "title" "a title"
+					     "deliversUserFunctionality" "true"
+					     "specification" "spec"})]
+	  (is (not (nil? (actual "_id"))))
+	  (is (nil? (actual "project-uid")))
+	  (is (nil? (actual "task-uid")))
+	  (is (actual "deliversUserFunctionality")))))

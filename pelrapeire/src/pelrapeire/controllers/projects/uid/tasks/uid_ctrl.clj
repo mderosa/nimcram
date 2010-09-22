@@ -1,5 +1,6 @@
 (ns pelrapeire.controllers.projects.uid.tasks.uid-ctrl
   (:use pelrapeire.app.validators
+	pelrapeire.app.specification.task
 	pelrapeire.app.convert)
   (:import org.joda.time.DateTime))
 
@@ -37,7 +38,9 @@ object"}
 (defn
   #^{:doc "take object as supplied by the front end and append it"}
   run-update-all [fn-update params]
-  (println params))
+  (let [clean-params (dissoc params "project-uid" "task-uid")
+	add-proj-params (assoc clean-params "project" (params "project-uid"))]
+  (fn-update (condition-task add-proj-params) :append)))
 
 (defn 
   #^{:doc "handles a post request and returns a full task object"}

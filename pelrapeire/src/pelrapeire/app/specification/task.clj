@@ -1,6 +1,7 @@
 (ns pelrapeire.app.specification.task
   ^{:doc "this module preconditions data that is sent in by form submission"}
-  (:use pelrapeire.app.convert)
+  (:use pelrapeire.app.convert
+	pelrapeire.app.validators)
   (:require [clojure.contrib.str-utils2 :as s])
   (:import org.joda.time.DateTime))
 
@@ -21,19 +22,35 @@
      (vector? ns) (filter #(not (nil? %)) (map ns-string-to-map ns))))
 
 (def condition-fns
-  {"specification" (fn [s]
-		    (if (s/blank? s) nil s))
-  "deliversUserFunctionality" (fn [f]
-				(if (= "true" f) true false))
-  "namespace" (fn [ns])})
-
+     {"_id" (fn [s] s)
+      "_rev" (fn [s] s)
+      "specification" (fn [s]
+			(if (s/blank? s) nil (. s trim)))
+      "deliversUserFunctionality" (fn [f]
+				    (if (= "true" f) true false))
+      "namespace" ns-param-to-vector-map
+      "title" (fn [t] (. t trim))
+      "project" (fn [p] p)})
 
 (defn 
   #^{:doc "this function is responsible for preprocessing task data before that task data
 is sent to the backend for update"}
   condition-task [map-data]
-  {:pre [(not (s/blank? (map-data "title"))) (not (s/blank? (map-data "project")))]}
-)
+  {:pre [(not (s/blank? (map-data "title"))) 
+	 (not (s/blank? (map-data "project")))
+	 (id? (map-data "_id"))
+	 (revision? (map-data "_rev"))]}
+  (loop [unprocessed-data map-data 
+	 processed-data {}]
+    (let [current-key (first (first unprocessed-data))
+	  current-val (second (first unprocessed-data))]
+      (if (and (nil? current-key) (nil? current-val))
+	processed-data
+	(recur 
+	 (rest unprocessed-data) 
+	 (assoc processed-data 
+	   current-key
+	   ((condition-fns current-key) current-val)))))))
 
 (defn 
   #^{:doc "this function is responsible for creating a task that meets
@@ -46,7 +63,7 @@ specifications"}
   (let [spec ((condition-fns "specification") (map-data "specification"))
 	user-func ((condition-fns "deliversUserFunctionality") (map-data "deliversUserFunctionality"))
 	create-dt (datetime-to-vector (DateTime.))
-	nm-space (ns-param-to-vector-map (map-data "namespace"))
+	nm-space ((condition-fns "namespace") (map-data "namespace"))
 	conditioned-data (assoc map-data "specification" spec
 				"deliversUserFunctionality" user-func
 				"namespace" nm-space
@@ -64,3 +81,15 @@ specifications"}
 		 "priority" nil
 		 "namespace" nm-space}]
     (conj default conditioned-data)))
+
+
+
+
+
+
+
+
+
+
+
+
