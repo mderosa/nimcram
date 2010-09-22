@@ -160,18 +160,19 @@ TaskList.prototype = {
 	
 	addNewTask: function(data) {
 		var Y = this.config.yui;
-		var node = Y.Node.create('<table id="' + data._id + '.' + data._rev + '" ' + 'class="task">' +
-		'<tr>' +
-			'<td><a class="collapsible" href="#">+</a></td>' +
-			'<td class="title">' + data.title + '</td>' + 
-			'<td class="statistic">0</td>' +
-		'</tr></table>');
+		var node = Y.Node.create('<table id="' + data._id + '.' + data._rev + '" ' + 'class="task"></table>');
 		var nodTasks = this.config.root.one('div.tasks');
 		if (nodTasks.hasChildNodes()) {
 			nodTasks.prepend(node);
 		} else {
 			nodTasks.appendChild(node);
 		}
+		var task = new Task({
+			node: node,
+			yui: Y,
+			server: this.config.server
+		}, data);
+		task.renderAsTaskTable(null, data);
 		new Y.DD.Drag({
 	    		node: node,
 	    		target: {
