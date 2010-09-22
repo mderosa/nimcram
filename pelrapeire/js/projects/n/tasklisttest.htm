@@ -2,14 +2,12 @@
 <html>
 	<head>
 		<script type="text/javascript" charset="utf-8" src="../../yui/build/yui/yui-debug.js"></script>
-		<script type="text/javascript" charset="utf-8" src="./server.js" ></script>
 		<script type="text/javascript" charset="utf-8" src="./task.js" ></script>
-		<script type="text/javascript" charset="utf-8" src="./tasklist.js" ></script>
 		<script type="text/javascript" charset="utf-8" src="./home.js" ></script>
 		<script>var serverData = {"project-name" : "PicoMinMin"};</script>
 	</head>
 	<body class="yui3-skin-sam">
-		<h1>home.js test</h1>
+		<h1>tasklist.js test</h1>
 		
 		<script type="text/javascript">
 			YUI({
@@ -19,7 +17,7 @@
 			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function (Y) {
 				
 				var testcase = new Y.Test.Case({
-					name: "home test",
+					name: "tasklist test",
 					
 					testSuccessfulFormCreation: function() {
 						Y.one('#new').simulate('click');
