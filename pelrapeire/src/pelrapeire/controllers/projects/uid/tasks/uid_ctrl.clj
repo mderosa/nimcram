@@ -2,7 +2,8 @@
   (:use pelrapeire.app.validators
 	pelrapeire.app.specification.task
 	pelrapeire.app.convert)
-  (:import org.joda.time.DateTime))
+  (:import org.joda.time.DateTime
+	   org.joda.time.DateTimeZone))
 
 (defn 
   #^{:doc "this function expects a task GET and returns a full task
@@ -21,9 +22,9 @@ object"}
   (let [extract (select-keys params ["_id" "_rev" "progress"])
 	augmented (condp = (params "progress")
 		    "in-progress" (assoc extract "taskStartDate" 
-					 (datetime-to-vector (DateTime.)))
+					 (datetime-to-vector (DateTime. DateTimeZone/UTC)))
 		    "delivered" (assoc extract "taskCompleteDate" 
-				       (datetime-to-vector (DateTime.))))]
+				       (datetime-to-vector (DateTime. DateTimeZone/UTC))))]
     (fn-update augmented :append)))
 
 (defn 

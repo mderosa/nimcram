@@ -3,7 +3,8 @@
   (:use pelrapeire.app.convert
 	pelrapeire.app.validators)
   (:require [clojure.contrib.str-utils2 :as s])
-  (:import org.joda.time.DateTime))
+  (:import org.joda.time.DateTime
+	   org.joda.time.DateTimeZone))
 
 (defn ns-string-to-map [ns]
   (if (s/blank? ns) 
@@ -62,7 +63,7 @@ specifications"}
 	  (not (nil? (% "taskCreateDate")))]}
   (let [spec ((condition-fns "specification") (map-data "specification"))
 	user-func ((condition-fns "deliversUserFunctionality") (map-data "deliversUserFunctionality"))
-	create-dt (datetime-to-vector (DateTime.))
+	create-dt (datetime-to-vector (DateTime. DateTimeZone/UTC))
 	nm-space ((condition-fns "namespace") (map-data "namespace"))
 	conditioned-data (assoc map-data "specification" spec
 				"deliversUserFunctionality" user-func

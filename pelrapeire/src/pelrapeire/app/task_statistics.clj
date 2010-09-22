@@ -1,6 +1,7 @@
 (ns pelrapeire.app.task-statistics
   (:use pelrapeire.app.convert)
   (:import org.joda.time.DateTime 
+	   org.joda.time.DateTimeZone
 	   org.joda.time.Days))
 
 (defn days-in-progress [map-data]
@@ -16,7 +17,7 @@
       "proposed" 0
       "in-progress" (do
 		      (assert start)
-		      (. (Days/daysBetween start (DateTime.)) getDays))
+		      (. (Days/daysBetween start (DateTime. DateTimeZone/UTC)) getDays))
       "delivered" (do
 		    (assert start)
 		    (assert end)
