@@ -3,7 +3,6 @@
 	<head>
 		<script type="text/javascript" charset="utf-8" src="../../yui/build/yui/yui-debug.js"></script>
 		<script type="text/javascript" charset="utf-8" src="./task.js" ></script>
-		<script type="text/javascript" charset="utf-8" src="./home.js" ></script>
 		<script>var serverData = {"project-name" : "PicoMinMin"};</script>
 	</head>
 	<body class="yui3-skin-sam">
@@ -15,7 +14,21 @@
     			filter: "debug",
     			logInclude: { TestRunner: true}
 			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function (Y) {
-				
+				var mockServer = {
+					createTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.uri);
+						Y.Assert.isNotUndefined(obj.sourceForm);
+						this.called = 'createTask';
+					},
+					updateAppendTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.task);
+						this.called = 'updateAppendTask';
+					},
+					getTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.id);
+						this.called = 'getTask';
+					}
+				}
 				var testcase = new Y.Test.Case({
 					name: "task test",
 					
@@ -27,7 +40,7 @@
 					testSerializationOfTaskObject: function() {
 						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
+						var t = new Task({node: nd, yui: Y, server: mockServer});
 						var json = t.serialize("update-progress");
 						Y.Assert.areEqual("64dca73821060386b52188b6cc8e5a89", json._id, 'expect and id');
 						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev, 'expect a rev');
@@ -41,41 +54,31 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
+						var t = new Task({node: nd, yui: Y, server: mockServer});
 						var json = t.serialize('update-priority');
-						Y.Assert.areEqual(0, json.priority);
+						Y.Assert.areEqual(null, json.priority);
 						Y.Assert.areEqual('update-priority', json.action);
 						
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
+						var t = new Task({node: nd, yui: Y, server: mockServer});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(2, json.priority);
+						Y.Assert.areEqual(json._id, '34c9c3adade7da214b70f96ea1418abc');
+						Y.Assert.areEqual(json._rev, '1-ca66e995fa34333d682f04a00e98c3cc');
 					},
 					/**
 					 * this is a destructive test that takes a task table and transforms it into a task form.
 					 * its inverse test will be run below.
 					 */
 					testWeShouldBeAbleToTransformATaskBoxToATaskForm: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
-						t.taskData =  {
-							_id: '34c9c3adade7da214b70f96ea1418abc',
-							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
-							type: 'task',
-							title: 'a test form title',
-							specification: 'this is a test specification',
-							project: 'PicoMinMin',
-							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
-							deliversUserFunctionality: true,
-							priority: null,
-							namespace: [{'release': 'e662.indexer-shj-01'}]
-						};
+						var t = new Task({node: nd, yui: Y, server: mockServer});
 						t.renderAsTaskForm();
-						el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.areEqual("FORM", el.tagName);
 						Y.Assert.isTrue(t.isInFormMode());
 					},
@@ -84,13 +87,12 @@
 					 * does the inverse of the above test, set all handlers
 					 */
 					testWeShouldBeAbleToTransformATaskFormToATaskBox: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
 						
-						var taskData = {
-							_id: '34c9c3adade7da214b70f96ea1418abc',
+						var rawData = {
+							_id: '34c9c3adade7da214b70f96ea1418ac1',
 							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
 							type: 'task',
 							title: 'a test form title',
@@ -102,12 +104,14 @@
 							progress: 'proposed',
 							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}]
 						};
-						t.renderAsTaskTable(null, taskData);
-						el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						var t = new Task({node: nd, yui: Y, server: mockServer}, rawData);
+						t.renderAsTaskTable(null, rawData);
+						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.areEqual("TABLE", el.tagName);
 					}, 
 					testRenderTaskFormNamespaces: function() {
-						var t = new Task({node: null, yui: Y});
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abf.1-ca66e995fa34333d682f04a00e98c3cc');
+						var t = new Task({node: Y.one(el), yui: Y, server: mockServer});
 						var html = t._renderTaskFormNamespaces([{release: 'e662.indexer'}, {project: 'projectA.feature1'}]);
 						var matches = html.match(/release=e662.indexer/);
 						Y.Assert.isNotNull(matches);
@@ -115,9 +119,10 @@
 						Y.Assert.isNotNull(matches);
 					},
 					testRenderTaskTablePriorities: function() {
-						var t = new Task({node: null, yui: Y});
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abe.1-ca66e995fa34333d682f04a00e98c3cc');
+						var t = new Task({node: Y.one(el), yui: Y, server: mockServer});
 						var taskData = {
-							_id: '34c9c3adade7da214b70f96ea1418abc',
+							_id: '34c9c3adade7da214b70f96ea1418abe',
 							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
 							type: 'task',
 							title: 'a test form title',
@@ -137,10 +142,10 @@
 					},
 					//test _renderTaskTableDaysActive
 					testRenderTaskTableDaysActive: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abd.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
+						var t = new Task({node: nd, yui: Y, server: mockServer});
 						Y.Assert.isTrue(t.isValid());
 						
 						t.taskData = {
@@ -168,13 +173,32 @@
 						var el = document.getElementById(id);
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y});
+						var t = new Task({node: nd, yui: Y, server: mockServer});
 						Y.Assert.isTrue(t.isValid());
 						Y.Assert.isNotNull(t.taskData);
 						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.taskData._id);
 						Y.Assert.areEqual('proposed', t.taskData.progress);
+					},
+					testPriorityDisplayHandler: function() {
+						var id = 'f6c73e27c5e4258c8457e8bfaf1a79c5.1-b81de00d061621947aac747f794b01af';
+						var el = document.getElementById(id);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y,	server: mockServer});
+						Y.Assert.isNotNull(t);
+						nd.one('#tpdh_low').simulate('click');
+						Y.Assert.areEqual('updateAppendTask', mockServer.called);
+					},
+					/**
+					 * test form serialization when we are showing days in process stats
+					 */
+					testGetIdForForms: function() {
+						var id = 'a5ce4479660b9334deeb288eb5166f60.3-6db398380e045d2b6d208cddeca84979';
+						var el = document.getElementById(id);
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y, server: mockServer});
+						t.renderAsTaskForm();
+						Y.Assert.areEqual('a5ce4479660b9334deeb288eb5166f60', t.getId());
 					}
-					//when we add a new task we should also update the tasks in the task list
 					
 				});
 		
@@ -206,6 +230,9 @@
 							<table id="64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14" class="task yui3-dd-drop yui3-dd-draggable">
 								<tbody>
 									<tr>
+										<td class="rawData">
+											{"specification":"","priority":2,"_rev":"1-d44f047f8b364777d96a8fa2b993de14","taskStartDate":null,"taskCompleteDate":null,"progress":"delivered","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"64dca73821060386b52188b6cc8e5a89","type":"task","namespace":[]}
+										</td>
 										<td><a href="#" class="collapsible">+</a></td>
 										<td class="title">add task detail expansion functionality</td>
 										<td class="statistic">0</td>
@@ -224,34 +251,101 @@
 		these to test task to form conversion so I am being destructive with the second
 		set of tests -->
 		<table>
-			<td id="testBucket" class="bucket">
-				<div class="tasks">
-					<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">
-						<tr>
-							<td><a class="collapsible" href="#">+</a></td>
-							<td class="title">password hashing for login</td>
-							<td class="priority">
-								<img class="clickable" src="/img/star-off.gif" title="low" />
-								<img class="clickable" src="/img/star-off.gif" title="medium" />
-								<img class="clickable" src="/img/star-off.gif" title="high" />
-							</td>
-						</tr>
-					</table>
-					<table class="task" id="34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc">
-						<tr>
-							<td><a class="collapsible" href="#">+</a></td>
-							<td class="title">password hashing for login</td>
-							<td class="priority">
-								<img class="clickable" src="/img/star-on.gif" title="low" />
-								<img class="clickable" src="/img/star-on.gif" title="medium" />
-								<img class="clickable" src="/img/star-off.gif" title="high" />
-							</td>
-						</tr>
-					</table>			
-				</div>	
-			</td>
+			<tr>
+				<td id="testBucket" class="bucket">
+					<div class="tasks">
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">
+							<tr>
+								<td class="rawData">{"specification":"","priority":2,"_rev":"1-ca66e995fa34333d682f04a00e98c3cb","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"34c9c3adade7da214b70f96ea1418abb","type":"task","namespace":[]}</td>
+								<td><a class="collapsible" href="#">+</a></td>
+								<td class="title">password hashing for login</td>
+								<td class="priority">
+									<img class="clickable" src="/img/star-off.gif" title="low" />
+									<img class="clickable" src="/img/star-off.gif" title="medium" />
+									<img class="clickable" src="/img/star-off.gif" title="high" />
+								</td>
+							</tr>
+						</table>
+						<!-- below used by testSerializationOfTaskObjectsThatHavePriorities -->
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc">
+							<tr>
+								<td class="rawData">
+									{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}
+								</td>
+								<td><a class="collapsible" href="#">+</a></td>
+								<td class="title">password hashing for login</td>
+								<td class="priority">
+									<img class="clickable" src="/img/star-on.gif" title="low" />
+									<img class="clickable" src="/img/star-on.gif" title="medium" />
+									<img class="clickable" src="/img/star-off.gif" title="high" />
+								</td>
+							</tr>
+						</table>
+						<!-- below used by testRenderTaskTableDaysActive -->
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abd.1-ca66e995fa34333d682f04a00e98c3cc">
+							<tr>
+								<td class="rawData">
+									{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}
+								</td>
+								<td><a class="collapsible" href="#">+</a></td>
+								<td class="title">password hashing for login</td>
+								<td class="priority">
+									<img class="clickable" src="/img/star-on.gif" title="low" />
+									<img class="clickable" src="/img/star-on.gif" title="medium" />
+									<img class="clickable" src="/img/star-off.gif" title="high" />
+								</td>
+							</tr>
+						</table>
+						<!-- renderTaskTablePriorities -->
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abe.1-ca66e995fa34333d682f04a00e98c3cc">
+							<tr>
+								<td class="rawData">
+									{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}
+								</td>
+								<td><a class="collapsible" href="#">+</a></td>
+								<td class="title">password hashing for login</td>
+								<td class="priority">
+									<img class="clickable" src="/img/star-on.gif" title="low" />
+									<img class="clickable" src="/img/star-on.gif" title="medium" />
+									<img class="clickable" src="/img/star-off.gif" title="high" />
+								</td>
+							</tr>
+						</table>	
+						<!-- testRenderTaskFormNamespaces -->
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abf.1-ca66e995fa34333d682f04a00e98c3cc">
+							<tr>
+								<td class="rawData">
+									{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}
+								</td>
+								<td><a class="collapsible" href="#">+</a></td>
+								<td class="title">password hashing for login</td>
+								<td class="priority">
+									<img class="clickable" src="/img/star-on.gif" title="low" />
+									<img class="clickable" src="/img/star-on.gif" title="medium" />
+									<img class="clickable" src="/img/star-off.gif" title="high" />
+								</td>
+							</tr>
+						</table>
+						<!-- testWeShouldBeAbleToTransformATaskBoxToATaskForm -->
+						<table class="task" id="34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc">
+							<tr>
+								<td class="rawData">
+									{"_id": "34c9c3adade7da214b70f96ea1418ac1","_rev": "1-ca66e995fa34333d682f04a00e98c3cc","type": "task","title": "a test form title","specification": "this is a test specification","project": "PicoMinMin","solutionTeam": ["marc.derosa@gmail.com", "micai@ebay.com"],"deliversUserFunctionality": true,"priority": null,"namespace": [{"release": "e662.indexer-shj-01"}]}
+								</td>
+								<td><a class="collapsible" href="#">+</a></td>
+								<td class="title">password hashing for login</td>
+								<td class="priority">
+									<img class="clickable" src="/img/star-on.gif" title="low" />
+									<img class="clickable" src="/img/star-on.gif" title="medium" />
+									<img class="clickable" src="/img/star-off.gif" title="high" />
+								</td>
+							</tr>
+						</table>																	
+					</div>	
+				</td>
+			</tr>
 		</table>
-		
+		<div></div>
 		<table id="ff5e24a8b1351764edde8e98c74fc99d.7-e83166bf9a306826e1d2dbd4811e114e" class="task usr-func yui3-dd-drop yui3-dd-draggable">
 			<tbody>
 				<tr>
@@ -281,7 +375,32 @@
 				</tr>
 			</tbody>
 		</table>
+		<!-- below used by testPriorityDisplayHandler -->
+		<table id="f6c73e27c5e4258c8457e8bfaf1a79c5.1-b81de00d061621947aac747f794b01af" class="task usr-func yui3-dd-drop yui3-dd-draggable">
+			<tbody
+				><tr>
+					<td class="rawData">{"specification":"store all the dates as UCT that way there are no issues depending on where in the world people are using the application","priority":null,"_rev":"1-b81de00d061621947aac747f794b01af","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,28,12,54,56],"deliversUserFunctionality":true,"solutionTeam":[],"title":"store dates as UCT","project":"PicoMinMin","_id":"f6c73e27c5e4258c8457e8bfaf1a79c4","type":"task","namespace":"project=database"}</td>
+					<td><a href="#" class="collapsible">+</a></td>
+					<td class="title">store dates as UCT</td>
+					<td class="priority">
+						<img id="tpdh_low" title="low" src="/img/star-off.gif" class="clickable">
+						<img title="medium" src="/img/star-off.gif" class="clickable">
+						<img title="high" src="/img/star-off.gif" class="clickable">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<!-- for test form serialization -->
+		<table class="task usr-func yui3-dd-drop yui3-dd-draggable" id="a5ce4479660b9334deeb288eb5166f60.3-6db398380e045d2b6d208cddeca84979">
+			<tbody>
+				<tr>
+					<td class="rawData">{"_id": "a5ce4479660b9334deeb288eb5166f60", "_rev": "3-6db398380e045d2b6d208cddeca84979", "specification": "on task update we should first update the remote store", "priority": 2, "taskStartDate": [2010, 9, 19, 21, 9, 9], "taskCompleteDate": null, "progress": "in-progress", "taskCreateDate": [2010, 9, 19, 17, 4, 12], "deliversUserFunctionality": true, "solutionTeam": [], "title": "on task update update the remote store", "project": "PicoMinMin", "type": "task", "namespace": []}</td>
+					<td><a class="collapsible" href="#">+</a></td>
+					<td class="title">on task update update the remote store</td>
+					<td class="statistic">0</td>
+				</tr>
+			</tbody>
+		</table>
 
-		
 	</body>
 </html>

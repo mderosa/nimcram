@@ -1,13 +1,20 @@
 
 /**
- * A task definition
+ * A task definition.  The data associated with this task can be provided either as part of the 
+ * markup from the server or as an argument to the constructor 
  * @param {Object} config
  * {node: Node, yui: Y, server: Server}
  */
-var Task = function(config) {
+var Task = function(config, rawData) {
 	this.config = config;
-	this._initTaskData(config);
+	if (!rawData) {
+		this._initTaskData(config);
+	} else {
+		this.taskData = rawData;
+	}
 	this._setOnExpandHandler(config);
+	this._setOnPriorityEventHandlers(config);
+	this._makeNodeDragAndDroppable(config);
 };
 Task.prototype = {
 	_initTaskData : function(cfg) {
@@ -49,15 +56,18 @@ Task.prototype = {
 	 * places the transitive content of a node into a json object
 	 * @param {Object} action if this object is going to be part of a post update reqest to the back
 	 * end then the user will want to set the action variable so that the backend code knows
-	 * what data is being updated
+	 * what data is being updated.  This is only used for priority updates for the rest of the
+	 * updates it is not used
 	 */
 	serialize: function(action) {
+		var obj = {};
+		var id = this.getId();
 		if (this.isInTableMode()) {
-			var obj = {};
-			obj.action = action;
-			arrIdAndRev = this.config.node.get("id").split(".");
-			obj._id = arrIdAndRev[0];
-			obj._rev = arrIdAndRev[1];
+			if (action) {
+				obj.action = action;
+			}
+			obj._id = this.getId();
+			obj._rev = this.getRevision();
 			nodBucket = this.config.node.ancestor('.bucket');
 			obj.progress = nodBucket.get('id');
 			var priority = 0;
@@ -67,12 +77,11 @@ Task.prototype = {
 					priority++;
 				}
 			});
-			obj.priority = priority;
-			
-			return obj;
+			obj.priority = priority == 0 ? null : priority;
 		} else {
-			throw new Error('not implemented for form mode');
+			throw new Error('mode not implemented');
 		}
+		return obj;
 	},
 	/**
 	 * 我的想法是task的对象有权威的信息，代码可以那对象以不同的方式显示在页面上但是总是现对象-》显示
@@ -89,6 +98,8 @@ Task.prototype = {
 		};
 		var frmNode = this.config.yui.Node.create(
 			'<form ' + 'id="' + id + '" class="task">' +
+				'<input type="hidden" name="_id" value="' + this.getId() + '" />' +
+				'<input type="hidden" name="_rev" value="' + this.getRevision() + '" />' +
 				'<label for="title">title:</label>' +
 				'<input type="text" id="title" name="title" class="fill" ' + 'value="' +
 					this.taskData.title + '" />' +
@@ -113,14 +124,25 @@ Task.prototype = {
 		var collapse = this.config.node.one('.deleting');
 		this.config.yui.on('click', this.renderAsTaskTable, collapse, this, this.taskData);
 		var updating = this.config.node.one('.updating');
-		//this.config.yui.on('click', this.config.server.updateAppendTask, updating, server);
+		this.config.yui.on('click', 
+			function(e, obj) {
+				this.config.server.updateAppendTaskFromForm(obj);
+			},
+			updating, 
+			this,
+			{id: this.getId(), sourceForm: this.config.node});
 	},
 	_renderTaskFormNamespaces: function(arrNs) {
 		var html = "";
-		for (var i = 0; i < arrNs.length; i++) {
-			html += '<input type="text" name="namespace" class="fill" ';
-			for (nskey in arrNs[i]) {
-				html += 'value="' + nskey + "=" + arrNs[i][nskey] + '" />';
+		if (arrNs.length == 0) {
+			html += '<input type="text" id="namespace" name="namespace" class="fill" />';
+		}
+		else {
+			for (var i = 0; i < arrNs.length; i++) {
+				html += '<input type="text" id="namespace" name="namespace" class="fill" ';
+				for (nskey in arrNs[i]) {
+					html += 'value="' + nskey + "=" + arrNs[i][nskey] + '" />';
+				}
 			}
 		}
 		return html;
@@ -129,7 +151,7 @@ Task.prototype = {
 		this.taskData = taskData;
 		var id = taskData._id + '.' + taskData._rev;
 		var usrFunc = taskData.deliversUserFunctionality ? "usr-func" : "";
-		var fnTd3 = (taskData.progress == 'proposed') ? this._renderTaskTablePriorities : this.renderTaskTableDaysActive;
+		var fnTd3 = (taskData.progress == 'proposed') ? this._renderTaskTablePriorities : this._renderTaskTableDaysActive;
 		var tblNode = this.config.yui.Node.create(
 			'<table id="' + id + '" class="task ' + usrFunc + ' yui3-dd-drop yui3-dd-draggable">' +
 				'<tbody>' + 
@@ -143,8 +165,9 @@ Task.prototype = {
 		this.config.node.replace(tblNode);
 		this.config.node = tblNode;
 		
-		var collapsible = this.config.node.one('.collapsible');
-		this.config.yui.on('click', this.renderAsTaskForm, collapsible, this);
+		this._setOnExpandHandler(this.config);
+		this._setOnPriorityEventHandlers(this.config);
+		this._makeNodeDragAndDroppable(this.config);
 	},
 	_renderTaskTablePriorities: function(taskData) {
 		var onOff = [0,0,0];
@@ -174,5 +197,34 @@ Task.prototype = {
 		}
 		var diff = Math.floor((dtEnd.getTime() - dtStart.getTime()) / (1000 * 60 * 60 * 24));
 		return '<td class="statistic">' + diff + '</td>';
+	},
+	_setOnPriorityEventHandlers : function(cfg) {
+		var Y = cfg.yui;
+		if (this.taskData.progress == 'proposed') {
+			Y.delegate('click', this._onPriorityDisplayClick, cfg.node, 'img', this);
+		}
+	},	
+	_onPriorityDisplayClick: function(e) {
+		var Y = this.config.yui;
+		var ns = e.target.get('parentNode').get('children');
+		var imgName = '/img/star-on.gif';
+		ns.each(function(n){
+			n.set('src', imgName);
+			if (n === e.target) {
+				imgName = '/img/star-off.gif';
+			}
+		});
+		this.config.server.updateAppendTask({
+			task: this
+			});
+	},
+	_makeNodeDragAndDroppable: function(cfg) {
+		new cfg.yui.DD.Drag({
+	    		node: cfg.node,
+	    		target: {
+	    			border: '0 0 0 20'
+	    		}
+	    	}).plug(cfg.yui.Plugin.DDProxy, {moveOnEnd: false});
+		new cfg.yui.DD.Drop({node: cfg.node});
 	}
 };

@@ -31,7 +31,7 @@ request data object"}
 
   :projects-uid-tasks-uid
   (partial pelrapeire.controllers.projects.uid.tasks.uid-ctrl/run
-	   pel-get)
+	   pel-get pel-update)
 
   :users-uid-projects
   (partial pelrapeire.controllers.users.uid.projects-ctrl/run 
