@@ -1,5 +1,5 @@
 
-(use 'clojure.contrib.duck-streams)
+(require 'clojure.contrib.duck-streams :as ds)
 (use 'clojure.contrib.trace)
 
 (defstruct node :contents :yes :no)
@@ -14,7 +14,7 @@
      (def *nodes* (assoc *nodes* name (fn []
 					(do 
 					  (println (str contents "(y/n): "))
-					  (let [line (.readLine (reader *in*))]
+					  (let [line (.readLine (ds/reader *in*))]
 					    (if (= line "y")
 					      ((yes *nodes*))
 					      ((no *nodes*))))))))))

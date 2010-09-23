@@ -135,6 +135,18 @@ that (condition-task) will ignore that key"
 				  "deliversUserFunctionality" "true"})]
       (is (nil? (actual "firefly"))))))
 
+(deftest test-condition-task-priority-update
+  (testing "we should be able to do a standard priority update"
+    (let [actual (condition-task {"project-uid" "PicoMinMin", 
+				  "task-uid" "f7085ddc838e5a8730b76d882cb70069", 
+				  "priority" "1", 
+				  "progress" "proposed",
+				  "_rev" "1-81d6316a992f21cbc69a4714b46f9ac7", 
+				  "_id" "f7085ddc838e5a8730b76d882cb70069"})]
+      (is (= "proposed" (actual "progress")))
+      (is (= 1 (actual "priority")))
+      (is (nil? (actual "project-uid"))))))
+
 (deftest test-condition-priority
   (testing "we should only accept the values of nil '1' '2' '3'"
     (is (thrown? AssertionError (condition-priority 5)))))

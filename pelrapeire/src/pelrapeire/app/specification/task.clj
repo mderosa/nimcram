@@ -53,8 +53,8 @@
       "project" (fn [p] p)
       "deliversUserFunctionality" (fn [f]
 				    (if (= "true" f) true false))
-      "progress" condition-priority
-      "priority" condition-progress
+      "progress" condition-progress
+      "priority" condition-priority
       "namespace" ns-param-to-vector-map}
      )
 
