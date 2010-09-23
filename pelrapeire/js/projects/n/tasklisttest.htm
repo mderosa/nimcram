@@ -3,7 +3,7 @@
 	<head>
 		<script type="text/javascript" charset="utf-8" src="../../yui/build/yui/yui-debug.js"></script>
 		<script type="text/javascript" charset="utf-8" src="./task.js" ></script>
-		<script type="text/javascript" charset="utf-8" src="./home.js" ></script>
+		<script type="text/javascript" charset="utf-8" src="./tasklist.js" ></script>
 		<script>var serverData = {"project-name" : "PicoMinMin"};</script>
 	</head>
 	<body class="yui3-skin-sam">
@@ -15,101 +15,121 @@
     			filter: "debug",
     			logInclude: { TestRunner: true}
 			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function (Y) {
-				
+				var mockServer = {
+					createTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.uri);
+						Y.Assert.isNotUndefined(obj.sourceForm);
+						this.called = 'createTask';
+					},
+					updateAppendTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.action);
+						Y.Assert.isNotUndefined(obj.task);
+						this.called = 'updateAppendTask';
+					},
+					getTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.id);
+						this.called = 'getTask';
+					}
+				};
 				var testcase = new Y.Test.Case({
 					name: "tasklist test",
 					
-					testSuccessfulFormCreation: function() {
-						Y.one('#new').simulate('click');
-						var ndParent = Y.one('#proposed div.tasks');
-						Y.Assert.isNotNull(ndParent);
-						var ns = ndParent.get('children');
-						Y.Assert.areEqual(1, ns.size(), 'should have only one node')
-						Y.Assert.areEqual("newTaskForm", ns.item(0).get('id'), 'should find the root of the form');
-					},
+					testAdditionOfTaskToTaskList: function() {
+						var nd = Y.one('#proposed');
+						var taskList = new TaskList({
+							root: nd,
+							server: mockServer,
+							yui: Y 
+						});
+						Y.Assert.areEqual(0, taskList.tasks.length, 'the list starts out empty');
+						
+						var taskData = {"specification":"store all the dates as UCT that way there are no issues depending on where in the world people are using the application","priority":null,"_rev":"1-b81de00d061621947aac747f794b01af","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,28,12,54,56],"deliversUserFunctionality":true,"solutionTeam":[],"title":"store dates as UCT","project":"PicoMinMin","_id":"f6c73e27c5e4258c8457e8bfaf1a79c4","type":"task","namespace":"project=database"};
+						taskList.addNewTask(taskData);
+						Y.Assert.areEqual(1, taskList.tasks.length, 'after adding a task the number of tasks should become 1')
+					}//,
 					
-					testSuccessfulFormDestruction: function() {
-						var ancCancel = Y.one('#newTaskCanceler');
-						Y.Assert.isNotNull(ancCancel);  //i expect this to exist from the above test
-						ancCancel.simulate('click');
-						var ndParent = Y.one('#proposed div.tasks');
-						var ns = ndParent.get('children');
-						Y.Assert.areEqual(0, ns.size());
-					},
-					
-					testWeShouldOnlyBeAbleToCreateOneFormAtATime: function () {
-						Y.one('#new').simulate('click');
-						Y.one('#new').simulate('click');
-						var ndParent = Y.one('#proposed div.tasks');
-						var ns = ndParent.get('children');
-						Y.Assert.areEqual(1, ns.size(), 'we should not be able to create two forms at the same time');
-						Y.one('#newTaskCanceler').simulate('click');
-						ns = ndParent.get('children');
-						Y.Assert.areEqual(0, ns.size(), 'we should be able to destroy the form we just created');
-					},
+//					testSuccessfulFormDestruction: function() {
+//						var ancCancel = Y.one('#newTaskCanceler');
+//						Y.Assert.isNotNull(ancCancel);  //i expect this to exist from the above test
+//						ancCancel.simulate('click');
+//						var ndParent = Y.one('#proposed div.tasks');
+//						var ns = ndParent.get('children');
+//						Y.Assert.areEqual(0, ns.size());
+//					},
+//					
+//					testWeShouldOnlyBeAbleToCreateOneFormAtATime: function () {
+//						Y.one('#new').simulate('click');
+//						Y.one('#new').simulate('click');
+//						var ndParent = Y.one('#proposed div.tasks');
+//						var ns = ndParent.get('children');
+//						Y.Assert.areEqual(1, ns.size(), 'we should not be able to create two forms at the same time');
+//						Y.one('#newTaskCanceler').simulate('click');
+//						ns = ndParent.get('children');
+//						Y.Assert.areEqual(0, ns.size(), 'we should be able to destroy the form we just created');
+//					},
 					/**
 					 * when we initialize a table the only nodes below the root node should take on
 					 * dragable or dropable class types
 					 */
-					testInitializeANodeList: function() {
-						var ns = Y.all('div.bmrcp-head');
-						var count = 0;
-						Y.each(ns, function(v, k){
-							if (v.test('.yui3-dd-drop')) {
-								count++;
-							}
-						});
-						Y.Assert.areEqual(4, ns.size(), 'there are 4 nodes total');
-						Y.Assert.areEqual(3, count, 'only three nodes should be droppable');
-					},
-					testSimpleServerObjectCreation: function() {
-						var s = new Server();
-						Y.Assert.isNotNull(s);
-					},
+//					testInitializeANodeList: function() {
+//						var ns = Y.all('div.bmrcp-head');
+//						var count = 0;
+//						Y.each(ns, function(v, k){
+//							if (v.test('.yui3-dd-drop')) {
+//								count++;
+//							}
+//						});
+//						Y.Assert.areEqual(4, ns.size(), 'there are 4 nodes total');
+//						Y.Assert.areEqual(3, count, 'only three nodes should be droppable');
+//					},
+//					testSimpleServerObjectCreation: function() {
+//						var s = new Server();
+//						Y.Assert.isNotNull(s);
+//					},
 					//the create functionality should create one task that is both draggable
 					//and dropable
-					testShouldBeAbleToCreateANewTask: function() {
-						var proposedTasks = new TaskList({
-							root: Y.one('#proposed'),
-							dragSelector: 'div.tasks table.task',
-							dropSelector: 'table.task, div.bmrcp-head',
-							yui: Y
-							});
-						
-						var initialCount = Y.one('#proposed div.tasks').get('children').size();
-						proposedTasks.addNewTask({
-							"title":"find a good height for the task boxes",
-							"specification":"the task boxes should have at least twice the vertical height as they currently have",
-							"deliversUserFunctionality":false,
-							"project":"PicoMinMin",
-							"type":"task",
-							"progress":"proposed",
-							"_rev":"1-fe84a1a782cd5dff145623efbc86e213",
-							"_id":"ec1d1fcfdf43deaa33b17499c2535154"}
-						);
-						var ns = Y.one('#proposed div.tasks').get('children');
-						var finalCount = ns.size();
-						Y.Assert.areEqual(initialCount + 1, finalCount);
-						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-drop'));
-						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-draggable'));
-					},
+//					testShouldBeAbleToCreateANewTask: function() {
+//						var proposedTasks = new TaskList({
+//							root: Y.one('#proposed'),
+//							dragSelector: 'div.tasks table.task',
+//							dropSelector: 'table.task, div.bmrcp-head',
+//							yui: Y
+//							});
+//						
+//						var initialCount = Y.one('#proposed div.tasks').get('children').size();
+//						proposedTasks.addNewTask({
+//							"title":"find a good height for the task boxes",
+//							"specification":"the task boxes should have at least twice the vertical height as they currently have",
+//							"deliversUserFunctionality":false,
+//							"project":"PicoMinMin",
+//							"type":"task",
+//							"progress":"proposed",
+//							"_rev":"1-fe84a1a782cd5dff145623efbc86e213",
+//							"_id":"ec1d1fcfdf43deaa33b17499c2535154"}
+//						);
+//						var ns = Y.one('#proposed div.tasks').get('children');
+//						var finalCount = ns.size();
+//						Y.Assert.areEqual(initialCount + 1, finalCount);
+//						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-drop'));
+//						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-draggable'));
+//					},
 
 					/**
 					 * given an id a task list should be able to return a task object to us
 					 */
-					testGetTaskFromATaskList: function() {
-						var taskList = new TaskList({
-							root: Y.one('#testBucket'),
-							dragSelector: 'div.tasks table.task',
-							dropSelector: 'table.task, div.bmrcp-head',
-							server: null,
-							yui: Y
-						});
-						var task = taskList.getTask('34c9c3adade7da214b70f96ea1418abc');
-						Y.Assert.isNotNull(task);
-						var actual = task.getRevision();
-						Y.Assert.areEqual(actual, '1-ca66e995fa34333d682f04a00e98c3cc');
-					}
+//					testGetTaskFromATaskList: function() {
+//						var taskList = new TaskList({
+//							root: Y.one('#testBucket'),
+//							dragSelector: 'div.tasks table.task',
+//							dropSelector: 'table.task, div.bmrcp-head',
+//							server: null,
+//							yui: Y
+//						});
+//						var task = taskList.getTask('34c9c3adade7da214b70f96ea1418abc');
+//						Y.Assert.isNotNull(task);
+//						var actual = task.getRevision();
+//						Y.Assert.areEqual(actual, '1-ca66e995fa34333d682f04a00e98c3cc');
+//					}
 
 					//when we add a new task we should also update the tasks in the task list
 					

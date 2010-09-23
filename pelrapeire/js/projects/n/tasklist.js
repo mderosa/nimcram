@@ -61,13 +61,7 @@ TaskList.prototype = {
 			server: this.config.server
 		}, data);
 		task.renderAsTaskTable(null, data);
-//		new Y.DD.Drag({
-//	    		node: node,
-//	    		target: {
-//	    			border: '0 0 0 20'
-//	    		}
-//	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
-//		new Y.DD.Drop({node: node}); 
+		this.tasks.push(task);
 	},
 	/**
 	 * getTask :: String -> Task
