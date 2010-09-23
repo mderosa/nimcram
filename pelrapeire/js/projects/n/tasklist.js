@@ -3,13 +3,15 @@
  * <p>
  * config :: {root: Node, dragSelector: String, dropSelector: String, server: Server, yui: Object}
  * root = the node that contains the contents of the table, right now this is a <td> 
+ * dropSelector = optional parameter that we can supply if we want nodes other than the tasks to be droppable
+ * dragSelector = optional parameter that we can supply if we want nodes other than the tasks to be draggable
  */
 var TaskList = function(config) {
 	this.config = config;
 	this.tasks = [];
 	this._initTasks(config);
-	this._makeNodesDraggable(config);
-	this._makeNodesDroppable(config);
+	this._makeAuxNodesDraggable(config);
+	this._makeAuxNodesDroppable(config);
 };
 TaskList.prototype = {
 	_initTasks: function(cfg) {
@@ -18,24 +20,30 @@ TaskList.prototype = {
 			this.tasks.push(new Task({node: val, yui: cfg.yui, server: cfg.server}))
 		}, this);
 	},
-	_makeNodesDraggable : function(cfg) {
-//		var Y = cfg.yui;
-//		var ns = cfg.root.all(cfg.dragSelector);
-//    	Y.each(ns, function(v, k) {
-//	    	var drag = new Y.DD.Drag({
-//	    		node: v,
-//	    		target: {
-//	    			border: '0 0 0 20'
-//	    		}
-//	    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
-//	    });
+	_makeAuxNodesDraggable : function(cfg) {
+		if (cfg.dragSelector) {
+			var Y = cfg.yui;
+			var ns = cfg.root.all(cfg.dragSelector);
+			Y.each(ns, function(v, k){
+				var drag = new Y.DD.Drag({
+					node: v,
+					target: {
+						border: '0 0 0 20'
+					}
+				}).plug(Y.Plugin.DDProxy, {
+					moveOnEnd: false
+				});
+			});
+		}
 	},
-	_makeNodesDroppable: function(cfg) {
-//		var Y = cfg.yui;
-//		var ns = cfg.root.all(cfg.dropSelector);
-//	    Y.each(ns, function(v, k) {
-//	        var drop = new Y.DD.Drop({node: v});   
-//	    });
+	_makeAuxNodesDroppable: function(cfg) {
+		if (cfg.dropSelector) {
+			var Y = cfg.yui;
+			var ns = cfg.root.all(cfg.dropSelector);
+			Y.each(ns, function(v, k) {
+				var drop = new Y.DD.Drop({node: v});   
+			});
+		}
 	},
 	
 	addNewTask: function(data) {

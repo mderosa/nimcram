@@ -12,22 +12,19 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		});
 	var proposedTasks = new TaskList({
 		root: Y.one('#proposed'),
-		dragSelector: 'div.tasks table.task',
-		dropSelector: 'table.task, div.bmrcp-head',
+		dropSelector: 'div.bmrcp-head',
 		server: server,
 		yui: Y
 		});
 	var inProgressTasks = new TaskList({
 		root: Y.one('#in-progress'),
-		dragSelector: 'div.tasks table.task',
-		dropSelector: 'table.task, div.bmrcp-head',
+		dropSelector: 'div.bmrcp-head',
 		server: server,
 		yui: Y
 		});
 	var deliveredTasks = new TaskList({
 		root: Y.one('#delivered'),
-		dragSelector: 'div.tasks table.task',
-		dropSelector: 'table.task, div.bmrcp-head',
+		dropSelector: 'div.bmrcp-head',
 		server: server,
 		yui: Y
 		});
