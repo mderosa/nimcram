@@ -27,12 +27,6 @@ object"}
 				       (datetime-to-vector (DateTime. DateTimeZone/UTC))))]
     (fn-update augmented :append)))
 
-(defn 
-  #^{:doc "this can be merged with (run-update-all)"}
-  run-update-priority [fn-update params]
-  (let [conditioned-data (condition-task params)]
-    (fn-update conditioned-data :append)))
-
 (defn
   #^{:doc "take object as supplied by the front end and append it"}
   run-update-all [fn-update params]
@@ -55,11 +49,6 @@ object"}
       :layout :json-layout
       :content updated-resp})
 
-   (= "update-priority" (params "action"))
-   (let [updated-resp (run-update-priority fn-update-task params)]
-     {:view :json-view
-      :layout :json-layout
-      :content updated-resp})
    true (throw (IllegalArgumentException. "request not properly specified"))))
 
 (defn run [fn-get fn-update req]
