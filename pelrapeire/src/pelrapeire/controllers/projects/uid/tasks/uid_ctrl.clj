@@ -16,21 +16,37 @@ object"}
 
 (defn 
   #^{:doc "pulls out '_id', '_rev', progress parameters and then adds a 
-'taskStartDate' parameter or a taskCompleteDate"}
-  run-update-progress [fn-update params]
-  {:pre [(params "_id") (revision? (params "_rev")) (#{"in-progress" "delivered"} (params "progress"))]}
+'taskStartDate' parameter or a taskCompleteDate.  This function just updates the progress
+parameter for all other updates we should go through (run-update-all)"}
+  run-update-progress [fn-update {progress "progress"  originalProgress "originalProgress" :as params}]
+  {:pre [(params "_id") (revision? (params "_rev")) 
+	 (#{"proposed" "in-progress" "delivered"} progress)
+	 (#{"proposed" "in-progress" "delivered"} originalProgress)]}
   (let [extract (select-keys params ["_id" "_rev" "progress"])
-	augmented (condp = (params "progress")
-		    "in-progress" (assoc extract "taskStartDate" 
-					 (datetime-to-vector (DateTime. DateTimeZone/UTC)))
-		    "delivered" (assoc extract "taskCompleteDate" 
-				       (datetime-to-vector (DateTime. DateTimeZone/UTC))))]
-    (fn-update augmented :append)))
+	start-dt (datetime-to-vector (DateTime. DateTimeZone/UTC))
+	complete-dt (datetime-to-vector (DateTime. DateTimeZone/UTC))
+	augmented (cond
+		    (and (= originalProgress "proposed") (= progress "in-progress"))
+		    (assoc extract "taskStartDate" start-dt)
+
+		    (and (= originalProgress "proposed") (= progress "delivered"))
+		    (assoc extract "taskStartDate" start-dt "taskCompleteDate" complete-dt)
+
+		    (and (= originalProgress "in-progress") (= progress "delivered"))
+		    (assoc extract "taskCompleteDate" complete-dt)
+
+		    (and (= originalProgress "in-progress") (= progress "proposed"))
+		    nil
+		    
+		    (= originalProgress "delivered")
+		    nil)]
+    (if augmented (fn-update augmented :append) nil)))
 
 (defn
-  #^{:doc "take object as supplied by the front end and append it"}
+  #^{:doc "take object as supplied by the front end and append it.  This function will update all parameters except
+for the 'progress', which need special processing logic"}
   run-update-all [fn-update params]
-  (let [conditioned-data (condition-task params)]
+  (let [conditioned-data (condition-task (dissoc params "progress"))]
     (fn-update conditioned-data :append)))
 
 (defn 
@@ -44,10 +60,11 @@ object"}
       :layout :json-layout
       :content task})
    (= "update-progress" (params "action"))
-   (let [updated-resp (run-update-progress fn-update-task params)]
+   (let [ok-err-resp (run-update-progress fn-update-task params)
+	 task (fn-get (params "task-uid"))]
      {:view :json-view
       :layout :json-layout
-      :content updated-resp})
+      :content task})
 
    true (throw (IllegalArgumentException. "request not properly specified"))))
 

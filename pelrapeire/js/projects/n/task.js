@@ -50,7 +50,7 @@ Task.prototype = {
 	isValid: function() {
 		var valid = this.isInTableMode() || this.isInFormMode();
 		var id = this.config.node.get("id");
-		return valid && /[0-9a-f]{32}\.\d-[0-9a-f]{32}/.test(id);
+		return valid && /[0-9a-f]{32}\.\d+-[0-9a-f]{32}/.test(id);
 	},
 	/**
 	 * places the transitive content of a node into a json object
@@ -77,7 +77,11 @@ Task.prototype = {
 					priority++;
 				}
 			});
-			obj.priority = priority == 0 ? null : priority;
+			if (action == "update-progress") {
+				obj.originalProgress = this.taskData.progress;
+			} else {
+				obj.priority = priority == 0 ? null : priority;
+			}
 		} else {
 			throw new Error('mode not implemented');
 		}
