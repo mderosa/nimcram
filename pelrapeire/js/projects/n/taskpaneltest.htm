@@ -1,0 +1,119 @@
+
+<html>
+	<head>
+		<script type="text/javascript" charset="utf-8" src="../../yui/build/yui/yui-debug.js"></script>
+		<script type="text/javascript" charset="utf-8" src="./server.js" ></script>
+		<script type="text/javascript" charset="utf-8" src="./task.js" ></script>
+		<script type="text/javascript" charset="utf-8" src="./tasklist.js" ></script>
+		<script type="text/javascript" charset="utf-8" src="./taskpanel.js" ></script>
+		<script>var serverData = {"project-name" : "PicoMinMin"};</script>
+	</head>
+	<body class="yui3-skin-sam">
+		<h1>task.js test</h1>
+		
+		<script type="text/javascript">
+			YUI({
+    			base: '../../yui/build/',
+    			filter: "debug",
+    			logInclude: { TestRunner: true}
+			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function (Y) {
+				var mockServer = {
+					createTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.uri);
+						Y.Assert.isNotUndefined(obj.sourceForm);
+						this.called = 'createTask';
+					},
+					updateAppendTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.task);
+						this.called = 'updateAppendTask';
+					},
+					getTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.id);
+						this.called = 'getTask';
+					}
+				}
+				var testcase = new Y.Test.Case({
+					name: "task test",
+					
+					testSerializationOfTaskObject: function() {
+						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
+						var nd = Y.one(el);
+						var t = new Task({node: nd, yui: Y, server: mockServer});
+						var json = t.serialize("update-progress");
+						Y.Assert.areEqual("64dca73821060386b52188b6cc8e5a89", json._id, 'expect and id');
+						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev, 'expect a rev');
+						Y.Assert.areEqual("delivered", json.progress, 'expect a value of delivered');
+						Y.Assert.areEqual("update-progress", json.action, 'should find an action');
+					}
+					
+				});
+		
+			    var yconsole = new Y.Console({newestOnTop: false});
+			    yconsole.render('#logger');
+				Y.Test.Runner.add(testcase);
+			    Y.Test.Runner.run();
+
+			});
+		</script>
+		
+		<a href="#" id="new">new</a>
+		<table class="buckets">
+			<tbody>
+				<tr>
+					<td id="proposed" class="bucket">
+						<div class="bmrcp-head">waiting to start</div>
+						<div class="tasks">
+							<table class="task" id="34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc">
+								<tr>
+									<td class="rawData">{"_id": "34c9c3adade7da214b70f96ea1418ac1","_rev": "1-ca66e995fa34333d682f04a00e98c3cc", "progress": "proposed", "type": "task","title": "a test form title","specification": "this is a test specification","project": "PicoMinMin","solutionTeam": ["marc.derosa@gmail.com", "micai@ebay.com"],"deliversUserFunctionality": true,"priority": 2,"namespace": [{"release": "e662.indexer-shj-01"}], "taskCreateDate": [2010,9,12,10,0,0], "taskStartDate":null, "taskCompleteDate":null}
+									</td>
+									<td><a class="collapsible" href="#">+</a></td>
+									<td class="title">password hashing for login</td>
+									<td class="priority">
+										<img class="clickable" src="/img/star-on.gif" title="low" />
+										<img class="clickable" src="/img/star-on.gif" title="medium" />
+										<img class="clickable" src="/img/star-off.gif" title="high" />
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+					<td id="in-progress" class="bucket">
+						<div class="bmrcp-head">work in progress</div>
+						<div class="tasks">
+							<table class="task usr-func yui3-dd-drop yui3-dd-draggable" id="a5ce4479660b9334deeb288eb5166f60.3-6db398380e045d2b6d208cddeca84979">
+								<tbody>
+									<tr>
+										<td class="rawData">{"_id": "a5ce4479660b9334deeb288eb5166f60", "_rev": "3-6db398380e045d2b6d208cddeca84979", "specification": "on task update we should first update the remote store", "priority": 2, "taskStartDate": [2010, 9, 19, 21, 9, 9], "taskCompleteDate": null, "progress": "in-progress", "taskCreateDate": [2010, 9, 19, 17, 4, 12], "deliversUserFunctionality": true, "solutionTeam": [], "title": "on task update update the remote store", "project": "PicoMinMin", "type": "task", "namespace": []}
+										</td>
+										<td><a class="collapsible" href="#">+</a></td>
+										<td class="title">on task update update the remote store</td>
+										<td class="statistic">0</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+					<td id="delivered" class="bucket">
+						<div class="bmrcp-head">delivered to user</div>
+						<div class="tasks">
+							<!-- below is a example task to test the Task object -->
+							<table id="64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14" class="task yui3-dd-drop yui3-dd-draggable">
+								<tbody>
+									<tr>
+										<td class="rawData">{"specification":"","priority":2,"_rev":"1-d44f047f8b364777d96a8fa2b993de14","taskStartDate":null,"taskCompleteDate":null,"progress":"delivered","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"64dca73821060386b52188b6cc8e5a89","type":"task","namespace":[]}
+										</td>
+										<td><a href="#" class="collapsible">+</a></td>
+										<td class="title">add task detail expansion functionality</td>
+										<td class="statistic">0</td>
+									</tr>
+								</tbody>
+							</table>							
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</body>
+</html>
