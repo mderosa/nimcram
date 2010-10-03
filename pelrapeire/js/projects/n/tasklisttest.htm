@@ -46,8 +46,24 @@
 						var taskData = {"specification":"store all the dates as UCT that way there are no issues depending on where in the world people are using the application","priority":null,"_rev":"1-b81de00d061621947aac747f794b01af","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,28,12,54,56],"deliversUserFunctionality":true,"solutionTeam":[],"title":"store dates as UCT","project":"PicoMinMin","_id":"f6c73e27c5e4258c8457e8bfaf1a79c4","type":"task","namespace":"project=database"};
 						taskList.addNewTask(taskData);
 						Y.Assert.areEqual(1, taskList.tasks.length, 'after adding a task the number of tasks should become 1')
-					}//,
-					
+					},
+					testDeletionOfATask: function() {
+						var nd = Y.one("#delivered");
+						var taskList = new TaskList({
+							root: nd,
+							server: mockServer,
+							yui: Y
+						});
+						Y.Assert.areEqual(1, taskList.tasks.length, 'should be one existing task');
+						var node = taskList.removeTask('not exist');
+						Y.Assert.isNull(node);
+						node = taskList.removeTask('64dca73821060386b52188b6cc8e5a89');
+						Y.Assert.isNotNull(node);
+						Y.Assert.areEqual('64dca73821060386b52188b6cc8e5a89', node.getId());
+						Y.Assert.areEqual(0, taskList.tasks.length, 'we should have removed the only task');
+						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
+						Y.Assert.isNull(el, 'and the node should be removed from the dom');	
+					}				
 //					testSuccessfulFormDestruction: function() {
 //						var ancCancel = Y.one('#newTaskCanceler');
 //						Y.Assert.isNotNull(ancCancel);  //i expect this to exist from the above test

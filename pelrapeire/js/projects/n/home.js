@@ -11,18 +11,21 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		server: server
 		});
 	var proposedTasks = new TaskList({
+		name: 'proposed',
 		root: Y.one('#proposed'),
 		dropSelector: 'div.bmrcp-head',
 		server: server,
 		yui: Y
 		});
 	var inProgressTasks = new TaskList({
+		name: 'in-progress',
 		root: Y.one('#in-progress'),
 		dropSelector: 'div.bmrcp-head',
 		server: server,
 		yui: Y
 		});
 	var deliveredTasks = new TaskList({
+		name: 'delivered',
 		root: Y.one('#delivered'),
 		dropSelector: 'div.bmrcp-head',
 		server: server,
@@ -96,7 +99,7 @@ YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'quer
 		var nodeId = ndDrag.get('id').split('.')[0];	   
 		var task = proposedTasks.getTask(nodeId);
 		if (!task) {
-	  		task = inProgressTasks.getTask(nodeId)
+	  		task = inProgressTasks.getTask(nodeId);
 	   	}
 		if (task) {
 			server.updateAppendTask({

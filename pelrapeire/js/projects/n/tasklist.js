@@ -1,7 +1,7 @@
 /**
  * This object represents a listing of tasks
  * <p>
- * config :: {root: Node, dragSelector: String, dropSelector: String, server: Server, yui: Object}
+ * config :: {name : String, root: Node, dragSelector: String, dropSelector: String, server: Server, yui: Object}
  * root = the node that contains the contents of the table, right now this is a <td> 
  * dropSelector = optional parameter that we can supply if we want nodes other than the tasks to be droppable
  * dragSelector = optional parameter that we can supply if we want nodes other than the tasks to be draggable
@@ -17,7 +17,7 @@ TaskList.prototype = {
 	_initTasks: function(cfg) {
 		var ns = cfg.root.all('table.task');
 		ns.each(function(val, idx) {
-			this.tasks.push(new Task({node: val, yui: cfg.yui, server: cfg.server}))
+			this.tasks.push(new Task({node: val, yui: cfg.yui, server: cfg.server}));
 		}, this);
 	},
 	_makeAuxNodesDraggable : function(cfg) {
@@ -65,7 +65,7 @@ TaskList.prototype = {
 	},
 	/**
 	 * getTask :: String -> Task
-	 * @param {Object} id corresponds to couchdb '_id' 
+	 * @param id  corresponds to couchdb '_id' 
 	 */
 	getTask: function(id) {
 		var task = null;
@@ -75,6 +75,39 @@ TaskList.prototype = {
 				return;
 			}
 		});
+		return task;
+	},
+	/**
+	 * removeTask :: String -> Task
+	 * @param id a couch db '_id'
+	 */
+	removeTask: function (id) {
+		var index = null;
+		this.config.yui.each(this.tasks, function (val, idx) {
+			if (val.getId() == id) {
+				index = idx;
+				return;
+			}
+		});
+		console.log(index);
+		if (index != null) {
+			var task = this.tasks.splice(index, 1)[0];
+			task.config.node.remove();
+			return task;
+		} else {
+			return null;
+		}
+	},
+	/**
+	 * updateTask :: String -> Task update and rerenders a task element
+	 * @param id
+	 * @returns
+	 */
+	updateTask: function (data) {
+		var task = this.getTask(id);
+		if (task) {
+			task.renderAsTaskTable(null, data);
+		}
 		return task;
 	}
 };
@@ -90,11 +123,11 @@ TaskList.prototype = {
 var NewTaskForm = function(config) {
 	this.config = config;
 	this.visible = false;
-}
+};
 NewTaskForm.prototype = {
 	_addSubmitHandler: function(Y) {
 		var req = {
-			sourceForm:	this.config.root.one('#newTaskForm'),
+			sourceForm:	this.config.root.one('#newTaskForm')
 			};
 		var that = this;
 		Y.one('#newTaskSubmitter').on("click", function() {
