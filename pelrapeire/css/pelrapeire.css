@@ -1,6 +1,7 @@
 
 .footer {
     margin-top: 4px;
+	text-align: center;
 }
 
 .footer a {
@@ -10,6 +11,10 @@
     padding-right: 4px;
     padding-bottom: 3px;
     border-bottom: 1px solid #CCC;
+}
+
+.header {
+	text-align: center;
 }
 
 .header sup {

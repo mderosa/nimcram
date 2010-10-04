@@ -5,7 +5,6 @@ YUI.add('server', function(Y) {
 	 * abstract server communications from other page controls
 	 * @param {Object} config
 	 * {baseTaskUri: String}
-	 * where yui is the yui global object 
 	 */
 	function Server (config) {
 		Server.superclass.constructor.apply(this, arguments);
