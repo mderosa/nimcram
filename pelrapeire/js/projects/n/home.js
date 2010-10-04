@@ -1,35 +1,35 @@
-var y;
 
-YUI().use('dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function(Y) {
-	y = Y;
-	var server = new Server({
-		yui: Y,
+YUI({
+	
+}).use('dd-drop', 'dd-proxy', 'node-base', 
+	'io', 'event', 'json-parse', 
+	'querystring-stringify-simple', 'server', 'task',
+	'tasklist', function(Y) {
+
+	var server = new Y.hokulea.Server({
 		baseTaskUri: "/projects/" + serverData['project-name'] + "/tasks"
 		});
-	var newTaskForm = new NewTaskForm({
+	var newTaskForm = new Y.hokulea.NewTaskForm({
 		root: Y.one('#proposed div.tasks'),
 		server: server
 		});
-	var proposedTasks = new TaskList({
+	var proposedTasks = new Y.hokulea.TaskList({
 		name: 'proposed',
 		root: Y.one('#proposed'),
 		dropSelector: 'div.bmrcp-head',
-		server: server,
-		yui: Y
+		server: server
 		});
-	var inProgressTasks = new TaskList({
+	var inProgressTasks = new Y.hokulea.TaskList({
 		name: 'in-progress',
 		root: Y.one('#in-progress'),
 		dropSelector: 'div.bmrcp-head',
-		server: server,
-		yui: Y
+		server: server
 		});
-	var deliveredTasks = new TaskList({
+	var deliveredTasks = new Y.hokulea.TaskList({
 		name: 'delivered',
 		root: Y.one('#delivered'),
 		dropSelector: 'div.bmrcp-head',
-		server: server,
-		yui: Y
+		server: server
 		});
 
    function resizeTasks() {

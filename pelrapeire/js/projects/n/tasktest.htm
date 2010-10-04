@@ -2,7 +2,6 @@
 <html>
 	<head>
 		<script type="text/javascript" charset="utf-8" src="../../yui/build/yui/yui-debug.js"></script>
-		<script type="text/javascript" charset="utf-8" src="./task.js" ></script>
 		<script>var serverData = {"project-name" : "PicoMinMin"};</script>
 	</head>
 	<body class="yui3-skin-sam">
@@ -12,8 +11,23 @@
 			YUI({
     			base: '../../yui/build/',
     			filter: "debug",
-    			logInclude: { TestRunner: true}
-			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function (Y) {
+    			logInclude: { TestRunner: true},
+				groups: {
+					hokulea: {
+						combine: false,
+						base: './',
+						filter: 'raw',
+						modules: {
+							task: {
+								path: 'task.js'
+							}
+						}
+					}
+				}
+			}).use('node-event-simulate', 'test','console', 
+					'dd-drop', 'dd-proxy', 'node-base', 
+					'io', 'event', 'json-parse', 
+					'querystring-stringify-simple', 'task', function (Y) {
 				var mockServer = {
 					createTask: function(obj) {
 						Y.Assert.isNotUndefined(obj.uri);
@@ -40,7 +54,7 @@
 					testSerializationOfTaskObject: function() {
 						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y, server: mockServer});
+						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						var json = t.serialize("update-progress");
 						Y.Assert.areEqual("64dca73821060386b52188b6cc8e5a89", json._id, 'expect and id');
 						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev, 'expect a rev');
@@ -54,7 +68,7 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y, server: mockServer});
+						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(null, json.priority);
 						Y.Assert.areEqual('update-priority', json.action);
@@ -62,7 +76,7 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y, server: mockServer});
+						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(2, json.priority);
 						Y.Assert.areEqual(json._id, '34c9c3adade7da214b70f96ea1418abc');
@@ -76,7 +90,7 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y, server: mockServer});
+						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						t.renderAsTaskForm();
 						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.areEqual("FORM", el.tagName);
@@ -104,14 +118,14 @@
 							progress: 'proposed',
 							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}]
 						};
-						var t = new Task({node: nd, yui: Y, server: mockServer}, rawData);
+						var t = new Y.hokulea.Task({node: nd, server: mockServer}, rawData);
 						t.renderAsTaskTable(null, rawData);
 						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.areEqual("TABLE", el.tagName);
 					}, 
 					testRenderTaskFormNamespaces: function() {
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abf.1-ca66e995fa34333d682f04a00e98c3cc');
-						var t = new Task({node: Y.one(el), yui: Y, server: mockServer});
+						var t = new Y.hokulea.Task({node: Y.one(el), server: mockServer});
 						var html = t._renderTaskFormNamespaces([{release: 'e662.indexer'}, {project: 'projectA.feature1'}]);
 						var matches = html.match(/release=e662.indexer/);
 						Y.Assert.isNotNull(matches);
@@ -120,7 +134,7 @@
 					},
 					testRenderTaskTablePriorities: function() {
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abe.1-ca66e995fa34333d682f04a00e98c3cc');
-						var t = new Task({node: Y.one(el), yui: Y, server: mockServer});
+						var t = new Y.hokulea.Task({node: Y.one(el), server: mockServer});
 						var taskData = {
 							_id: '34c9c3adade7da214b70f96ea1418abe',
 							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
@@ -145,7 +159,7 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abd.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y, server: mockServer});
+						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						Y.Assert.isTrue(t.isValid());
 						
 						t.taskData = {
@@ -173,7 +187,7 @@
 						var el = document.getElementById(id);
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y, server: mockServer});
+						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						Y.Assert.isTrue(t.isValid());
 						Y.Assert.isNotNull(t.taskData);
 						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.taskData._id);
@@ -183,7 +197,7 @@
 						var id = 'f6c73e27c5e4258c8457e8bfaf1a79c5.1-b81de00d061621947aac747f794b01af';
 						var el = document.getElementById(id);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y,	server: mockServer});
+						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						Y.Assert.isNotNull(t);
 						nd.one('#tpdh_low').simulate('click');
 						Y.Assert.areEqual('updateAppendTask', mockServer.called);
@@ -195,7 +209,7 @@
 						var id = 'a5ce4479660b9334deeb288eb5166f60.3-6db398380e045d2b6d208cddeca84979';
 						var el = document.getElementById(id);
 						var nd = Y.one(el);
-						var t = new Task({node: nd, yui: Y, server: mockServer});
+						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						t.renderAsTaskForm();
 						Y.Assert.areEqual('a5ce4479660b9334deeb288eb5166f60', t.getId());
 					}

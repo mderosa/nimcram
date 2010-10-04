@@ -16,7 +16,11 @@
     			base: '../../yui/build/',
     			filter: "debug",
     			logInclude: { TestRunner: true}
-			}).use('node-event-simulate', 'test','console', 'dd-drop', 'dd-proxy', 'node-base', 'io', 'event', 'json-parse', 'querystring-stringify-simple', function (Y) {
+			}).use('node-event-simulate', 'test','console', 
+					'dd-drop', 'dd-proxy', 'node-base', 
+					'io', 'event', 'json-parse', 
+					'querystring-stringify-simple', 'server', 'task', 
+					'tasklist', function (Y) {
 				
 				var testcase = new Y.Test.Case({
 					name: "home test",
@@ -66,17 +70,16 @@
 						Y.Assert.areEqual(3, count, 'only three nodes should be droppable');
 					},
 					testSimpleServerObjectCreation: function() {
-						var s = new Server();
+						var s = new Y.hokulea.Server();
 						Y.Assert.isNotNull(s);
 					},
 					//the create functionality should create one task that is both draggable
 					//and dropable
 					testShouldBeAbleToCreateANewTask: function() {
-						var proposedTasks = new TaskList({
+						var proposedTasks = new Y.hokulea.TaskList({
 							root: Y.one('#proposed'),
 							dragSelector: 'div.tasks table.task',
-							dropSelector: 'table.task, div.bmrcp-head',
-							yui: Y
+							dropSelector: 'table.task, div.bmrcp-head'
 							});
 						
 						var initialCount = Y.one('#proposed div.tasks').get('children').size();
@@ -101,11 +104,10 @@
 					 * given an id a task list should be able to return a task object to us
 					 */
 					testGetTaskFromATaskList: function() {
-						var taskList = new TaskList({
+						var taskList = new Y.hokulea.TaskList({
 							root: Y.one('#testBucket'),
 							dropSelector: 'div.bmrcp-head',
-							server: null,
-							yui: Y
+							server: null
 						});
 						var task = taskList.getTask('34c9c3adade7da214b70f96ea1418abc');
 						Y.Assert.isNotNull(task);
