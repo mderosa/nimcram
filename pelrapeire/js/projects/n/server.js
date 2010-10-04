@@ -1,16 +1,33 @@
 
 YUI.add('server', function(Y) {
-	Y.namespace('hokulea');
+
 	/**
 	 * abstract server communications from other page controls
 	 * @param {Object} config
 	 * {baseTaskUri: String}
 	 * where yui is the yui global object 
 	 */
-	Y.hokulea.Server = function(config) {
-		this.config = config;
+	function Server (config) {
+		Server.superclass.constructor.apply(this, arguments);
+	}
+	
+	Server.NAME = 'server';
+	
+	Server.ATTRS = {
+		baseTaskUri : {
+			readOnly: true
+		}
 	};
-	Y.hokulea.Server.prototype = {
+		
+	Y.extend (Server, Y.Base, {
+
+	    initializer : function(cfg) {
+			if (!cfg || !cfg.baseTaskUri) {
+				Y.fail("the attribute 'baseTaskUri' is required");
+			} else {
+				this._set('baseTaskUri', cfg.baseTaskUri);
+			}
+	    },
 	
 		/**
 		 * Creates a task
@@ -24,7 +41,7 @@ YUI.add('server', function(Y) {
 				on: {
 					success: function(id, rsp, args) {
 						var json = Y.JSON.parse(rsp.responseText);
-						Y.fire('newtask:created', json);
+						Y.fire('server:createdtask', json);
 					},
 					failure: function(id, rsp, args) {
 	
@@ -37,7 +54,7 @@ YUI.add('server', function(Y) {
 					id: obj.sourceForm
 				}
 			};
-			Y.io(this.config.baseTaskUri, cfg);
+			Y.io(this.get('baseTaskUri'), cfg);
 		},
 		/**
 		 * updates a task given form data
@@ -49,7 +66,7 @@ YUI.add('server', function(Y) {
 				on: {
 					success: function(id, rsp, args) {
 						var json = Y.JSON.parse(rsp.responseText);
-						Y.fire('task:updated', json);
+						Y.fire('server:updatedtask', json);
 					},
 					failure: function(id, rsp, args) {
 	
@@ -62,7 +79,7 @@ YUI.add('server', function(Y) {
 					id: obj.sourceForm
 				}
 			};
-			Y.io(this.config.baseTaskUri + '/' + obj.id, cfg);
+			Y.io(this.get('baseTaskUri') + '/' + obj.id, cfg);
 		},
 		/**
 		 * Does a post to update a task with additional information.  The check for '_id' is necessary
@@ -72,7 +89,7 @@ YUI.add('server', function(Y) {
 		 */
 		updateAppendTask: function(obj) {
 			if (obj.task.isValid()) {
-				var uri = this.config.baseTaskUri + '/' + obj.task.getId();
+				var uri = this.get('baseTaskUri') + '/' + obj.task.getId();
 				var cfg = {
 					method: 'POST',
 					on: {
@@ -97,13 +114,13 @@ YUI.add('server', function(Y) {
 		 * @param {id: String} obj
 		 */
 		getTask: function(obj) {
-			var uri = this.config.baseTaskUri + "/" + obj.id;
+			var uri = this.get('baseTaskUri') + "/" + obj.id;
 			var cfg = {
 				method: 'GET',
 				on: {
 					success: function(id, rsp, args) {
 						var json = Y.JSON.parse(rsp.responseText);
-						Y.fire('taskdata:queried', json);
+						Y.fire('server:queriedtask', json);
 					},
 					failure: function(id, rsp, args) {},
 					complete: function(id, rsp, args) {}
@@ -111,6 +128,8 @@ YUI.add('server', function(Y) {
 			};
 			Y.io(uri, cfg);
 		}
-	};
+	});
+	
+	Y.namespace('hokulea').Server = Server;
 
-}, '0.1');
+}, '0.1', {requires: ['base']});

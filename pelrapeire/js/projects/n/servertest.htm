@@ -1,0 +1,86 @@
+
+<html>
+	<head>
+		<script type="text/javascript" charset="utf-8" src="../../yui/build/yui/yui-debug.js"></script>
+	</head>
+	<body class="yui3-skin-sam">
+		<h1>server.js test</h1>
+		
+		<script type="text/javascript">
+			YUI({
+    			base: '../../yui/build/',
+    			filter: "debug",
+    			logInclude: { TestRunner: true},
+				groups: {
+					hokulea: {
+						combine: false,
+						base: './',
+						filter: 'raw',
+						modules: {
+							server: {
+								path: 'server.js'
+							}
+						}
+					}
+				}				
+			}).use('base', 'test','console', 
+			'node-base', 'io', 'event', 'json-parse', 
+			'querystring-stringify-simple', 'server', function (Y) {
+
+				var testcase = new Y.Test.Case({
+					name: "server test",
+					
+				    _should: {
+				        error: {
+				            //testServerInitialization1: true
+				        }
+				    },
+
+					/**
+					 * a configuration object should be required by the class
+					 */
+					testServerInitialization1: function() {
+						try {
+							var server = new Y.hokulea.Server();
+							Y.Assert.isFalse(true, 'we should never get here');
+						} catch (e) {
+							Y.Assert.areEqual('Assert Error', e.name);
+						}
+					}, 
+					/**
+					 * the configuration object should provide a baseTaskUri attribute
+					 */
+					testServerInitialization2: function() {
+						try {
+							var server = new Y.hokulea.Server({
+								one: 1
+							});
+							Y.Assert.isFalse(true, 'we should never get here')
+						} catch (e) {
+							Y.Assert.areEqual('Assert Error', e.name)
+						}
+					},
+					/**
+					 * the server object should have a read only attribute 'baseTaskUri'
+					 */
+					testServerInitialization3: function() {
+						var server = new Y.hokulea.Server({baseTaskUri: '/server/loc'});
+						var loc = server.get('baseTaskUri');
+						Y.Assert.areEqual('/server/loc', loc);
+						server.set('baseTaskUri', '/none');
+						Y.Assert.areEqual('/server/loc', server.get('baseTaskUri'));
+					}
+					
+				});
+		
+			    var yconsole = new Y.Console({newestOnTop: false});
+			    yconsole.render('#logger');
+				Y.Test.Runner.add(testcase);
+			    Y.Test.Runner.run();
+
+			});
+		</script>
+
+		
+	</body>
+</html>

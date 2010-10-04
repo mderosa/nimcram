@@ -69,10 +69,6 @@
 						Y.Assert.areEqual(4, ns.size(), 'there are 4 nodes total');
 						Y.Assert.areEqual(3, count, 'only three nodes should be droppable');
 					},
-					testSimpleServerObjectCreation: function() {
-						var s = new Y.hokulea.Server();
-						Y.Assert.isNotNull(s);
-					},
 					//the create functionality should create one task that is both draggable
 					//and dropable
 					testShouldBeAbleToCreateANewTask: function() {

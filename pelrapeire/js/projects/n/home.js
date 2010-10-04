@@ -47,11 +47,11 @@ YUI({
 	   resizeTasks();
    });
    
-   Y.on('newtask:created', function(objTask) {
+   Y.on('server:createdtask', function(objTask) {
 		proposedTasks.addNewTask(objTask);
    });
    
-   Y.on('task:updated', function(objTask) {
+   Y.on('server:updatedtask', function(objTask) {
    		var task = proposedTasks.getTask(objTask._id);
 		if (task == null) {
 			task = inProgressTasks.getTask(objTask._id);

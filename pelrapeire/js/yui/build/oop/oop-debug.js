@@ -2,8 +2,8 @@
 Copyright (c) 2010, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.com/yui/license.html
-version: 3.1.0
-build: 2026
+version: 3.2.0
+build: 2676
 */
 YUI.add('oop', function(Y) {
 
@@ -68,7 +68,7 @@ YUI.add('oop', function(Y) {
             rProto           = r.prototype, 
             target           = rProto || r, 
             applyConstructor = false,
-            sequestered, replacements, i;
+            sequestered, replacements;
 
         // working on a class, so apply constructor infrastructure
         if (rProto && construct) {
@@ -84,7 +84,7 @@ YUI.add('oop', function(Y) {
 // Y.log('sequestered function "' + k + '" executed.  Initializing EventTarget');
 // overwrite the prototype with all of the sequestered functions,
 // but only if it hasn't been overridden
-                    for (i in sequestered) {
+                    for (var i in sequestered) {
                         if (sequestered.hasOwnProperty(i) && (this[i] === replacements[i])) {
                             // Y.log('... restoring ' + k);
                             this[i] = sequestered[i];
@@ -141,7 +141,7 @@ YUI.add('oop', function(Y) {
      * will be overwritten if found on the supplier.
      * @param wl {string[]} a whitelist.  If supplied, only properties in 
      * this list will be applied to the receiver.
-     * @return {object} the extended object
+     * @return the extended object
      */
     Y.aggregate = function(r, s, ov, wl) {
         return Y.mix(r, s, ov, wl, 0, true);
@@ -157,7 +157,7 @@ YUI.add('oop', function(Y) {
      * @param {Function} s the object to inherit
      * @param {Object} px prototype properties to add/override
      * @param {Object} sx static properties to add/override
-     * @return {YUI} the YUI instance
+     * @return the extended object
      */
     Y.extend = function(r, s, px, sx) {
         if (!s||!r) {
@@ -253,7 +253,13 @@ YUI.add('oop', function(Y) {
             return o;
         }
 
-        var o2, marked = cloned || {}, stamp;
+        // @TODO cloning YUI instances doesn't currently work
+        if (o instanceof YUI) {
+            return o;
+        }
+
+        var o2, marked = cloned || {}, stamp,
+            each = Y.each || Y.Object.each;
 
         switch (L.type(o)) {
             case 'date':
@@ -262,8 +268,9 @@ YUI.add('oop', function(Y) {
                 // return new RegExp(o.source); // if we do this we need to set the flags too
                 return o;
             case 'function':
-                o2 = Y.bind(o, owner);
-                break;
+                // o2 = Y.bind(o, owner);
+                // break;
+                return o;
             case 'array':
                 o2 = [];
                 break;
@@ -284,11 +291,13 @@ YUI.add('oop', function(Y) {
 
         // #2528250 don't try to clone element properties
         if (!o.addEventListener && !o.attachEvent) {
-            Y.Object.each(o, function(v, k) {
+            each(o, function(v, k) {
                 if (!f || (f.call(c || this, v, k, this, o) !== false)) {
                     if (k !== CLONE_MARKER) {
-                        if (o[k] === o) {
-                            this[k] = this;
+                        if (k == 'prototype') {
+                            // skip the prototype
+                        // } else if (o[k] === o) {
+                        //     this[k] = this;
                         } else {
                             this[k] = Y.clone(v, safe, f, c, owner || o, marked);
                         }
@@ -356,4 +365,4 @@ YUI.add('oop', function(Y) {
 
 
 
-}, '3.1.0' );
+}, '3.2.0' );

@@ -5,7 +5,7 @@ YUI.add('taskpanel', function(Y) {
 	 * a class that contains one or more task lists and coordinates movements
 	 * between the lists
 	 * @param config {Object} this object contains the fields
-	 * {lists: [TaskList], yui: Y} 
+	 * {lists: {name: TaskList}} 
 	 */
 	Y.hokulea.TaskPanel = new function(config) {
 		this.config = config;

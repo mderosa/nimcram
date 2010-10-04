@@ -2,150 +2,11 @@
 Copyright (c) 2010, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.com/yui/license.html
-version: 3.1.0
-build: 2026
+version: 3.2.0
+build: 2676
 */
 YUI.add('tabview', function(Y) {
 
-var getClassName = Y.ClassNameManager.getClassName,
-    TABVIEW = 'tabview',
-    TAB = 'tab',
-    CONTENT = 'content',
-    PANEL = 'panel',
-    SELECTED = 'selected',
-    EMPTY_OBJ = {},
-    DOT = '.',
-
-    _classNames = {
-        tabview: getClassName(TABVIEW),
-        tabviewPanel: getClassName(TABVIEW, PANEL),
-        tabviewList: getClassName(TABVIEW, 'list'),
-        tab: getClassName(TAB),
-        tabLabel: getClassName(TAB, 'label'),
-        tabPanel: getClassName(TAB, PANEL),
-        selectedTab: getClassName(TAB, SELECTED),
-        selectedPanel: getClassName(TAB, PANEL, SELECTED)
-    },
-
-    _queries = {
-        tabview: DOT + _classNames.tabview,
-        tabviewList: '> ul',
-        tab: '> ul > li',
-        tabLabel: '> ul > li > a ',
-        tabviewPanel: '> div',
-        tabPanel: '> div > div',
-        selectedTab: '> ul > ' + DOT + _classNames.selectedTab,
-        selectedPanel: '> div ' + DOT + _classNames.selectedPanel
-    },
-
-    TabviewBase = function(config) {
-        this.init.apply(this, arguments);
-    };
-
-TabviewBase.NAME = 'tabviewBase';
-TabviewBase._queries = _queries;
-TabviewBase._classNames = _classNames;
-
-Y.mix(TabviewBase.prototype, {
-    init: function(config) {
-        config = config || EMPTY_OBJ;
-        this._node = config.host || Y.one(config.node);
-
-        this.refresh();
-    },
-
-    initClassNames: function(index) {
-        Y.Object.each(_queries, function(query, name) {
-            // this === tabview._node
-            if (_classNames[name]) {
-                var result = this.all(query);
-                
-                if (index !== undefined) {
-                    result = result.item(index);
-                }
-
-                if (result) {
-                    result.addClass(_classNames[name]);
-                }
-            }
-        }, this._node);
-
-        this._node.addClass(_classNames.tabview);
-    },
-
-    _select: function(index) {
-        var node = this._node,
-            oldItem = node.one(_queries.selectedTab),
-            oldContent = node.one(_queries.selectedPanel),
-            newItem = node.all(_queries.tab).item(index),
-            newContent = node.all(_queries.tabPanel).item(index);
-
-        if (oldItem) {
-            oldItem.removeClass(_classNames.selectedTab);
-        }
-
-        if (oldContent) {
-            oldContent.removeClass(_classNames.selectedPanel);
-        }
-
-        if (newItem) {
-            newItem.addClass(_classNames.selectedTab);
-        }
-
-        if (newContent) {
-            newContent.addClass(_classNames.selectedPanel);
-        }
-    },
-
-    initState: function() {
-        var node = this._node,
-            activeNode = node.one(_queries.selectedTab),
-            activeIndex = activeNode ?
-                    node.all(_queries.tab).indexOf(activeNode) : 0;
-
-        this._select(activeIndex);
-    },
-
-    // collapse extra space between list-items
-    _scrubTextNodes: function() {
-        this._node.one(_queries.tabviewList).get('childNodes').each(function(node) {
-            if (node.get('nodeType') === 3) { // text node
-                node.remove();
-            }
-        });
-    },
-
-    // base renderer only enlivens existing markup
-    refresh: function() {
-        this._scrubTextNodes();
-        this.initClassNames();
-        this.initState();
-        this.initEvents();
-    },
-
-    tabEventName: 'click',
-
-    initEvents: function() {
-        // TODO: detach prefix for delegate?
-        // this._node.delegate('tabview|' + this.tabEventName),
-        this._node.delegate(this.tabEventName,
-            this.onTabEvent,
-            _queries.tab,
-            this
-        );
-    },
-
-    onTabEvent: function(e) {
-        e.preventDefault();
-        this._select(this._node.all(_queries.tab).indexOf(e.currentTarget));
-    },
-
-    destroy: function() {
-        this._node.detach(this.tabEventName);
-    }
-});
-
-Y.TabviewBase = TabviewBase;
 /**
  * The TabView module 
  *
@@ -155,7 +16,6 @@ Y.TabviewBase = TabviewBase;
 var _queries = Y.TabviewBase._queries,
     _classNames = Y.TabviewBase._classNames,
     DOT = '.',
-    _isGeckoIEWin = ((Y.UA.gecko || Y.UA.ie) && navigator.userAgent.indexOf("Windows") > -1),
     getClassName = Y.ClassNameManager.getClassName,
 
     /**
@@ -170,6 +30,14 @@ var _queries = Y.TabviewBase._queries,
     TabView = Y.Base.create('tabView', Y.Widget, [Y.WidgetParent], {
     _afterChildAdded: function(e) {
         this.get('contentBox').focusManager.refresh();
+    },
+
+    _defListNodeValueFn: function() {
+        return Y.Node.create(TabView.LIST_TEMPLATE);
+    },
+
+    _defPanelNodeValueFn: function() {
+        return Y.Node.create(TabView.PANEL_TEMPLATE);
     },
 
     _afterChildRemoved: function(e) { // update the selected tab when removed
@@ -196,28 +64,13 @@ var _queries = Y.TabviewBase._queries,
                 role: tablist
             });
         }
-
-        //  Since the anchor's "href" attribute has been removed, the
-        //  element will not fire the click event in Firefox when the
-        //  user presses the enter key.  To fix this, dispatch the
-        //  "click" event to the anchor when the user presses the
-        //  enter key.
-     
-        if (_isGeckoIEWin) {
-            tabView.delegate('keydown', function (event) {
-                if (event.charCode === 13) {
-                    this.simulate("click");
-                }
-     
-            }, ">ul>li>a");
-     
-        }
     },
 
     bindUI: function() {
         //  Use the Node Focus Manager to add keyboard support:
         //  Pressing the left and right arrow keys will move focus
         //  among each of the tabs.
+
         this.get('contentBox').plug(Y.Plugin.NodeFocusManager, {
                         descendants: DOT + _classNames.tabLabel,
                         keys: { next: 'down:39', // Right arrow
@@ -225,6 +78,7 @@ var _queries = Y.TabviewBase._queries,
                         circular: true
                     });
 
+        this.after('render', this._setDefSelection);
         this.after('addChild', this._afterChildAdded);
         this.after('removeChild', this._afterChildRemoved);
     },
@@ -233,42 +87,45 @@ var _queries = Y.TabviewBase._queries,
         var contentBox = this.get('contentBox'); 
         this._renderListBox(contentBox);
         this._renderPanelBox(contentBox);
+        this._childrenContainer = this.get('listNode');
         this._renderTabs(contentBox);
-        this._setDefSelection(contentBox);
-
     },
 
-    _setDefSelection: function() {
+    _setDefSelection: function(contentBox) {
         //  If no tab is selected, select the first tab.
-        var firstItem = this.item(0);
-        if (!this.get('selection') && firstItem) {
-            firstItem.set('selected', 1);
+        var selection = this.get('selection') || this.item(0);
+
+        this.some(function(tab) {
+            if (tab.get('selected')) {
+                selection = tab;
+                return true;
+            }
+        });
+        if (selection) {
+            // TODO: why both needed? (via widgetParent/Child)?
+            this.set('selection', selection);
+            selection.set('selected', 1);
         }
     },
 
     _renderListBox: function(contentBox) {
-        var list = contentBox.one(_queries.tabviewList);
-        if (!list) {
-            list = contentBox.appendChild(Y.Node.create(TabView.LIST_TEMPLATE));
-        } else {
-            list.addClass(_classNames.tabviewList);
+        var node = this.get('listNode');
+        if (!node.inDoc()) {
+            contentBox.append(node);
         }
-
-        this._childrenContainer = list;
     },
 
     _renderPanelBox: function(contentBox) {
-        var panel = contentBox.one(_queries.tabviewPanel);
-        if (!panel) {
-            contentBox.append(TabView.PANEL_TEMPLATE);
-        } else {
-            panel.addClass(_classNames.tabviewPanel);
+        var node = this.get('panelNode');
+        if (!node.inDoc()) {
+            contentBox.append(node);
         }
     },
 
     _renderTabs: function(contentBox) {
         var tabs = contentBox.all(_queries.tab),
-            panels = contentBox.all(_queries.tabPanel),
+            panelNode = this.get('panelNode'),
+            panels = (panelNode) ? this.get('panelNode').get('children') : null,
             tabview = this;
 
         if (tabs) { // add classNames and fill in Tab fields from markup when possible
@@ -277,16 +134,15 @@ var _queries = Y.TabviewBase._queries,
             contentBox.all(_queries.tabPanel).addClass(_classNames.tabPanel);
 
             tabs.each(function(node, i) {
-                var panelNode = panels.item(i);
+                var panelNode = (panels) ? panels.item(i) : null;
                 tabview.add({
                     boundingBox: node,
                     contentBox: node.one(DOT + _classNames.tabLabel),
                     label: node.one(DOT + _classNames.tabLabel).get('text'),
-                    content: panelNode ? panelNode.get('innerHTML') : null
+                    panelNode: panelNode
                 });
             });
         }
-
     }
 }, {
 
@@ -298,10 +154,39 @@ var _queries = Y.TabviewBase._queries,
             value: 'Tab'
         },
 
+        listNode: {
+            setter: function(node) {
+                node = Y.one(node);
+                if (node) {
+                    node.addClass(_classNames.tabviewList);
+                }
+                return node;
+            },
+
+            valueFn: '_defListNodeValueFn'
+        },
+
+        panelNode: {
+            setter: function(node) {
+                node = Y.one(node);
+                if (node) {
+                    node.addClass(_classNames.tabviewPanel);
+                }
+                return node;
+            },
+
+            valueFn: '_defPanelNodeValueFn'
+        },
+
         tabIndex: {
             value: null
             //validator: '_validTabIndex'
         }
+    },
+
+    HTML_PARSER: {
+        listNode: _queries.tabviewList,
+        panelNode: _queries.tabviewPanel
     }
 });
 
@@ -309,7 +194,6 @@ Y.TabView = TabView;
 var Lang = Y.Lang,
     _queries = Y.TabviewBase._queries,
     _classNames = Y.TabviewBase._classNames,
-    _isGeckoIEWin = ((Y.UA.gecko || Y.UA.ie) && navigator.userAgent.indexOf("Windows") > -1),
     getClassName = Y.ClassNameManager.getClassName;
 
 /**
@@ -356,16 +240,7 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
         anchor.get('parentNode').set('role', 'presentation');
  
  
-        //  Remove the "href" attribute from the anchor element to
-        //  prevent JAWS and NVDA from reading the value of the "href"
-        //  attribute when the anchor is focused
- 
-        if (_isGeckoIEWin) {
-            anchor.removeAttribute('href');
-        }
- 
         //  Apply the ARIA roles, states and properties to each panel
- 
         panel.setAttrs({
             role: 'tabpanel',
             'aria-labelledby': id
@@ -389,20 +264,21 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
     },
 
     _renderPanel: function() {
-        this.get('parent').get('contentBox')
-            .one(_queries.tabviewPanel).appendChild(this.get('panelNode'));
+        this.get('parent').get('panelNode')
+            .appendChild(this.get('panelNode'));
     },
 
     _add: function() {
-        var parentNode = this.get('parent').get('contentBox'),
-            list = parentNode.one(_queries.tabviewList),
-            tabviewPanel = parentNode.one(_queries.tabviewPanel);
+        var parent = this.get('parent').get('contentBox'),
+            list = parent.get('listNode'),
+            panel = parent.get('panelNode');
+
         if (list) {
             list.appendChild(this.get('boundingBox'));
         }
 
-        if (tabviewPanel) {
-            tabviewPanel.appendChild(this.get('panelNode'));
+        if (panel) {
+            panel.appendChild(this.get('panelNode'));
         }
     },
     
@@ -436,21 +312,30 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
         return content;
     },
 
+    // find panel by ID mapping from label href
     _defPanelNodeValueFn: function() {
-        var id,
-            href = this.get('contentBox').get('href') || '',
+        var href = this.get('contentBox').get('href') || '',
+            parent = this.get('parent'),
+            hashIndex = href.indexOf('#'),
             panel;
 
-        if (href.charAt(0) === '#') {
-            id = href.substr(1); 
+        href = href.substr(hashIndex);
+
+        if (href.charAt(0) === '#') { // in-page nav, find by ID
             panel = Y.one(href);
-        } else {
-            id = Y.guid();
+            if (panel) {
+                panel.addClass(_classNames.tabPanel);
+            }
         }
 
-        if (!panel) {
+        // use the one found by id, or else try matching indices
+        if (!panel && parent) {
+            panel = parent.get('panelNode')
+                    .get('children').item(this.get('index'));
+        }
+
+        if (!panel) { // create if none found
             panel = Y.Node.create(this.PANEL_TEMPLATE);
-            panel.set('id', id);
         }
         return panel;
     }
@@ -488,6 +373,13 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
          * @type Y.Node
          */
         panelNode: {
+            setter: function(node) {
+                node = Y.one(node);
+                if (node) {
+                    node.addClass(_classNames.tabPanel);
+                }
+                return node;
+            },
             valueFn: '_defPanelNodeValueFn'
         },
         
@@ -507,4 +399,4 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
 });
 
 
-}, '3.1.0' ,{requires:['substitute', 'node-focusmanager', 'tabview-base', 'widget', 'widget-parent', 'widget-child']});
+}, '3.2.0' ,{requires:['substitute', 'node-pluginhost', 'node-focusmanager', 'tabview-base', 'widget', 'widget-parent', 'widget-child']});
