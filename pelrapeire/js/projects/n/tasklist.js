@@ -157,14 +157,37 @@ YUI.add('tasklist', function(Y) {
 	 * uri = the uri to submit form data to
 	 * server = the server object defined on this page
 	 */
-	Y.hokulea.NewTaskForm = function(config) {
-		this.config = config;
-		this.visible = false;
+	function NewTaskForm (config) {
+		NewTaskForm.superclass.constructor.apply(this, arguments);
 	};
-	Y.hokulea.NewTaskForm.prototype = {
-		_addSubmitHandler: function(Y) {
+	
+	NewTaskForm.NAME = 'newtaskform';
+	
+	NewTaskForm.ATTRS = {
+		root: {
+			readOnly: true
+		},
+		server: {
+			readOnly: true
+		},
+		visible: {
+			readOnly: true
+		}
+	};
+	
+	Y.extend (NewTaskForm, Y.Base, {
+
+	    initializer : function(cfg) {
+			if (!cfg || !cfg.root || !cfg.server) {
+				Y.fail("a configuration object containing the attributes 'root', 'server' must be provided");
+			}
+			this._set('root', cfg.root);
+			this._set('server', cfg.server);
+			this._set('visible', false);
+		},	
+		_addSubmitHandler: function() {
 			var req = {
-				sourceForm:	this.config.root.one('#newTaskForm')
+				sourceForm:	this.get('root').one('#newTaskForm')
 				};
 			var that = this;
 			Y.one('#newTaskSubmitter').on("click", function() {
@@ -172,13 +195,13 @@ YUI.add('tasklist', function(Y) {
 					that.destroy();
 				});
 		},
-		_addCancelHandler: function(Y) {
+		_addCancelHandler: function() {
 			var that = this;
 			var nodAnchor = Y.one("#newTaskCanceler").on('click', function() {
 				that.destroy();
 			});
 		},
-		_buildFormHtml: function(Y) {
+		_buildFormHtml: function() {
 			var nodNewTask = Y.Node.create(
 				'<form id="newTaskForm" >' +
 					'<label for="title">title:</label>' +
@@ -198,10 +221,10 @@ YUI.add('tasklist', function(Y) {
 				'</form>');
 			return nodNewTask;
 		},
-		show : function(Y) {
-			if (this.visible == false) {
+		show : function() {
+			if (this.get('visible') == false) {
 				var nodNewTask = this._buildFormHtml(Y);
-				var nodTasks = this.config.root;
+				var nodTasks = this.get('root');
 				if (nodTasks.hasChildNodes()) {
 					nodTasks.prepend(nodNewTask);
 				} else {
@@ -210,17 +233,18 @@ YUI.add('tasklist', function(Y) {
 				
 				this._addSubmitHandler(Y);
 				this._addCancelHandler(Y);
-				this.visible = true;
+				this._set('visible', true);
 				nodNewTask.one('#title').focus();
 			}
 		},
 		destroy: function() {
-			this.config.root.one('#newTaskForm').remove();
-			this.visible = false;
+			this.get('root').one('#newTaskForm').remove();
+			this._set('visible', false);
 		}
 	
-	};
+	});
 	
 	Y.namespace('hokulea').TaskList = TaskList;
+	Y.namespace('hokulea').NewTaskForm = NewTaskForm;
 
 }, '0.1', {requires: ['base','task']});
