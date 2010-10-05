@@ -58,8 +58,9 @@ YUI.add('tasklist', function(Y) {
 			}
 			var task = new Y.hokulea.Task({
 				node: node,
-				server: this.config.server
-			}, data);
+				server: this.config.server,
+				data: data
+			});
 			task.renderAsTaskTable(null, data);
 			this.tasks.push(task);
 		},

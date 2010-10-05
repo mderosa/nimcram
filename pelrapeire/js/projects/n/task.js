@@ -5,14 +5,14 @@ YUI.add('task', function(Y) {
 	 * A task definition.  The data associated with this task can be provided either as part of the 
 	 * markup from the server or as an argument to the constructor 
 	 * @param {Object} config
-	 * {node: Node, server: Server}
+	 * {node: Node, server: Server, data: Object}
 	 */
-	Y.hokulea.Task = function(config, rawData) {
+	Y.hokulea.Task = function(config) {
 		this.config = config;
-		if (!rawData) {
+		if (!config.data) {
 			this._initTaskData(config);
 		} else {
-			this.taskData = rawData;
+			this.taskData = config.data;
 		}
 		this._setOnExpandHandler(config);
 		this._setOnPriorityEventHandlers(config);

@@ -118,7 +118,7 @@
 							progress: 'proposed',
 							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}]
 						};
-						var t = new Y.hokulea.Task({node: nd, server: mockServer}, rawData);
+						var t = new Y.hokulea.Task({node: nd, server: mockServer, data: rawData});
 						t.renderAsTaskTable(null, rawData);
 						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.areEqual("TABLE", el.tagName);
