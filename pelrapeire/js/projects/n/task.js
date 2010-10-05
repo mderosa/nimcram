@@ -1,56 +1,81 @@
 
 YUI.add('task', function(Y) {
-	Y.namespace('hokulea');
+
 	/**
 	 * A task definition.  The data associated with this task can be provided either as part of the 
 	 * markup from the server or as an argument to the constructor 
 	 * @param {Object} config
 	 * {node: Node, server: Server, data: Object}
 	 */
-	Y.hokulea.Task = function(config) {
-		this.config = config;
-		if (!config.data) {
-			this._initTaskData(config);
-		} else {
-			this.taskData = config.data;
+	function Task (config) {
+		Task.superclass.constructor.apply(this, arguments);
+	}
+	
+	Task.NAME = 'task';
+	
+	Task.ATTRS = {
+		node: {
+			readOnly: true
+		},
+		server: {
+			readOnly: true
+		},
+		data: {
+			
 		}
-		this._setOnExpandHandler(config);
-		this._setOnPriorityEventHandlers(config);
-		this._makeNodeDragAndDroppable(config);
 	};
-	Y.hokulea.Task.prototype = {
+	
+	Y.extend (Task, Y.Base, {
+
+	    initializer : function(cfg) {
+			if (!cfg || !cfg.node || !cfg.server) {
+				Y.fail("a config object with the attributes 'node' and 'server' is required");
+			} else {
+				this._set('node', cfg.node);
+				this._set('server', cfg.server);
+			}
+			if (!cfg.data) {
+				this._initTaskData(cfg);
+			} else {
+				this._set('data', cfg.data);
+			}
+			this._setOnExpandHandler();
+			this._setOnPriorityEventHandlers();
+			this._makeNodeDragAndDroppable();
+	    },
+
 		_initTaskData : function(cfg) {
 			if (cfg.node && cfg.node.one) {
 				var dataNode = cfg.node.one('.rawData');
 				if (dataNode) {
-					this.taskData = Y.JSON.parse(dataNode.get('innerHTML'));
+					this._set('data', Y.JSON.parse(dataNode.get('innerHTML')));
 					dataNode.remove();
 				}
 			}
 		},
-		_setOnExpandHandler: function(cfg) {
-			if (cfg.node && cfg.node.all) {
-				var ns = cfg.node.all('td > a.collapsible');
+		_setOnExpandHandler: function() {
+			if (this.get('node') && this.get('node').all) {
+				var ns = this.get('node').all('td > a.collapsible');
 				Y.on('click', this.renderAsTaskForm, ns, this);
 			}
 		},
 		getId: function() {
-			var arrIdAndRev = this.config.node.get("id").split(".");
+			var arrIdAndRev = this.get('node').get("id").split(".");
 			return arrIdAndRev[0];
 		},
 		getRevision: function() {
-			var arrIdAndRev = this.config.node.get("id").split(".");
+			var arrIdAndRev = this.get('node').get("id").split(".");
 			return arrIdAndRev[1];
 		},
 		isInFormMode: function() {
-			return this.config.node.get('tagName') == 'FORM';
+			return this.get('node').get('tagName') == 'FORM';
 		},
 		isInTableMode: function() {
-			return this.config.node.get('tagName') == 'TABLE';
+			return this.get('node').get('tagName') == 'TABLE';
 		},
 		isValid: function() {
 			var valid = this.isInTableMode() || this.isInFormMode();
-			var id = this.config.node.get("id");
+			var id = this.get('node').get("id");
 			return valid && /[0-9a-f]{32}\.\d+-[0-9a-f]{32}/.test(id);
 		},
 		/**
@@ -69,17 +94,17 @@ YUI.add('task', function(Y) {
 				}
 				obj._id = this.getId();
 				obj._rev = this.getRevision();
-				nodBucket = this.config.node.ancestor('.bucket');
+				nodBucket = this.get('node').ancestor('.bucket');
 				obj.progress = nodBucket.get('id');
 				var priority = 0;
-				var ns = this.config.node.all('td.priority img');
+				var ns = this.get('node').all('td.priority img');
 				ns.each(function(n){
 					if (n.get('src').match(/star-on.gif/)) {
 						priority++;
 					}
 				});
 				if (action == "update-progress") {
-					obj.originalProgress = this.taskData.progress;
+					obj.originalProgress = this.get('data').progress;
 				} else {
 					obj.priority = priority == 0 ? null : priority;
 				}
@@ -93,7 +118,7 @@ YUI.add('task', function(Y) {
 		 * @param {Object} taskData 一个完整的后台对象
 		 */
 		renderAsTaskForm : function(e) {
-			var id = this.taskData._id + '.' + this.taskData._rev;
+			var id = this.get('data')._id + '.' + this.get('data')._rev;
 			var checked = function(taskData, ctrlValue) {
 				if (taskData.deliversUserFunctionality === ctrlValue) {
 					return '" checked="checked" ';
@@ -107,35 +132,35 @@ YUI.add('task', function(Y) {
 					'<input type="hidden" name="_rev" value="' + this.getRevision() + '" />' +
 					'<label for="title">title:</label>' +
 					'<input type="text" id="title" name="title" class="fill" ' + 'value="' +
-						this.taskData.title + '" />' +
+						this.get('data').title + '" />' +
 					'<label for="namespace">namespace:</label>' +
-					this._renderTaskFormNamespaces(this.taskData.namespace) +
+					this._renderTaskFormNamespaces(this.get('data').namespace) +
 					'<label for="specification">specification:</label>' +
 					'<textarea id="specification" name="specification" class="fill">' +
-						this.taskData.specification +
+						this.get('data').specification +
 					'</textarea>' +
 					'<fieldset><legend>delivers end user functionality</legend>' +
 						'<label>yes</label>' +
-						'<input type="radio" name="deliversUserFunctionality" value="true" ' + checked(this.taskData, true) + '/>' +
+						'<input type="radio" name="deliversUserFunctionality" value="true" ' + checked(this.get('data'), true) + '/>' +
 						'<label>no</label>' +
-						'<input type="radio" name="deliversUserFunctionality" value="false" ' + checked(this.taskData, false) + '/>' +
+						'<input type="radio" name="deliversUserFunctionality" value="false" ' + checked(this.get('data'), false) + '/>' +
 					'</fieldset>' +
 					'<button class="updating" type="button">update</button>' +
 					'&nbsp;&nbsp;<a class="deleting" href="#">collapse</a>' +
 				'</form>');
-			this.config.node.replace(frmNode);
-			this.config.node = frmNode;
+			this.get('node').replace(frmNode);
+			this._set('node', frmNode);
 			
-			var collapse = this.config.node.one('.deleting');
-			Y.on('click', this.renderAsTaskTable, collapse, this, this.taskData);
-			var updating = this.config.node.one('.updating');
+			var collapse = this.get('node').one('.deleting');
+			Y.on('click', this.renderAsTaskTable, collapse, this, this.get('data'));
+			var updating = this.get('node').one('.updating');
 			Y.on('click', 
 				function(e, obj) {
-					this.config.server.updateAppendTaskFromForm(obj);
+					this.get('server').updateAppendTaskFromForm(obj);
 				},
 				updating, 
 				this,
-				{id: this.getId(), sourceForm: this.config.node});
+				{id: this.getId(), sourceForm: this.get('node')});
 		},
 		_renderTaskFormNamespaces: function(arrNs) {
 			var html = "";
@@ -153,7 +178,7 @@ YUI.add('task', function(Y) {
 			return html;
 		},
 		renderAsTaskTable: function(e, taskData) {
-			this.taskData = taskData;
+			this._set('data', taskData);
 			var id = taskData._id + '.' + taskData._rev;
 			var usrFunc = taskData.deliversUserFunctionality ? "usr-func" : "";
 			var fnTd3 = (taskData.progress == 'proposed') ? this._renderTaskTablePriorities : this._renderTaskTableDaysActive;
@@ -167,8 +192,8 @@ YUI.add('task', function(Y) {
 					'</tr>' + 
 					'</tbody>' + 
 				'</table>');
-			this.config.node.replace(tblNode);
-			this.config.node = tblNode;
+			this.get('node').replace(tblNode);
+			this._set('node', tblNode);
 			
 			this._setOnExpandHandler(this.config);
 			this._setOnPriorityEventHandlers(this.config);
@@ -203,9 +228,9 @@ YUI.add('task', function(Y) {
 			var diff = Math.floor((dtEnd.getTime() - dtStart.getTime()) / (1000 * 60 * 60 * 24));
 			return '<td class="statistic">' + diff + '</td>';
 		},
-		_setOnPriorityEventHandlers : function(cfg) {
-			if (this.taskData.progress == 'proposed') {
-				Y.delegate('click', this._onPriorityDisplayClick, cfg.node, 'img', this);
+		_setOnPriorityEventHandlers : function() {
+			if (this.get('data').progress == 'proposed') {
+				Y.delegate('click', this._onPriorityDisplayClick, this.get('node'), 'img', this);
 			}
 		},	
 		_onPriorityDisplayClick: function(e) {
@@ -217,19 +242,21 @@ YUI.add('task', function(Y) {
 					imgName = '/img/star-off.gif';
 				}
 			});
-			this.config.server.updateAppendTask({
+			this.get('server').updateAppendTask({
 				task: this
 				});
 		},
-		_makeNodeDragAndDroppable: function(cfg) {
+		_makeNodeDragAndDroppable: function() {
 			new Y.DD.Drag({
-		    		node: cfg.node,
+		    		node: this.get('node'),
 		    		target: {
 		    			border: '0 0 0 20'
 		    		}
 		    	}).plug(Y.Plugin.DDProxy, {moveOnEnd: false});
-			new Y.DD.Drop({node: cfg.node});
+			new Y.DD.Drop({node: this.get('node')});
 		}
-	};
-	
-}, '0.1');
+	});
+
+	Y.namespace('hokulea').Task = Task;
+		
+}, '0.1', {requires: ['base']});

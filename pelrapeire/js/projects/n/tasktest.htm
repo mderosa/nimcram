@@ -28,6 +28,7 @@
 					'dd-drop', 'dd-proxy', 'node-base', 
 					'io', 'event', 'json-parse', 
 					'querystring-stringify-simple', 'task', function (Y) {
+						
 				var mockServer = {
 					createTask: function(obj) {
 						Y.Assert.isNotUndefined(obj.uri);
@@ -42,7 +43,8 @@
 						Y.Assert.isNotUndefined(obj.id);
 						this.called = 'getTask';
 					}
-				}
+				};
+				
 				var testcase = new Y.Test.Case({
 					name: "task test",
 					
@@ -162,7 +164,7 @@
 						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						Y.Assert.isTrue(t.isValid());
 						
-						t.taskData = {
+						var taskData = {
 							_id: '34c9c3adade7da214b70f96ea1418abc',
 							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
 							type: 'task',
@@ -178,7 +180,7 @@
 							taskStartDate: [2010, 8, 27, 9, 30, 12],
 							taskCompleteDate: null
 						};
-						var html = t._renderTaskTableDaysActive(t.taskData);
+						var html = t._renderTaskTableDaysActive(taskData);
 						var matches = html.match(/<td class="statistic">\d+</);
 						Y.Assert.isNotNull(matches, "should have a whole number in the td element");
 					},
@@ -189,9 +191,9 @@
 						var nd = Y.one(el);
 						var t = new Y.hokulea.Task({node: nd, server: mockServer});
 						Y.Assert.isTrue(t.isValid());
-						Y.Assert.isNotNull(t.taskData);
-						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.taskData._id);
-						Y.Assert.areEqual('proposed', t.taskData.progress);
+						Y.Assert.isNotNull(t.get('data'));
+						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.get('data')._id);
+						Y.Assert.areEqual('proposed', t.get('data').progress);
 					},
 					testPriorityDisplayHandler: function() {
 						var id = 'f6c73e27c5e4258c8457e8bfaf1a79c5.1-b81de00d061621947aac747f794b01af';

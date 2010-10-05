@@ -93,7 +93,7 @@ YUI.add('tasklist', function(Y) {
 			console.log(index);
 			if (index != null) {
 				var task = this.tasks.splice(index, 1)[0];
-				task.config.node.remove();
+				task.get('node').remove();
 				return task;
 			} else {
 				return null;

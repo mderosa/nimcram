@@ -21,6 +21,22 @@
 					'io', 'event', 'json-parse', 
 					'querystring-stringify-simple', 'server', 'task', 
 					'tasklist', function (Y) {
+						
+				var mockServer = {
+					createTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.uri);
+						Y.Assert.isNotUndefined(obj.sourceForm);
+						this.called = 'createTask';
+					},
+					updateAppendTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.task);
+						this.called = 'updateAppendTask';
+					},
+					getTask: function(obj) {
+						Y.Assert.isNotUndefined(obj.id);
+						this.called = 'getTask';
+					}
+				};						
 				
 				var testcase = new Y.Test.Case({
 					name: "home test",
@@ -103,7 +119,7 @@
 						var taskList = new Y.hokulea.TaskList({
 							root: Y.one('#testBucket'),
 							dropSelector: 'div.bmrcp-head',
-							server: null
+							server: mockServer
 						});
 						var task = taskList.getTask('34c9c3adade7da214b70f96ea1418abc');
 						Y.Assert.isNotNull(task);
