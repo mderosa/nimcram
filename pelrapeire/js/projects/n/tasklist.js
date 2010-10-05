@@ -1,6 +1,6 @@
 
 YUI.add('tasklist', function(Y) {
-	Y.namespace('hokulea');
+	
 	
 	/**
 	 * This object represents a listing of tasks
@@ -10,23 +10,59 @@ YUI.add('tasklist', function(Y) {
 	 * dropSelector = optional parameter that we can supply if we want nodes other than the tasks to be droppable
 	 * dragSelector = optional parameter that we can supply if we want nodes other than the tasks to be draggable
 	 */
-	Y.hokulea.TaskList = function(config) {
-		this.config = config;
-		this.tasks = [];
-		this._initTasks(config);
-		this._makeAuxNodesDraggable(config);
-		this._makeAuxNodesDroppable(config);
+	function TaskList (config) {
+		TaskList.superclass.constructor.apply(this, arguments);
 	};
-	Y.hokulea.TaskList.prototype = {
-		_initTasks: function(cfg) {
-			var ns = cfg.root.all('table.task');
+	
+	TaskList.NAME = 'tasklist';
+	
+	TaskList.ATTRS = {
+		name: {
+			readOnly: true
+		},
+		root: {
+			readOnly: true
+		},
+		dragSelector: {
+			readOnly: true
+		},
+		dropSelector: {
+			readOnly: true
+		},
+		server: {
+			readOnly: true
+		},
+		tasks: {
+			readOnly: true
+		}
+	};
+	
+	Y.extend (TaskList, Y.Base, {
+
+	    initializer : function(cfg) {
+			if (!cfg || !cfg.name || !cfg.root || !cfg.server) {
+				Y.fail("a configuration object containing the attributes 'name', 'root', 'server' must be provided");
+			}
+			this._set('tasks', []);
+			this._set('name', cfg.name);
+			this._set('root', cfg.root);
+			this._set('server', cfg.server);
+			if (cfg.dragSelector) {this._set('dragSelector', cfg.dragSelector);}
+			if (cfg.dropSelector) {this._set('dropSelector', cfg.dropSelector);}
+			this._initTasks();
+			this._makeAuxNodesDraggable();
+			this._makeAuxNodesDroppable();
+		},
+
+		_initTasks: function() {
+			var ns = this.get('root').all('table.task');
 			ns.each(function(val, idx) {
-				this.tasks.push(new Y.hokulea.Task({node: val, server: cfg.server}));
+				this.get('tasks').push(new Y.hokulea.Task({node: val, server: this.get('server')}));
 			}, this);
 		},
-		_makeAuxNodesDraggable : function(cfg) {
-			if (cfg.dragSelector) {
-				var ns = cfg.root.all(cfg.dragSelector);
+		_makeAuxNodesDraggable : function() {
+			if (this.get('dragSelector')) {
+				var ns = this.get('root').all(this.get('dragSelector'));
 				Y.each(ns, function(v, k){
 					var drag = new Y.DD.Drag({
 						node: v,
@@ -39,9 +75,9 @@ YUI.add('tasklist', function(Y) {
 				});
 			}
 		},
-		_makeAuxNodesDroppable: function(cfg) {
-			if (cfg.dropSelector) {
-				var ns = cfg.root.all(cfg.dropSelector);
+		_makeAuxNodesDroppable: function() {
+			if (this.get('dropSelector')) {
+				var ns = this.get('root').all(this.get('dropSelector'));
 				Y.each(ns, function(v, k) {
 					var drop = new Y.DD.Drop({node: v});   
 				});
@@ -50,7 +86,7 @@ YUI.add('tasklist', function(Y) {
 		
 		addNewTask: function(data) {
 			var node = Y.Node.create('<table id="' + data._id + '.' + data._rev + '" ' + 'class="task"></table>');
-			var nodTasks = this.config.root.one('div.tasks');
+			var nodTasks = this.get('root').one('div.tasks');
 			if (nodTasks.hasChildNodes()) {
 				nodTasks.prepend(node);
 			} else {
@@ -58,11 +94,11 @@ YUI.add('tasklist', function(Y) {
 			}
 			var task = new Y.hokulea.Task({
 				node: node,
-				server: this.config.server,
+				server: this.get('server'),
 				data: data
 			});
 			task.renderAsTaskTable(null, data);
-			this.tasks.push(task);
+			this.get('tasks').push(task);
 		},
 		/**
 		 * getTask :: String -> Task
@@ -70,7 +106,7 @@ YUI.add('tasklist', function(Y) {
 		 */
 		getTask: function(id) {
 			var task = null;
-			Y.each(this.tasks, function(val, idx) {
+			Y.each(this.get('tasks'), function(val, idx) {
 				if (val.getId() == id) {
 					task = val; 
 					return;
@@ -84,7 +120,7 @@ YUI.add('tasklist', function(Y) {
 		 */
 		removeTask: function (id) {
 			var index = null;
-			Y.each(this.tasks, function (val, idx) {
+			Y.each(this.get('tasks'), function (val, idx) {
 				if (val.getId() == id) {
 					index = idx;
 					return;
@@ -92,7 +128,7 @@ YUI.add('tasklist', function(Y) {
 			});
 			console.log(index);
 			if (index != null) {
-				var task = this.tasks.splice(index, 1)[0];
+				var task = this.get('tasks').splice(index, 1)[0];
 				task.get('node').remove();
 				return task;
 			} else {
@@ -111,7 +147,7 @@ YUI.add('tasklist', function(Y) {
 			}
 			return task;
 		}
-	};
+	});
 	
 	/**
 	 * This object represents a form which can be used to create a new task
@@ -184,5 +220,7 @@ YUI.add('tasklist', function(Y) {
 		}
 	
 	};
+	
+	Y.namespace('hokulea').TaskList = TaskList;
 
-}, '0.1', {requires: ['task']});
+}, '0.1', {requires: ['base','task']});

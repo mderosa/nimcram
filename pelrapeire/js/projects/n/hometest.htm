@@ -89,9 +89,11 @@
 					//and dropable
 					testShouldBeAbleToCreateANewTask: function() {
 						var proposedTasks = new Y.hokulea.TaskList({
+							name: 'proposed',
 							root: Y.one('#proposed'),
 							dragSelector: 'div.tasks table.task',
-							dropSelector: 'table.task, div.bmrcp-head'
+							dropSelector: 'table.task, div.bmrcp-head',
+							server: mockServer
 							});
 						
 						var initialCount = Y.one('#proposed div.tasks').get('children').size();
@@ -117,6 +119,7 @@
 					 */
 					testGetTaskFromATaskList: function() {
 						var taskList = new Y.hokulea.TaskList({
+							name: 'teste',
 							root: Y.one('#testBucket'),
 							dropSelector: 'div.bmrcp-head',
 							server: mockServer
