@@ -109,9 +109,9 @@
 						);
 						var ns = Y.one('#proposed div.tasks').get('children');
 						var finalCount = ns.size();
-						Y.Assert.areEqual(initialCount + 1, finalCount);
-						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-drop'));
-						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-draggable'));
+						Y.Assert.areEqual(initialCount + 1, finalCount, 'the number of children should be incremented by one');
+						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-drop'), 'the newly added node should be dropable');
+						Y.Assert.isTrue(ns.item(0).test('.yui3-dd-draggable', 'the newly added node should be draggable'));
 					},
 
 					/**

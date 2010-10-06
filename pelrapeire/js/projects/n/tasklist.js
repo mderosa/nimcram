@@ -57,7 +57,7 @@ YUI.add('tasklist', function(Y) {
 		_initTasks: function() {
 			var ns = this.get('root').all('table.task');
 			ns.each(function(val, idx) {
-				this.get('tasks').push(new Y.hokulea.Task({node: val, server: this.get('server')}));
+				this.get('tasks').push(new Y.hokulea.Task({srcNode: val, boundingBox: val, server: this.get('server'), render: true}));
 			}, this);
 		},
 		_makeAuxNodesDraggable : function() {
@@ -84,6 +84,10 @@ YUI.add('tasklist', function(Y) {
 			}
 		},
 		
+		/**
+		 * addNewTask :: Object -> ()
+		 * adds a new task to a task list and renders it as a task table
+		 */
 		addNewTask: function(data) {
 			var node = Y.Node.create('<table id="' + data._id + '.' + data._rev + '" ' + 'class="task"></table>');
 			var nodTasks = this.get('root').one('div.tasks');
@@ -93,9 +97,11 @@ YUI.add('tasklist', function(Y) {
 				nodTasks.appendChild(node);
 			}
 			var task = new Y.hokulea.Task({
-				node: node,
+				srcNode: node,
+				boundingBox: node,
 				server: this.get('server'),
-				data: data
+				data: data,
+				render: true
 			});
 			task.renderAsTaskTable(null, data);
 			this.get('tasks').push(task);
@@ -191,7 +197,7 @@ YUI.add('tasklist', function(Y) {
 				};
 			var that = this;
 			Y.one('#newTaskSubmitter').on("click", function() {
-					that.config.server.createTaskFromForm(req);	
+					that.get('server').createTaskFromForm(req);	
 					that.destroy();
 				});
 		},

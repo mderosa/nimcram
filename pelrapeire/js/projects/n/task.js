@@ -5,7 +5,7 @@ YUI.add('task', function(Y) {
 	 * A task definition.  The data associated with this task can be provided either as part of the 
 	 * markup from the server or as an argument to the constructor 
 	 * @param {Object} config
-	 * {node: Node, server: Server, data: Object}
+	 * {srcNode: Node, server: Server, data: Object}
 	 */
 	function Task (config) {
 		Task.superclass.constructor.apply(this, arguments);
@@ -25,32 +25,83 @@ YUI.add('task', function(Y) {
 		}
 	};
 	
-	Y.extend (Task, Y.Base, {
+	Task.HTML_PARSER = {
+		data: function(srcNode) {
+			var data = null;
+			var nd = srcNode.one('.rawData');
+			if (nd) {
+				data = Y.JSON.parse(nd.get('innerHTML'));
+			}
+			return data;
+		}
+	};
+	
+	Task.BOUNDING_TEMPLATE= '<table id="{_id}.{_rev}" class="task {clsUserFunc}"></table>';
+
+	Task.CONTENT_TEMPLATE = 
+		'<tbody>' + 
+			'<tr>' + 
+				'<td><a href="#" class="collapsible">+</a></td>' + 
+				'<td class="title">{title}</td>' + 
+			'</tr>' + 
+		'</tbody>';
+	Task.PROPOSED_TEMPLATE = 
+		'<table id="{_id}.{_rev}" class="task {clsUserFunc}">' +
+			'<tbody>' + 
+				'<tr>' + 
+					'<td><a href="#" class="collapsible">+</a></td>' + 
+					'<td class="title">{title}</td>' + 
+					'<td class="priority">' + 
+						'<img title="low" src="/img/star-{onOff0}.gif" class="clickable">' + 
+						'<img title="medium" src="/img/star-{onOff1}.gif" class="clickable">' + 
+						'<img title="high" src="/img/star-{onOff2}.gif" class="clickable">' + 
+					'</td>'
+				'</tr>' + 
+			'</tbody>' +
+		'</table>';	
+	Task.INPROGRESS_TEMPLATE = 
+		'<table id="{_id}.{_rev}" class="task {clsUserFunc}">' +
+			'<tbody>' + 
+				'<tr>' + 
+					'<td><a href="#" class="collapsible">+</a></td>' + 
+					'<td class="title">{title}</td>' + 
+					'<td class="statistic">{daysActive}</td>' +
+				'</tr>' + 
+			'</tbody>' +
+		'</table>';	
+
+	Y.extend (Task, Y.Widget, {
 
 	    initializer : function(cfg) {
-			if (!cfg || !cfg.node || !cfg.server) {
-				Y.fail("a config object with the attributes 'node' and 'server' is required");
-			} else {
-				this._set('node', cfg.node);
-				this._set('server', cfg.server);
-			}
+			if (!cfg || !cfg.boundingBox || !cfg.server) {
+				Y.fail("a config object with the attributes 'boundingBox' and 'server' is required");
+			} 
 			if (!cfg.data) {
-				this._initTaskData(cfg);
-			} else {
-				this._set('data', cfg.data);
+				Y.fail("a 'data' attribute is not available during initialization this must be provided  " +
+					"either directly via a 'data' attribute in the configuration object or secondly through " +
+					"a 'srcNode' attribute");
 			}
+			this._set('node', cfg.boundingBox);
+			this._set('server', cfg.server);
+			this._set('data', cfg.data);
+	    },
+
+		renderUI : function() {
+			this._removeRawDataNode();					
+		},
+		bindUI: function () {
 			this._setOnExpandHandler();
 			this._setOnPriorityEventHandlers();
 			this._makeNodeDragAndDroppable();
-	    },
-
-		_initTaskData : function(cfg) {
-			if (cfg.node && cfg.node.one) {
-				var dataNode = cfg.node.one('.rawData');
-				if (dataNode) {
-					this._set('data', Y.JSON.parse(dataNode.get('innerHTML')));
-					dataNode.remove();
-				}
+		},
+		syncUI: function () {
+			
+		},
+		
+		_removeRawDataNode : function() {
+			var ndRawData = this.get('node').one('.rawData');
+			if (ndRawData) {
+				ndRawData.remove();
 			}
 		},
 		_setOnExpandHandler: function() {
@@ -179,19 +230,23 @@ YUI.add('task', function(Y) {
 		},
 		renderAsTaskTable: function(e, taskData) {
 			this._set('data', taskData);
-			var id = taskData._id + '.' + taskData._rev;
-			var usrFunc = taskData.deliversUserFunctionality ? "usr-func" : "";
-			var fnTd3 = (taskData.progress == 'proposed') ? this._renderTaskTablePriorities : this._renderTaskTableDaysActive;
-			var tblNode = Y.Node.create(
-				'<table id="' + id + '" class="task ' + usrFunc + ' yui3-dd-drop yui3-dd-draggable">' +
-					'<tbody>' + 
-					'<tr>' + 
-						'<td><a href="#" class="collapsible">+</a></td>' + 
-						'<td class="title">' + taskData.title + '</td>' + 
-						fnTd3(taskData) + 
-					'</tr>' + 
-					'</tbody>' + 
-				'</table>');
+			var tmplt;
+			var tmpltMap = {
+				_id: taskData._id,
+				_rev: taskData._rev,
+				clsUserFunc: taskData.deliversUserFunctionality ? "usr-func" : "",
+				title: taskData.title
+			};
+			if (taskData.progress == 'proposed') {
+				tmplt = Task.PROPOSED_TEMPLATE;
+				tmpltMap.onOff0 = taskData.priority >= 1 ? 'on' : 'off';
+				tmpltMap.onOff1 = taskData.priority >= 2 ? 'on' : 'off';
+				tmpltMap.onOff2 = taskData.priority == 3 ? 'on' : 'off';
+			} else {
+				tmplt = Task.INPROGRESS_TEMPLATE;
+				tmpltMap.daysActive = _taskTableDaysActive(taskData);
+			}
+			var tblNode = Y.Node.create(Y.substitute(tmplt, tmpltMap));
 			this.get('node').replace(tblNode);
 			this._set('node', tblNode);
 			
@@ -199,23 +254,11 @@ YUI.add('task', function(Y) {
 			this._setOnPriorityEventHandlers(this.config);
 			this._makeNodeDragAndDroppable(this.config);
 		},
-		_renderTaskTablePriorities: function(taskData) {
-			var onOff = [0,0,0];
-			for (var i = 0; i < taskData.priority; i++) {
-				onOff[i] = 1;
-			}
-			var temp = '<td class="priority">' + 
-							'<img title="low" src="/img/star-' + (onOff[0] ? 'on' : 'off') + '.gif" class="clickable">' + 
-							'<img title="medium" src="/img/star-' + (onOff[1] ? 'on' : 'off') + '.gif" class="clickable">' + 
-							'<img title="high" src="/img/star-' + (onOff[2] ? 'on' : 'off') + '.gif" class="clickable">' + 
-						'</td>';
-			return temp;
-		},
 		/**
 		 * calculates the number of days a task has been active
 		 * @param {Object} taskData
 		 */
-		_renderTaskTableDaysActive: function(taskData) {
+		_taskTableDaysActive: function(taskData) {
 			var d0 = taskData.taskStartDate;
 			var d1 = taskData.taskCompleteDate; 
 			var dtStart = new Date(Date.UTC(d0[0], d0[1] - 1, d0[2], d0[3], d0[4], d0[5], 0));
@@ -226,7 +269,7 @@ YUI.add('task', function(Y) {
 				dtEnd = new Date();
 			}
 			var diff = Math.floor((dtEnd.getTime() - dtStart.getTime()) / (1000 * 60 * 60 * 24));
-			return '<td class="statistic">' + diff + '</td>';
+			return diff;
 		},
 		_setOnPriorityEventHandlers : function() {
 			if (this.get('data').progress == 'proposed') {
@@ -259,4 +302,4 @@ YUI.add('task', function(Y) {
 
 	Y.namespace('hokulea').Task = Task;
 		
-}, '0.1', {requires: ['base']});
+}, '0.1', {requires: ['widget', 'substitute']});

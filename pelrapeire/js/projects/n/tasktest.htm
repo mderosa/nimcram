@@ -27,7 +27,8 @@
 			}).use('node-event-simulate', 'test','console', 
 					'dd-drop', 'dd-proxy', 'node-base', 
 					'io', 'event', 'json-parse', 
-					'querystring-stringify-simple', 'task', function (Y) {
+					'querystring-stringify-simple', 'task', 'widget',
+					'substitute', function (Y) {
 						
 				var mockServer = {
 					createTask: function(obj) {
@@ -56,7 +57,10 @@
 					testSerializationOfTaskObject: function() {
 						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
 						var nd = Y.one(el);
-						var t = new Y.hokulea.Task({node: nd, server: mockServer});
+						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
+						var ndRawData = nd.one('.rawData');
+						Y.Assert.isNull(ndRawData);
+						
 						var json = t.serialize("update-progress");
 						Y.Assert.areEqual("64dca73821060386b52188b6cc8e5a89", json._id, 'expect and id');
 						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev, 'expect a rev');
@@ -70,7 +74,7 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Y.hokulea.Task({node: nd, server: mockServer});
+						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(null, json.priority);
 						Y.Assert.areEqual('update-priority', json.action);
@@ -78,7 +82,7 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Y.hokulea.Task({node: nd, server: mockServer});
+						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(2, json.priority);
 						Y.Assert.areEqual(json._id, '34c9c3adade7da214b70f96ea1418abc');
@@ -92,7 +96,7 @@
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Y.hokulea.Task({node: nd, server: mockServer});
+						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						t.renderAsTaskForm();
 						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.areEqual("FORM", el.tagName);
@@ -120,48 +124,27 @@
 							progress: 'proposed',
 							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}]
 						};
-						var t = new Y.hokulea.Task({node: nd, server: mockServer, data: rawData});
+						var t = new Y.hokulea.Task({boundingBox: nd, server: mockServer, data: rawData, render: false});
 						t.renderAsTaskTable(null, rawData);
 						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.areEqual("TABLE", el.tagName);
 					}, 
 					testRenderTaskFormNamespaces: function() {
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abf.1-ca66e995fa34333d682f04a00e98c3cc');
-						var t = new Y.hokulea.Task({node: Y.one(el), server: mockServer});
+						var nd = Y.one(el);
+						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						var html = t._renderTaskFormNamespaces([{release: 'e662.indexer'}, {project: 'projectA.feature1'}]);
 						var matches = html.match(/release=e662.indexer/);
 						Y.Assert.isNotNull(matches);
 						matches = html.match(/project=projectA.feature1/);
 						Y.Assert.isNotNull(matches);
 					},
-					testRenderTaskTablePriorities: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abe.1-ca66e995fa34333d682f04a00e98c3cc');
-						var t = new Y.hokulea.Task({node: Y.one(el), server: mockServer});
-						var taskData = {
-							_id: '34c9c3adade7da214b70f96ea1418abe',
-							_rev: '1-ca66e995fa34333d682f04a00e98c3cc',
-							type: 'task',
-							title: 'a test form title',
-							specification: 'this is a test specification',
-							project: 'PicoMinMin',
-							solutionTeam: ['marc.derosa@gmail.com', 'micai@ebay.com'],
-							deliversUserFunctionality: true,
-							priority: null,
-							progress: 'proposed',
-							namespace: [{release: 'e662.indexer-shj-01'}, {project: 'project1.indexer'}]
-						};
-						var html = t._renderTaskTablePriorities(taskData);
-						var matches = html.match(/star-on.gif/);
-						Y.Assert.isNull(matches, "the priority is null so we dont want any stars 'on'");
-						matches = html.match(/off/);
-						Y.Assert.isNotNull(matches, "we should have three stars off");
-					},
 					//test _renderTaskTableDaysActive
 					testRenderTaskTableDaysActive: function() {
 						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abd.1-ca66e995fa34333d682f04a00e98c3cc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Y.hokulea.Task({node: nd, server: mockServer});
+						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						Y.Assert.isTrue(t.isValid());
 						
 						var taskData = {
@@ -180,16 +163,15 @@
 							taskStartDate: [2010, 8, 27, 9, 30, 12],
 							taskCompleteDate: null
 						};
-						var html = t._renderTaskTableDaysActive(taskData);
-						var matches = html.match(/<td class="statistic">\d+</);
-						Y.Assert.isNotNull(matches, "should have a whole number in the td element");
+						var n = t._taskTableDaysActive(taskData);
+						Y.Assert.areEqual(40, n, "should have a whole number in the td element");
 					},
 					testATaskShouldFullyInitializeOnStartup: function () {
 						var id = 'ff5e24a8b1351764edde8e98c74fc99d.7-e83166bf9a306826e1d2dbd4811e114e';
 						var el = document.getElementById(id);
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
-						var t = new Y.hokulea.Task({node: nd, server: mockServer});
+						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						Y.Assert.isTrue(t.isValid());
 						Y.Assert.isNotNull(t.get('data'));
 						Y.Assert.areEqual('ff5e24a8b1351764edde8e98c74fc99d', t.get('data')._id);
@@ -199,7 +181,7 @@
 						var id = 'f6c73e27c5e4258c8457e8bfaf1a79c5.1-b81de00d061621947aac747f794b01af';
 						var el = document.getElementById(id);
 						var nd = Y.one(el);
-						var t = new Y.hokulea.Task({node: nd, server: mockServer});
+						var t = new Y.hokulea.Task({srcNode: nd, boundingBox:nd, server: mockServer, render: true});
 						Y.Assert.isNotNull(t);
 						nd.one('#tpdh_low').simulate('click');
 						Y.Assert.areEqual('updateAppendTask', mockServer.called);
@@ -211,10 +193,13 @@
 						var id = 'a5ce4479660b9334deeb288eb5166f60.3-6db398380e045d2b6d208cddeca84979';
 						var el = document.getElementById(id);
 						var nd = Y.one(el);
-						var t = new Y.hokulea.Task({node: nd, server: mockServer});
+						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						t.renderAsTaskForm();
 						Y.Assert.areEqual('a5ce4479660b9334deeb288eb5166f60', t.getId());
-					}
+					},
+					/**
+					 * we should be able to create a task without 
+					 */
 					
 				});
 		

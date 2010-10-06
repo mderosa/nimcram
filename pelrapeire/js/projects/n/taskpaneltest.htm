@@ -62,6 +62,36 @@
 						Y.Assert.areEqual("1-d44f047f8b364777d96a8fa2b993de14", json._rev, 'expect a rev');
 						Y.Assert.areEqual("delivered", json.progress, 'expect a value of delivered');
 						Y.Assert.areEqual("update-progress", json.action, 'should find an action');
+					},
+					/**
+					 * a | a not E ls -> a : ls
+					 */
+					testAdditionOfTaskToAPanel: function() {
+						var ts = new TaskList({
+							name: 'proposed',
+							root: Y.one('#proposed'),
+							server: mockServer
+						});
+						var panel = new TaskPanel({
+							lists: [ts]
+						});
+						
+						
+					},
+					/**
+					 * a | a E ls -> Error a
+					 */
+					testAdditionOfTaskWithExisting: function () {
+						
+					},
+					/**
+					 * if the named list does not exist throw error
+					 */
+					testAdditionOfTaskToUnknownList: function () {
+						
+					},
+					testShouldNotBeAbleToAddANullTask: function () {
+						
 					}
 					
 				});
