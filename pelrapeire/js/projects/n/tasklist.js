@@ -55,9 +55,14 @@ YUI.add('tasklist', function(Y) {
 		},
 
 		_initTasks: function() {
+			var tasks = this.get('tasks');
 			var ns = this.get('root').all('table.task');
 			ns.each(function(val, idx) {
-				this.get('tasks').push(new Y.hokulea.Task({srcNode: val, boundingBox: val, server: this.get('server'), render: true}));
+				var task = new Y.hokulea.Task({srcNode: val, boundingBox: val, server: this.get('server'), render: true});
+				if (task.get('data').progress !== this.get('name')) {
+					Y.fail("the progress attribute for task in the list must match the list name");
+				}
+				tasks.push(task);
 			}, this);
 		},
 		_makeAuxNodesDraggable : function() {
@@ -89,6 +94,9 @@ YUI.add('tasklist', function(Y) {
 		 * adds a new task to a task list and renders it as a task table
 		 */
 		addNewTask: function(data) {
+			if (data.progress !== this.get('name')) {
+				throw new Error("mismatch between the tasks 'progress' attribute and the tasklist 'name' attribute");
+			}
 			var node = Y.Node.create('<table id="' + data._id + '.' + data._rev + '" ' + 'class="task"></table>');
 			var nodTasks = this.get('root').one('div.tasks');
 			if (nodTasks.hasChildNodes()) {
@@ -147,11 +155,33 @@ YUI.add('tasklist', function(Y) {
 		 * @returns
 		 */
 		updateTask: function (data) {
-			var task = this.getTask(id);
+			var task = this.getTask(data._id);
 			if (task) {
 				task.renderAsTaskTable(null, data);
 			}
 			return task;
+		},
+		
+		/**
+		 * called after the a task has changed somewhere on the page to sync this list up with any 
+		 * changes.
+		 * @param {Object} data
+		 * task E ls && task.progress == list.name -> update task
+		 * task E ls && task.progress != list.name -> delete task
+		 * task nE ls && task.progress == list.name -> add task
+		 * task nE ls && task.progress != list.name -> return
+		 */
+		syncTask: function (data) {
+			var task = this.getTask(data._id);
+			if (task && data.progress === this.get('name')) {
+				this.updateTask(data);
+			} else if (task && data.progress !== this.get('name')) {
+				this.removeTask(data._id);
+			} else if (!task && data.progress === this.get('name')) {
+				this.addNewTask(data);
+			} else {
+				return;
+			}
 		}
 	});
 	

@@ -50,6 +50,12 @@
 				var testcase = new Y.Test.Case({
 					name: "tasklist test",
 					
+					_should: {
+						error: {
+							testAdditionOfTaskToIncorrectList: true
+						}
+					},
+					
 					testAdditionOfTaskToTaskList: function() {
 						var nd = Y.one('#proposed');
 						var taskList = new Y.hokulea.TaskList({
@@ -63,6 +69,22 @@
 						taskList.addNewTask(taskData);
 						Y.Assert.areEqual(1, taskList.get('tasks').length, 'after adding a task the number of tasks should become 1')
 					},
+					/**
+					 * we should not be able to add a task to a list when progress != name
+					 */
+					testAdditionOfTaskToIncorrectList: function() {
+						var nd = Y.one('#in-progress');
+						var taskList = new Y.hokulea.TaskList({
+							name: 'in-progress',
+							root: nd,
+							server: mockServer
+						});
+						Y.Assert.areEqual(0, taskList.get('tasks').length, 'the list starts out with one element');
+						
+						var taskData = {"specification":"store all the dates as UCT that way there are no issues depending on where in the world people are using the application","priority":null,"_rev":"1-b81de00d061621947aac747f794b01af","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,28,12,54,56],"deliversUserFunctionality":true,"solutionTeam":[],"title":"store dates as UCT","project":"PicoMinMin","_id":"f6c73e27c5e4258c8457e8bfaf1a79c4","type":"task","namespace":"project=database"};
+						taskList.addNewTask(taskData);
+					},
+					
 					testDeletionOfATask: function() {
 						var nd = Y.one("#delivered");
 						var taskList = new Y.hokulea.TaskList({
@@ -79,11 +101,30 @@
 						Y.Assert.areEqual(0, taskList.get('tasks').length, 'we should have removed the only task');
 						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
 						Y.Assert.isNull(el, 'and the node should be removed from the dom');	
-					}				
+					},
+					
+					testTaskUpdateShouldUpdateDomAndInternalObject: function() {
+						var nd = Y.one('#test1');
+						var taskList = new Y.hokulea.TaskList({
+							name: 'test1',
+							root: nd,
+							server: mockServer
+						});
+						Y.Assert.areEqual(1, taskList.get('tasks').length, 'the list starts out with one element');
+						var newData = {_id: "bcc6c02877cdefbeb69041c61ef5951a", _rev: "11-1865e2fb9041f2bfdc297bd63d54262a", specification: "non mutable properties like create-date should not be able to be changed by the client. other attributes - that are say boolean should not be sent as \"true\" to the back end", priority: null, taskStartDate: [2010, 9, 22, 10, 53, 2], taskCompleteDate: null, progress: "in-progress", taskCreateDate: [2010, 8, 28, 12, 27, 35], deliversUserFunctionality: false, solutionTeam: [], title: "condition some inbound objects", project: "PicoMinMin", type: "task", namespace: [{project: "validation"}]};
+						taskList.updateTask(newData);
+						var task = taskList.getTask("bcc6c02877cdefbeb69041c61ef5951a");
+						Y.Assert.areEqual("11-1865e2fb9041f2bfdc297bd63d54262a", task.get('data')._rev, "the revision number should be updated");
+						Y.Assert.areEqual('condition some inbound objects', task.get('data').title, 'the title should be updated');
+						var node = task.get('node');
+						Y.Assert.areEqual('bcc6c02877cdefbeb69041c61ef5951a.11-1865e2fb9041f2bfdc297bd63d54262a', node.get('id'), 'the node id value should be updated');
+						var ndTitle = node.one('.title');
+						Y.Assert.areEqual('condition some inbound objects', ndTitle.get('innerHTML'), 'the title on the page should be updated');
+					}		
 					
 				});
 		
-			    var yconsole = new Y.Console({newestOnTop: false});
+			    var yconsole = new Y.Console({newestOnTop: false, height: '500px'});
 			    yconsole.render('#logger');
 				Y.Test.Runner.add(testcase);
 			    Y.Test.Runner.run();
@@ -102,7 +143,9 @@
 					</td>
 					<td id="in-progress" class="bucket">
 						<div class="bmrcp-head">work in progress</div>
-						<div class="tasks"></div>
+						<div class="tasks">
+							
+						</div>
 					</td>
 					<td id="delivered" class="bucket">
 						<div class="bmrcp-head">delivered to user</div>
@@ -120,6 +163,23 @@
 									</tr>
 								</tbody>
 							</table>							
+						</div>
+					</td>
+					<td id="test1" class="bucket">
+						<div class="bmrcp-head">test1</div>
+						<div class="tasks">
+							<table id="bcc6c02877cdefbeb69041c61ef5951a.4-1865e2fb9041f2bfdc297bd63d54262a" class="task n-usr-func yui3-widget yui3-task yui3-task-content yui3-dd-drop yui3-dd-draggable">
+								<tbody>
+									<tr>
+										<td class="rawData">
+											{"_id": "bcc6c02877cdefbeb69041c61ef5951a", "_rev": "4-1865e2fb9041f2bfdc297bd63d54262a", "specification": "non mutable properties like create-date should not be able to be changed by the client. other attributes - that are say boolean should not be sent as true to the back end", "priority": null, "taskStartDate": [2010, 9, 22, 10, 53, 2], "taskCompleteDate": null, "progress": "test1", "taskCreateDate": [2010, 8, 28, 12, 27, 35], "deliversUserFunctionality": false, "solutionTeam": [], "title": "condition all inbound objects", "project": "PicoMinMin", "type": "task", "namespace": [{"project": "validation"}]}
+										</td>
+										<td><a href="#" class="collapsible">+</a></td>
+										<td class="title">condition all inbound objects</td>
+										<td class="statistic">15</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 					</td>
 				</tr>

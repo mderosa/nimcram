@@ -244,7 +244,7 @@ YUI.add('task', function(Y) {
 				tmpltMap.onOff2 = taskData.priority == 3 ? 'on' : 'off';
 			} else {
 				tmplt = Task.INPROGRESS_TEMPLATE;
-				tmpltMap.daysActive = _taskTableDaysActive(taskData);
+				tmpltMap.daysActive = this._taskTableDaysActive(taskData);
 			}
 			var tblNode = Y.Node.create(Y.substitute(tmplt, tmpltMap));
 			this.get('node').replace(tblNode);
