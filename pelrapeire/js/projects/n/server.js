@@ -94,7 +94,7 @@ YUI.add('server', function(Y) {
 					on: {
 						success: function(id, rsp, args){
 							var json = Y.JSON.parse(rsp.responseText);
-							obj.task.get('node').set('id', json.id + '.' + json.rev);
+							Y.fire('server:updatedtask', json);
 						},
 						failure: function(id, rsp, args){
 	

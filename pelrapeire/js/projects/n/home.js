@@ -31,7 +31,13 @@ YUI({
 		dropSelector: 'div.bmrcp-head',
 		server: server
 		});
-
+		
+	Y.on('server:updatedtask', function(data){
+		proposedTasks.syncTask(data);
+		inProgressTasks.syncTask(data);
+		deliveredTasks.syncTask(data);
+	});
+	
    function resizeTasks() {
 	   var heightY = Y.DOM.winHeight();
 	   var ls = Y.all('div.tasks');
@@ -51,19 +57,19 @@ YUI({
 		proposedTasks.addNewTask(objTask);
    });
    
-   Y.on('server:updatedtask', function(objTask) {
-   		var task = proposedTasks.getTask(objTask._id);
-		if (task == null) {
-			task = inProgressTasks.getTask(objTask._id);
-			if (task == null) {
-				task = deliveredTasks.getTask(objTask._id);
-				if (task == null) {
-					throw new Error("unable to resolve task " + objTask._id);
-				}
-			}
-		}
-		task.renderAsTaskTable(null, objTask);
-   });
+//   Y.on('server:updatedtask', function(objTask) {
+//   		var task = proposedTasks.getTask(objTask._id);
+//		if (task == null) {
+//			task = inProgressTasks.getTask(objTask._id);
+//			if (task == null) {
+//				task = deliveredTasks.getTask(objTask._id);
+//				if (task == null) {
+//					throw new Error("unable to resolve task " + objTask._id);
+//				}
+//			}
+//		}
+//		task.renderAsTaskTable(null, objTask);
+//   });
    
    Y.DD.DDM.on('drag:start', function(e) {
 	    var drag = e.target;
