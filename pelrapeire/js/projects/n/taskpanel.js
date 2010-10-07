@@ -11,9 +11,9 @@ YUI.add('taskpanel', function(Y) {
 		TaskPanel.superclass.constructor.apply(this, arguments);
 	};
 
-	TaskList.NAME = 'taskpanel';
+	TaskPanel.NAME = 'taskpanel';
 	
-	TaskList.ATTRS = {
+	TaskPanel.ATTRS = {
 		lists: {
 			readOnly: true
 		}
@@ -24,7 +24,7 @@ YUI.add('taskpanel', function(Y) {
 	 * @param {Object} taskListName
 	 * @param {Object} task
 	 */
-	Y.extend (TaskList, Y.Base, {
+	Y.extend (TaskPanel, Y.Base, {
 
 	    initializer : function(cfg) {
 			if (!cfg || !cfg.lists) {
