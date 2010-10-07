@@ -44,7 +44,6 @@ YUI({
 	   ls.setStyle('height', (heightY - 175));
    };   
 
-   
    Y.one('#new').on('click', function() {
    		newTaskForm.show(Y);
    });
@@ -56,20 +55,6 @@ YUI({
    Y.on('server:createdtask', function(objTask) {
 		proposedTasks.addNewTask(objTask);
    });
-   
-//   Y.on('server:updatedtask', function(objTask) {
-//   		var task = proposedTasks.getTask(objTask._id);
-//		if (task == null) {
-//			task = inProgressTasks.getTask(objTask._id);
-//			if (task == null) {
-//				task = deliveredTasks.getTask(objTask._id);
-//				if (task == null) {
-//					throw new Error("unable to resolve task " + objTask._id);
-//				}
-//			}
-//		}
-//		task.renderAsTaskTable(null, objTask);
-//   });
    
    Y.DD.DDM.on('drag:start', function(e) {
 	    var drag = e.target;
