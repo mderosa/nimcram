@@ -56,4 +56,4 @@ are required fields"
   (testing "an ajax call should return an ajax string"
     (let [rslt (direct-to mock-ajax-controller {})]
       (is (string? rslt))
-      (is (= "{\"id\":\"1\",\"rev\":\"1_1\",\"title\":\"a title\"}" rslt)))))
+      (is (= "{\"rev\":\"1_1\",\"title\":\"a title\",\"id\":\"1\"}" rslt)))))
