@@ -69,6 +69,25 @@ YUI.add('task', function(Y) {
 				'</tr>' + 
 			'</tbody>' +
 		'</table>';	
+	Task.FORM_TEMPLATE = '<form id="{_id}" class="task">' +
+					'<input type="hidden" name="_id" value="{_id}" />' +
+					'<input type="hidden" name="_rev" value="{_rev}" />' +
+					'<label for="title">title:</label>' +
+					'<input type="text" id="title" name="title" class="fill" value="{title}" />' +
+					'<label for="namespace">namespace:</label>{htmlNamespace}' +
+					'<label for="specification">specification:</label>' +
+					'<textarea id="specification" name="specification" class="fill">{specification}' +
+					'</textarea>' +
+					'<fieldset><legend>delivers end user functionality</legend>' +
+						'<label>yes</label>' +
+						'<input type="radio" name="deliversUserFunctionality" value="true" {checkedTrue} />' +
+						'<label>no</label>' +
+						'<input type="radio" name="deliversUserFunctionality" value="false" {checkedFalse} />' +
+					'</fieldset>' +
+					'<button class="updating" type="button">update</button>' +
+					'&nbsp;&nbsp;<a class="tableable" href="#">collapse</a>' +
+					'<a class="deleting" href="#">delete</a>' +
+				'</form>'
 
 	Y.extend (Task, Y.Widget, {
 
@@ -176,32 +195,20 @@ YUI.add('task', function(Y) {
 					return '';
 				}
 			};
-			var frmNode = Y.Node.create(
-				'<form ' + 'id="' + id + '" class="task">' +
-					'<input type="hidden" name="_id" value="' + this.getId() + '" />' +
-					'<input type="hidden" name="_rev" value="' + this.getRevision() + '" />' +
-					'<label for="title">title:</label>' +
-					'<input type="text" id="title" name="title" class="fill" ' + 'value="' +
-						this.get('data').title + '" />' +
-					'<label for="namespace">namespace:</label>' +
-					this._renderTaskFormNamespaces(this.get('data').namespace) +
-					'<label for="specification">specification:</label>' +
-					'<textarea id="specification" name="specification" class="fill">' +
-						this.get('data').specification +
-					'</textarea>' +
-					'<fieldset><legend>delivers end user functionality</legend>' +
-						'<label>yes</label>' +
-						'<input type="radio" name="deliversUserFunctionality" value="true" ' + checked(this.get('data'), true) + '/>' +
-						'<label>no</label>' +
-						'<input type="radio" name="deliversUserFunctionality" value="false" ' + checked(this.get('data'), false) + '/>' +
-					'</fieldset>' +
-					'<button class="updating" type="button">update</button>' +
-					'&nbsp;&nbsp;<a class="deleting" href="#">collapse</a>' +
-				'</form>');
+			var tmpltMap = {
+				_id: id,
+				_rev: this.getRevision(),
+				title: this.get('data').title,
+				htmlNamespace: this._renderTaskFormNamespaces(this.get('data').namespace),
+				specification: this.get('data').specification,
+				checkedTrue: checked(this.get('data'), true),
+				checkedFalse: checked(this.get('data'), false)
+			};
+			var frmNode = Y.Node.create((Y.substitute(Task.FORM_TEMPLATE, tmpltMap)));
 			this.get('node').replace(frmNode);
 			this._set('node', frmNode);
 			
-			var collapse = this.get('node').one('.deleting');
+			var collapse = this.get('node').one('.tableable');
 			Y.on('click', this.renderAsTaskTable, collapse, this, this.get('data'));
 			var updating = this.get('node').one('.updating');
 			Y.on('click', 

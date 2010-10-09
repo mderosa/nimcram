@@ -204,6 +204,10 @@ form button:hover {
 	cursor: pointer;
 }
 
+form.task .deleting {
+	float: right;
+}
+
 a:active, a:link, .g-novisited a:visited {
 color:#0000CC;
 text-decoration:none;
