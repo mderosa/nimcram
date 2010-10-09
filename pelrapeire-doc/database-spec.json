@@ -5,8 +5,8 @@
 	'_rev': 'Uuid',
 	'type': 'user',
 	'password': 'String'
-	'projects-im-contributing-to': ['Uuid']
-	'projects-im-following': ['Uuid']
+	'projectsImContributingTo': ['Uuid']
+	'projectsImFollowing': ['Uuid']
 	'email' : 'Email'
 }
 

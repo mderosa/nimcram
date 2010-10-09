@@ -25,3 +25,11 @@
 (deftest test-id?-false
   (testing "just a quick test for a good id"
     (is (false? (id? "64d1060386b52188b6cc8e5a89")))))
+
+(deftest test-email?-true
+  (testing "a normal email should pass"
+    (is (true? (email? "marc.derosa@gmail.com")))))
+
+(deftest test-email?-false
+  (testing "non emails should fail"
+    (is (false? (email? "xxx")))))

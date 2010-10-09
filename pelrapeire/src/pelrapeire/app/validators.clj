@@ -10,3 +10,8 @@
     true
     false))
 
+(defn email? [^String email]
+  (if (and email (re-find #"^\S+@\S+\.[a-zA-Z]{2,3}$" email))
+    true
+    false))
+

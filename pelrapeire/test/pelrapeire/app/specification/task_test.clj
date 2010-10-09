@@ -158,3 +158,4 @@ that (condition-task) will ignore that key"
 (deftest test-condition-progress
   (testing "we should only accept the values of 'proposed' 'in-progress' 'delivered'"
     (is (thrown? AssertionError (condition-progress "yo")))))
+
