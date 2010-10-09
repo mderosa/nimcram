@@ -55,7 +55,7 @@
 					 * whatever other info it can devine
 					 */
 					testSerializationOfTaskObject: function() {
-						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14');
+						var el = document.getElementById('64dca73821060386b52188b6cc8e5a89');
 						var nd = Y.one(el);
 						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						var ndRawData = nd.one('.rawData');
@@ -71,7 +71,7 @@
 					 * test that we can serialize the priority property of a task when it exists
 					 */
 					testSerializationOfTaskObjectsThatHavePriorities: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abb');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
 						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
@@ -79,26 +79,26 @@
 						Y.Assert.areEqual(null, json.priority);
 						Y.Assert.areEqual('update-priority', json.action);
 						
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abc');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
 						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						var json = t.serialize('update-priority');
 						Y.Assert.areEqual(2, json.priority);
 						Y.Assert.areEqual(json._id, '34c9c3adade7da214b70f96ea1418abc');
-						Y.Assert.areEqual(json._rev, '1-ca66e995fa34333d682f04a00e98c3cc');
+						Y.Assert.areEqual(json._rev, '7-e83166bf9a306826e1d2dbd4811e114e');
 					},
 					/**
 					 * this is a destructive test that takes a task table and transforms it into a task form.
 					 * its inverse test will be run below.
 					 */
 					testWeShouldBeAbleToTransformATaskBoxToATaskForm: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
 						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						t.renderAsTaskForm();
-						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
+						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1');
 						Y.Assert.areEqual("FORM", el.tagName);
 						Y.Assert.isTrue(t.isInFormMode());
 					},
@@ -107,7 +107,7 @@
 					 * does the inverse of the above test, set all handlers
 					 */
 					testWeShouldBeAbleToTransformATaskFormToATaskBox: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
 						
@@ -126,11 +126,11 @@
 						};
 						var t = new Y.hokulea.Task({boundingBox: nd, server: mockServer, data: rawData, render: false});
 						t.renderAsTaskTable(null, rawData);
-						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc');
+						el = document.getElementById('34c9c3adade7da214b70f96ea1418ac1');
 						Y.Assert.areEqual("TABLE", el.tagName);
 					}, 
 					testRenderTaskFormNamespaces: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abf.1-ca66e995fa34333d682f04a00e98c3cc');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abf');
 						var nd = Y.one(el);
 						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
 						var html = t._renderTaskFormNamespaces([{release: 'e662.indexer'}, {project: 'projectA.feature1'}]);
@@ -141,7 +141,7 @@
 					},
 					//test _renderTaskTableDaysActive
 					testRenderTaskTableDaysActive: function() {
-						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abd.1-ca66e995fa34333d682f04a00e98c3cc');
+						var el = document.getElementById('34c9c3adade7da214b70f96ea1418abd');
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
 						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
@@ -167,7 +167,7 @@
 						Y.Assert.isTrue(30 < n, "should have a whole number in the td element");
 					},
 					testATaskShouldFullyInitializeOnStartup: function () {
-						var id = 'ff5e24a8b1351764edde8e98c74fc99d.7-e83166bf9a306826e1d2dbd4811e114e';
+						var id = 'ff5e24a8b1351764edde8e98c74fc99d';
 						var el = document.getElementById(id);
 						Y.Assert.isNotNull(el);
 						var nd = Y.one(el);
@@ -178,7 +178,7 @@
 						Y.Assert.areEqual('proposed', t.get('data').progress);
 					},
 					testPriorityDisplayHandler: function() {
-						var id = 'f6c73e27c5e4258c8457e8bfaf1a79c5.1-b81de00d061621947aac747f794b01af';
+						var id = 'f6c73e27c5e4258c8457e8bfaf1a79c5';
 						var el = document.getElementById(id);
 						var nd = Y.one(el);
 						var t = new Y.hokulea.Task({srcNode: nd, boundingBox:nd, server: mockServer, render: true});
@@ -190,7 +190,7 @@
 					 * test form serialization when we are showing days in process stats
 					 */
 					testGetIdForForms: function() {
-						var id = 'a5ce4479660b9334deeb288eb5166f60.3-6db398380e045d2b6d208cddeca84979';
+						var id = 'a5ce4479660b9334deeb288eb5166f60';
 						var el = document.getElementById(id);
 						var nd = Y.one(el);
 						var t = new Y.hokulea.Task({srcNode: nd, boundingBox: nd, server: mockServer, render: true});
@@ -228,7 +228,7 @@
 						<div class="bmrcp-head">delivered to user</div>
 						<div class="tasks">
 							<!-- below is a example task to test the Task object -->
-							<table id="64dca73821060386b52188b6cc8e5a89.1-d44f047f8b364777d96a8fa2b993de14" class="task yui3-dd-drop yui3-dd-draggable">
+							<table id="64dca73821060386b52188b6cc8e5a89" class="task yui3-dd-drop yui3-dd-draggable">
 								<tbody>
 									<tr>
 										<td class="rawData">
@@ -255,7 +255,7 @@
 			<tr>
 				<td id="testBucket" class="bucket">
 					<div class="tasks">
-						<table class="task" id="34c9c3adade7da214b70f96ea1418abb.1-ca66e995fa34333d682f04a00e98c3cb">
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abb">
 							<tr>
 								<td class="rawData">{"specification":"","priority":2,"_rev":"1-ca66e995fa34333d682f04a00e98c3cb","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"34c9c3adade7da214b70f96ea1418abb","type":"task","namespace":[]}</td>
 								<td><a class="collapsible" href="#">+</a></td>
@@ -268,10 +268,10 @@
 							</tr>
 						</table>
 						<!-- below used by testSerializationOfTaskObjectsThatHavePriorities -->
-						<table class="task" id="34c9c3adade7da214b70f96ea1418abc.1-ca66e995fa34333d682f04a00e98c3cc">
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abc">
 							<tr>
 								<td class="rawData">
-									{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}
+									{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"34c9c3adade7da214b70f96ea1418abc","type":"task","namespace":[]}
 								</td>
 								<td><a class="collapsible" href="#">+</a></td>
 								<td class="title">password hashing for login</td>
@@ -283,7 +283,7 @@
 							</tr>
 						</table>
 						<!-- below used by testRenderTaskTableDaysActive -->
-						<table class="task" id="34c9c3adade7da214b70f96ea1418abd.1-ca66e995fa34333d682f04a00e98c3cc">
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abd">
 							<tr>
 								<td class="rawData">
 									{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}
@@ -298,7 +298,7 @@
 							</tr>
 						</table>
 						<!-- renderTaskTablePriorities -->
-						<table class="task" id="34c9c3adade7da214b70f96ea1418abe.1-ca66e995fa34333d682f04a00e98c3cc">
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abe">
 							<tr>
 								<td class="rawData">
 									{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}
@@ -313,7 +313,7 @@
 							</tr>
 						</table>	
 						<!-- testRenderTaskFormNamespaces -->
-						<table class="task" id="34c9c3adade7da214b70f96ea1418abf.1-ca66e995fa34333d682f04a00e98c3cc">
+						<table class="task" id="34c9c3adade7da214b70f96ea1418abf">
 							<tr>
 								<td class="rawData">
 									{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}
@@ -328,7 +328,7 @@
 							</tr>
 						</table>
 						<!-- testWeShouldBeAbleToTransformATaskBoxToATaskForm -->
-						<table class="task" id="34c9c3adade7da214b70f96ea1418ac1.1-ca66e995fa34333d682f04a00e98c3cc">
+						<table class="task" id="34c9c3adade7da214b70f96ea1418ac1">
 							<tr>
 								<td class="rawData">
 									{"_id": "34c9c3adade7da214b70f96ea1418ac1","_rev": "1-ca66e995fa34333d682f04a00e98c3cc","type": "task","title": "a test form title","specification": "this is a test specification","project": "PicoMinMin","solutionTeam": ["marc.derosa@gmail.com", "micai@ebay.com"],"deliversUserFunctionality": true,"priority": null,"namespace": [{"release": "e662.indexer-shj-01"}]}
@@ -347,7 +347,7 @@
 			</tr>
 		</table>
 		<div></div>
-		<table id="ff5e24a8b1351764edde8e98c74fc99d.7-e83166bf9a306826e1d2dbd4811e114e" class="task usr-func yui3-dd-drop yui3-dd-draggable">
+		<table id="ff5e24a8b1351764edde8e98c74fc99d" class="task usr-func yui3-dd-drop yui3-dd-draggable">
 			<tbody>
 				<tr>
 					<td class="rawData">{"specification":"","priority":2,"_rev":"7-e83166bf9a306826e1d2dbd4811e114e","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,17,0,0,0],"deliversUserFunctionality":true,"title":"we want to add tagging to the tasks","project":"PicoMinMin","_id":"ff5e24a8b1351764edde8e98c74fc99d","type":"task","namespace":[]}</td>
@@ -362,7 +362,7 @@
 			</tbody>
 		</table>
 		
-		<table id="f6c73e27c5e4258c8457e8bfaf1a79c4.1-b81de00d061621947aac747f794b01af" class="task usr-func yui3-dd-drop yui3-dd-draggable">
+		<table id="f6c73e27c5e4258c8457e8bfaf1a79c4" class="task usr-func yui3-dd-drop yui3-dd-draggable">
 			<tbody
 				><tr>
 					<td class="rawData">{"specification":"store all the dates as UCT that way there are no issues depending on where in the world people are using the application","priority":null,"_rev":"1-b81de00d061621947aac747f794b01af","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,28,12,54,56],"deliversUserFunctionality":true,"solutionTeam":[],"title":"store dates as UCT","project":"PicoMinMin","_id":"f6c73e27c5e4258c8457e8bfaf1a79c4","type":"task","namespace":"project=database"}</td>
@@ -377,7 +377,7 @@
 			</tbody>
 		</table>
 		<!-- below used by testPriorityDisplayHandler -->
-		<table id="f6c73e27c5e4258c8457e8bfaf1a79c5.1-b81de00d061621947aac747f794b01af" class="task usr-func yui3-dd-drop yui3-dd-draggable">
+		<table id="f6c73e27c5e4258c8457e8bfaf1a79c5" class="task usr-func yui3-dd-drop yui3-dd-draggable">
 			<tbody
 				><tr>
 					<td class="rawData">{"specification":"store all the dates as UCT that way there are no issues depending on where in the world people are using the application","priority":null,"_rev":"1-b81de00d061621947aac747f794b01af","taskStartDate":null,"taskCompleteDate":null,"progress":"proposed","taskCreateDate":[2010,8,28,12,54,56],"deliversUserFunctionality":true,"solutionTeam":[],"title":"store dates as UCT","project":"PicoMinMin","_id":"f6c73e27c5e4258c8457e8bfaf1a79c4","type":"task","namespace":"project=database"}</td>
@@ -392,7 +392,7 @@
 			</tbody>
 		</table>
 		<!-- for test form serialization -->
-		<table class="task usr-func yui3-dd-drop yui3-dd-draggable" id="a5ce4479660b9334deeb288eb5166f60.3-6db398380e045d2b6d208cddeca84979">
+		<table class="task usr-func yui3-dd-drop yui3-dd-draggable" id="a5ce4479660b9334deeb288eb5166f60">
 			<tbody>
 				<tr>
 					<td class="rawData">{"_id": "a5ce4479660b9334deeb288eb5166f60", "_rev": "3-6db398380e045d2b6d208cddeca84979", "specification": "on task update we should first update the remote store", "priority": 2, "taskStartDate": [2010, 9, 19, 21, 9, 9], "taskCompleteDate": null, "progress": "in-progress", "taskCreateDate": [2010, 9, 19, 17, 4, 12], "deliversUserFunctionality": true, "solutionTeam": [], "title": "on task update update the remote store", "project": "PicoMinMin", "type": "task", "namespace": []}</td>

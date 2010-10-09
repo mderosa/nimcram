@@ -26,7 +26,7 @@ function creates the classes for that designation"}
        "task n-usr-func"))
 
 (defn make-task [task] 
-  [:table {:id (str (task "_id") "." (task "_rev")) :class (make-task-class task)}
+  [:table {:id (task "_id") :class (make-task-class task)}
    [:tr
     [:td {:class "rawData"} (json-str task) ]
     [:td [:a {:href "#" :class "collapsible"} "+"]]

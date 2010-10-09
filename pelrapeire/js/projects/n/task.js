@@ -36,7 +36,7 @@ YUI.add('task', function(Y) {
 		}
 	};
 	
-	Task.BOUNDING_TEMPLATE= '<table id="{_id}.{_rev}" class="task {clsUserFunc}"></table>';
+	Task.BOUNDING_TEMPLATE= '<table id="{_id}" class="task {clsUserFunc}"></table>';
 
 	Task.CONTENT_TEMPLATE = 
 		'<tbody>' + 
@@ -46,7 +46,7 @@ YUI.add('task', function(Y) {
 			'</tr>' + 
 		'</tbody>';
 	Task.PROPOSED_TEMPLATE = 
-		'<table id="{_id}.{_rev}" class="task {clsUserFunc}">' +
+		'<table id="{_id}" class="task {clsUserFunc}">' +
 			'<tbody>' + 
 				'<tr>' + 
 					'<td><a href="#" class="collapsible">+</a></td>' + 
@@ -60,7 +60,7 @@ YUI.add('task', function(Y) {
 			'</tbody>' +
 		'</table>';	
 	Task.INPROGRESS_TEMPLATE = 
-		'<table id="{_id}.{_rev}" class="task {clsUserFunc}">' +
+		'<table id="{_id}" class="task {clsUserFunc}">' +
 			'<tbody>' + 
 				'<tr>' + 
 					'<td><a href="#" class="collapsible">+</a></td>' + 
@@ -111,12 +111,12 @@ YUI.add('task', function(Y) {
 			}
 		},
 		getId: function() {
-			var arrIdAndRev = this.get('node').get("id").split(".");
-			return arrIdAndRev[0];
+			var id = this.get('data')._id;
+			return id;
 		},
 		getRevision: function() {
-			var arrIdAndRev = this.get('node').get("id").split(".");
-			return arrIdAndRev[1];
+			var rev = this.get('data')._rev;
+			return rev;
 		},
 		isInFormMode: function() {
 			return this.get('node').get('tagName') == 'FORM';
@@ -127,7 +127,7 @@ YUI.add('task', function(Y) {
 		isValid: function() {
 			var valid = this.isInTableMode() || this.isInFormMode();
 			var id = this.get('node').get("id");
-			return valid && /[0-9a-f]{32}\.\d+-[0-9a-f]{32}/.test(id);
+			return valid && /[0-9a-f]{32}/.test(id);
 		},
 		/**
 		 * places the transitive content of a node into a json object
@@ -138,7 +138,6 @@ YUI.add('task', function(Y) {
 		 */
 		serialize: function(action) {
 			var obj = {};
-			var id = this.getId();
 			if (this.isInTableMode()) {
 				if (action) {
 					obj.action = action;
@@ -169,7 +168,7 @@ YUI.add('task', function(Y) {
 		 * @param {Object} taskData 一个完整的后台对象
 		 */
 		renderAsTaskForm : function(e) {
-			var id = this.get('data')._id + '.' + this.get('data')._rev;
+			var id = this.get('data')._id;
 			var checked = function(taskData, ctrlValue) {
 				if (taskData.deliversUserFunctionality === ctrlValue) {
 					return '" checked="checked" ';

@@ -1,4 +1,4 @@
-(ns pelrapeire.app.specification.user
+(ns pelrapeire.app.specification.users
   ^{:doc "this module precoditions user data prior to being sent to the back end"}
   (:use pelrapeire.app.validators
 	pelrapeire.app.encrypt

@@ -126,6 +126,27 @@ YUI.add('server', function(Y) {
 				}
 			};
 			Y.io(uri, cfg);
+		},
+		/**
+		 * deletes a task from the server
+		 * @param {Object} obj of the form {id: String}
+		 */
+		deleteTask: function(obj) {
+			if (!obj || !obj.id) {
+				throw new Error("input argument is required to have an 'id' attribute");
+			}
+			var uri = this.get('baseTaskUri') + "/" + obj.id;
+			var cfg = {
+				method: 'DELETE',
+				on: {
+					success: function(id, rsp, args) {
+						Y.fire('server:deletedtask', obj.id);
+					},
+					failure: function(id, rsp, args) {},
+					complete: function(id, rsp, args) {}
+				}
+			};
+			Y.io(uri, cfg);		
 		}
 	});
 	
