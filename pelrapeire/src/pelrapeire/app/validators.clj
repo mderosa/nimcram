@@ -10,8 +10,16 @@
     true
     false))
 
+;;user specific validators
 (defn email? [^String email]
   (if (and email (re-find #"^\S+@\S+\.[a-zA-Z]{2,3}$" email))
     true
     false))
+
+;;task specific validators
+(defn progress? [^String progress]
+  (if (#{"proposed" "in-progress" "delivered"} progress)
+    true
+    false))
+
 

@@ -33,3 +33,11 @@
 (deftest test-email?-false
   (testing "non emails should fail"
     (is (false? (email? "xxx")))))
+
+(deftest test-progress?-true
+  (testing "test that a valid progress returns true"
+    (is (progress? "in-progress"))))
+
+(deftest test-progress?-false
+  (testing "a non valid progress returns false"
+    (is (not (progress? "inprogress")))))

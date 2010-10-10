@@ -105,6 +105,12 @@ td.bucket table.yui3-dd-drop-over, td.bucket div.yui3-dd-drop-over.bmrcp-head {
 form.task {
 	border: 1px solid #CCC;
 }
+
+form.task .deleting {
+	float: right;
+	padding-top: 0.2em;
+}
+
 table.task {
     border: 1px solid #CCC;
     margin: 0;
@@ -202,10 +208,6 @@ form fieldset {
 }
 form button:hover {
 	cursor: pointer;
-}
-
-form.task .deleting {
-	float: right;
 }
 
 a:active, a:link, .g-novisited a:visited {

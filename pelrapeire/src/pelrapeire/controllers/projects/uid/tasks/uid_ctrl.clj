@@ -1,6 +1,7 @@
 (ns pelrapeire.controllers.projects.uid.tasks.uid-ctrl
   (:use pelrapeire.app.validators
 	pelrapeire.app.specification.task
+	clojure.contrib.trace
 	pelrapeire.app.convert)
   (:import org.joda.time.DateTime
 	   org.joda.time.DateTimeZone))
@@ -20,8 +21,8 @@ object"}
 parameter for all other updates we should go through (run-update-all)"}
   run-update-progress [fn-update {progress "progress"  originalProgress "originalProgress" :as params}]
   {:pre [(params "_id") (revision? (params "_rev")) 
-	 (#{"proposed" "in-progress" "delivered"} progress)
-	 (#{"proposed" "in-progress" "delivered"} originalProgress)]}
+	 (progress? progress)
+	 (progress? originalProgress)]}
   (let [extract (select-keys params ["_id" "_rev" "progress"])
 	start-dt (datetime-to-vector (DateTime. DateTimeZone/UTC))
 	complete-dt (datetime-to-vector (DateTime. DateTimeZone/UTC))
@@ -51,16 +52,16 @@ for the 'progress', which need special processing logic"}
 
 (defn 
   #^{:doc "handles a post request and returns a full task object"}
-  run-post [fn-get fn-update-task params] 
+  run-post [fn-get fn-update params] 
   (cond
    (nil? (params "action"))
-   (let [ok-err-resp (run-update-all fn-update-task params)
+   (let [ok-err-resp (run-update-all fn-update params)
 	 task (fn-get (params "task-uid"))]
      {:view :json-view
       :layout :json-layout
       :content task})
    (= "update-progress" (params "action"))
-   (let [ok-err-resp (run-update-progress fn-update-task params)
+   (let [ok-err-resp (run-update-progress fn-update params)
 	 task (fn-get (params "task-uid"))]
      {:view :json-view
       :layout :json-layout
@@ -68,7 +69,20 @@ for the 'progress', which need special processing logic"}
 
    true (throw (IllegalArgumentException. "request not properly specified"))))
 
-(defn run [fn-get fn-update req]
+(defn run-delete [fn-get fn-update fn-delete {params :params :as req}]
+  (let [task (fn-get (params "task-uid"))
+	ok-err-resp (if (= "proposed" (task "progress"))
+		      (fn-delete task)
+		      (fn-update 
+		       (assoc task "taskTerminateDate" 
+			      (datetime-to-vector (DateTime. DateTimeZone/UTC)))
+			      :append))]
+    {:view :json-view
+     :layout :json-layout
+     :content ""}))
+
+(defn run [fn-get fn-update fn-delete req]
   (condp = (:request-method req)
     :get (run-get (:params req))
-    :post (run-post fn-get fn-update (:params req))))
+    :post (run-post fn-get fn-update (:params req))
+    :delete (trace(run-delete fn-get fn-update fn-delete req))))

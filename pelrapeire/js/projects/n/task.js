@@ -211,13 +211,13 @@ YUI.add('task', function(Y) {
 			var collapse = this.get('node').one('.tableable');
 			Y.on('click', this.renderAsTaskTable, collapse, this, this.get('data'));
 			var updating = this.get('node').one('.updating');
-			Y.on('click', 
-				function(e, obj) {
+			Y.on('click', function(e, obj) {
 					this.get('server').updateAppendTaskFromForm(obj);
-				},
-				updating, 
-				this,
-				{id: this.getId(), sourceForm: this.get('node')});
+				}, updating, this, {id: this.getId(), sourceForm: this.get('node')});
+			var ndDelete = this.get('node').one('a.deleting');
+			Y.on('click', function(e, obj) {
+					this.get('server').deleteTask(obj);
+				}, ndDelete, this, {id: this.getId()});
 		},
 		_renderTaskFormNamespaces: function(arrNs) {
 			var html = "";
@@ -276,6 +276,11 @@ YUI.add('task', function(Y) {
 			}
 			var diff = Math.floor((dtEnd.getTime() - dtStart.getTime()) / (1000 * 60 * 60 * 24));
 			return diff;
+		},
+		_setOnDeleteHandler: function() {
+			Y.delegate('click', function(e) {
+				this.get('server').deleteTask(this.getId());
+			}, this.get('node'), 'a.deleting', this);
 		},
 		_setOnPriorityEventHandlers : function() {
 			if (this.get('data').progress == 'proposed') {

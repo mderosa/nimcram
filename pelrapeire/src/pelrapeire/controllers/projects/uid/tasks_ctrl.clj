@@ -1,7 +1,7 @@
 (ns pelrapeire.controllers.projects.uid.tasks-ctrl
   (:use pelrapeire.app.specification.task))
 
-(defn 
+(defn
   #^{:doc "does initial task creation returning an object like
 {'ok' true 'id' xxx 'rev' yyy}"}
   run-create-task [fn-create-task params]

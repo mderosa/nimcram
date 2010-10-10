@@ -23,7 +23,7 @@ request data object"}
   (partial pelrapeire.controllers.projects.uid.home-ctrl/run 
 	   proposed-project-tasks
 	   wip-project-tasks
-	   completed-project-tasks)
+	   delivered-project-tasks)
 
   :projects-uid-tasks
   (partial pelrapeire.controllers.projects.uid.tasks-ctrl/run
@@ -31,7 +31,7 @@ request data object"}
 
   :projects-uid-tasks-uid
   (partial pelrapeire.controllers.projects.uid.tasks.uid-ctrl/run
-	   pel-get pel-update)
+	   pel-get pel-update pel-delete)
 
   :users-uid-projects
   (partial pelrapeire.controllers.users.uid.projects-ctrl/run 

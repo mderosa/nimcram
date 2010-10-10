@@ -42,7 +42,7 @@
   (Integer/parseInt p))
 
 (defn condition-progress [p]
-  {:pre [(#{"proposed" "in-progress" "delivered"} p)]}
+  {:pre [(progress? p)]}
    p)
 
 (def condition-fns

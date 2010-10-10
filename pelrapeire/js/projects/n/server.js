@@ -138,6 +138,7 @@ YUI.add('server', function(Y) {
 			var uri = this.get('baseTaskUri') + "/" + obj.id;
 			var cfg = {
 				method: 'DELETE',
+				headers: {'Accept': 'application/json'},
 				on: {
 					success: function(id, rsp, args) {
 						Y.fire('server:deletedtask', obj.id);

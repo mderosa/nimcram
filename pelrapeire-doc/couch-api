@@ -1,0 +1,32 @@
+odysseus$ curl -vX PUT http://localhost:5984/albums/record2 -d '{"title": "nothing left to lose", "artist": "foo fighters"}'
+< HTTP/1.1 201 Created
+< Server: CouchDB/1.0.1 (Erlang OTP/R13B)
+< Location: http://localhost:5984/albums/record2
+< Etag: "1-c3f5ae1d670f066830886bd0e9486151"
+< Date: Sun, 10 Oct 2010 00:28:39 GMT
+< Content-Type: text/plain;charset=utf-8
+< Content-Length: 70
+< Cache-Control: must-revalidate
+< 
+{"ok":true,"id":"record2","rev":"1-c3f5ae1d670f066830886bd0e9486151"}
+
+odysseus$ curl -vX DELETE http://localhost:5984/albums/record2
+< HTTP/1.1 409 Conflict
+< Server: CouchDB/1.0.1 (Erlang OTP/R13B)
+< Date: Sun, 10 Oct 2010 00:29:58 GMT
+< Content-Type: text/plain;charset=utf-8
+< Content-Length: 58
+< Cache-Control: must-revalidate
+< 
+{"error":"conflict","reason":"Document update conflict."}
+
+odysseus$ curl -vX DELETE http://localhost:5984/albums/record2?rev=1-c3f5ae1d670f066830886bd0e9486151
+< HTTP/1.1 200 OK
+< Server: CouchDB/1.0.1 (Erlang OTP/R13B)
+< Etag: "2-73e36d735e647a09d858b867347b44a4"
+< Date: Sun, 10 Oct 2010 00:30:38 GMT
+< Content-Type: text/plain;charset=utf-8
+< Content-Length: 70
+< Cache-Control: must-revalidate
+< 
+{"ok":true,"id":"record2","rev":"2-73e36d735e647a09d858b867347b44a4"}
