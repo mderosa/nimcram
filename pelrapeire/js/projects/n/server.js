@@ -37,6 +37,7 @@ YUI.add('server', function(Y) {
 		createTaskFromForm: function(obj) {
 			var cfg = {
 				method: 'POST',
+				headers: {'Accept': 'application/json'},
 				on: {
 					success: function(id, rsp, args) {
 						var json = Y.JSON.parse(rsp.responseText);
@@ -62,6 +63,7 @@ YUI.add('server', function(Y) {
 		updateAppendTaskFromForm: function(obj) {
 			var cfg = {
 				method: 'POST',
+				headers: {'Accept': 'application/json'},
 				on: {
 					success: function(id, rsp, args) {
 						var json = Y.JSON.parse(rsp.responseText);
@@ -91,6 +93,7 @@ YUI.add('server', function(Y) {
 				var uri = this.get('baseTaskUri') + '/' + obj.task.getId();
 				var cfg = {
 					method: 'POST',
+					headers: {'Accept': 'application/json'},
 					on: {
 						success: function(id, rsp, args){
 							var json = Y.JSON.parse(rsp.responseText);
@@ -116,6 +119,7 @@ YUI.add('server', function(Y) {
 			var uri = this.get('baseTaskUri') + "/" + obj.id;
 			var cfg = {
 				method: 'GET',
+				headers: {'Accept': 'application/json'},
 				on: {
 					success: function(id, rsp, args) {
 						var json = Y.JSON.parse(rsp.responseText);
@@ -129,19 +133,19 @@ YUI.add('server', function(Y) {
 		},
 		/**
 		 * deletes a task from the server
-		 * @param {Object} obj of the form {id: String}
+		 * @param {Object} obj of the form {data: taskData}
 		 */
 		deleteTask: function(obj) {
-			if (!obj || !obj.id) {
-				throw new Error("input argument is required to have an 'id' attribute");
+			if (!obj || !obj.data || !obj.data._id || !obj.data.progress) {
+				throw new Error("the function argument is required to have an 'data' attribute which holds task data");
 			}
-			var uri = this.get('baseTaskUri') + "/" + obj.id;
+			var uri = this.get('baseTaskUri') + "/" + obj.data._id;
 			var cfg = {
 				method: 'DELETE',
 				headers: {'Accept': 'application/json'},
 				on: {
 					success: function(id, rsp, args) {
-						Y.fire('server:deletedtask', obj.id);
+						Y.fire('server:deletedtask', obj.data);
 					},
 					failure: function(id, rsp, args) {},
 					complete: function(id, rsp, args) {}

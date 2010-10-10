@@ -56,6 +56,19 @@ YUI({
 		proposedTasks.addNewTask(objTask);
    });
    
+   Y.on('server:deletedtask', function(objTask) {
+   		if (!objTask || !objTask.progress || !objTask._id) {throw new Error("missing 'progress' attribute");}
+		if (objTask.progress === "proposed") {
+			 proposedTasks.removeTask(objTask._id);
+		} else if (objTask.progress === "in-progress") {
+			inProgressTasks.removeTask(objTask._id);
+		} else if (objTask.progress === "delivered") {
+			 deliveredTasks.removeTask(objTask._id);
+		} else {
+			throw new Error("unknown progress value, " + objTask.progress);
+		}
+   });
+   
    Y.DD.DDM.on('drag:start', function(e) {
 	    var drag = e.target;
 	    drag.get('node').setStyle('opacity', '.25');

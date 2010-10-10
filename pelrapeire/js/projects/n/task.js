@@ -217,7 +217,7 @@ YUI.add('task', function(Y) {
 			var ndDelete = this.get('node').one('a.deleting');
 			Y.on('click', function(e, obj) {
 					this.get('server').deleteTask(obj);
-				}, ndDelete, this, {id: this.getId()});
+				}, ndDelete, this, {data: this.get('data')});
 		},
 		_renderTaskFormNamespaces: function(arrNs) {
 			var html = "";
