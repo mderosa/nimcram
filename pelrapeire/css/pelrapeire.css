@@ -210,6 +210,10 @@ form button:hover {
 	cursor: pointer;
 }
 
+form input.submitting {
+	display: block;
+}
+
 a:active, a:link, .g-novisited a:visited {
 color:#0000CC;
 text-decoration:none;

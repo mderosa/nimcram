@@ -1,0 +1,32 @@
+
+given the state of what we have right now this seems like a reasonable first step
+
+for an object 
+{_id: xxxx, _rev: yyyy, attr1: xxxx, attr2: yyyy ....}
+
+for collections of objects (ex: tasks)
+{tasks: [{...}, {....}]}
+
+for errors
+{error: "conflict" reason: "xxkksks"}
+
+
+conventions
+
+enter create information
+GET /users/new
+
+create 
+POST /users   application/text
+
+query
+GET /users/xxxx application/text | application/json
+
+update
+POST /users/xxxxxx  application/text | application/json
+PUT /users/xxxxx
+
+delete
+DELETE /users/xxxxx application/json 
+
+

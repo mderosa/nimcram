@@ -5,7 +5,11 @@
 	    pelrapeire.controllers.projects.uid.home-ctrl
 	    pelrapeire.controllers.projects.uid.tasks-ctrl
 	    pelrapeire.controllers.projects.uid.tasks.uid-ctrl
+	    pelrapeire.controllers.users.new-ctrl
 	    pelrapeire.controllers.users.uid.projects-ctrl))
+
+(defstruct crud-struct :fn-create :fn-get :fn-update :fn-delete)
+(def crud (struct crud-struct pel-create pel-get pel-update pel-delete))
 
 (def 
  #^{:doc "this map configures the controllers in the project by passing them
@@ -32,6 +36,9 @@ request data object"}
   :projects-uid-tasks-uid
   (partial pelrapeire.controllers.projects.uid.tasks.uid-ctrl/run
 	   pel-get pel-update pel-delete)
+
+  :users-new
+  (partial pelrapeire.controllers.users.new-ctrl/run crud)
 
   :users-uid-projects
   (partial pelrapeire.controllers.users.uid.projects-ctrl/run 
