@@ -4,8 +4,9 @@
 
 (deftest test-create-user
   (testing "we should be able to create a user given a password and email"
-    (let [actual (create-user {"password" "pswd" "email" "marc@test.com"})]
+    (let [actual (create-user {"password" "pswd" "email" "marc@test.com" "confirmPassword" "pswd"})]
       (is (= "user" (actual "type")))
+      (is (nil? (actual "confirmPassword")))
       (is (= [] (actual "projectsImContributingTo"))))))
 
 (deftest test-create-user-bad-email

@@ -30,3 +30,19 @@ odysseus$ curl -vX DELETE http://localhost:5984/albums/record2?rev=1-c3f5ae1d670
 < Cache-Control: must-revalidate
 < 
 {"ok":true,"id":"record2","rev":"2-73e36d735e647a09d858b867347b44a4"}
+
+querying views
+http://localhost:5984/picominmin/_design/picominmin/_view/project-tasks?key="PicoMinMin"
+limit=?
+descending=true|false    
+
+
+examples
+http://localhost:5984/picominmin/_design/picominmin/_view/users?key="marc.derosa@gmail.com"
+{"total_rows":2,"offset":0,"rows":[
+{"id":"bc5287c66bc3acf02b958d6681390f3f","key":"marc.derosa@gmail.com","value":{"_id":"bc5287c66bc3acf02b958d6681390f3f","_rev":"5-e1f5d35b2e0240ab6465e21082bb7573","projectsImFollowing":[],"projectsImContributingTo":["PicoMinMin"],"type":"user","email":"marc.derosa@gmail.com","password":"f2c85b7b7198394a396938736539023d9fcebc9"}}
+]}
+
+http://localhost:5984/picominmin/_design/picominmin/_view/users?key="not exist"
+{"total_rows":2,"offset":2,"rows":[]}
+

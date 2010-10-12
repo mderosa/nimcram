@@ -1,4 +1,4 @@
-(ns pelrapeire.app.specification.users
+(ns pelrapeire.app.specification.user
   ^{:doc "this module precoditions user data prior to being sent to the back end"}
   (:use pelrapeire.app.validators
 	pelrapeire.app.encrypt
@@ -24,9 +24,10 @@
   {:pre [(not (s/blank? (map-data "password"))) (email? (map-data "email"))]}
   (let [contrib ((condition-fns "projectsImContributingTo") (map-data "projectsImContributingTo"))
 	following ((condition-fns "projectsImFollowing") (map-data "projectsImFollowing"))
-	conditioned-data (assoc map-data "projectsImContributingTo" contrib 
-				"projectsImFollowing" following
-				"password" (shaHash (map-data "password")))]
+	conditioned-data {"projectsImContributingTo" contrib 
+			  "projectsImFollowing" following
+			  "password" (shaHash (map-data "password"))
+			  "email" (map-data "email")}]
     (conj template-user conditioned-data)))
 
 (defn 

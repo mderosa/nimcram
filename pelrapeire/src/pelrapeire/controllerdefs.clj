@@ -5,6 +5,7 @@
 	    pelrapeire.controllers.projects.uid.home-ctrl
 	    pelrapeire.controllers.projects.uid.tasks-ctrl
 	    pelrapeire.controllers.projects.uid.tasks.uid-ctrl
+	    pelrapeire.controllers.users-ctrl
 	    pelrapeire.controllers.users.new-ctrl
 	    pelrapeire.controllers.users.uid.projects-ctrl))
 
@@ -37,6 +38,8 @@ request data object"}
   (partial pelrapeire.controllers.projects.uid.tasks.uid-ctrl/run
 	   pel-get pel-update pel-delete)
 
+  :users
+  (partial pelrapeire.controllers.users-ctrl/run crud users-by-email)
   :users-new
   (partial pelrapeire.controllers.users.new-ctrl/run crud)
 

@@ -58,6 +58,8 @@
 	(direct-to (:projects-uid-tasks-uid controllers) req))
   (DELETE "/projects/:project-uid/tasks/:task-uid" {params :params :as req}
 	  (direct-to (:projects-uid-tasks-uid controllers) req))
+  (POST "/users" {params :params}
+	(direct-to (:users controllers) params))
   (GET "/users/new" req
        (direct-to (:users-new controllers) req))
   (GET "/users/:user-id/projects" {params :params}
