@@ -9,4 +9,5 @@
 (defn datetime-to-vector [dt]
   [(.. dt year get) (.. dt monthOfYear get) (.. dt dayOfMonth get)
    (.. dt hourOfDay get) (.. dt minuteOfHour get) (.. dt secondOfMinute get)])
+
   

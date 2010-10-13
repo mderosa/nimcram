@@ -26,4 +26,5 @@
       {:view :index :layout :minimallayout :errors (:errors userB)}
       {:view :redirect
        :layout nil
+       :cookie (str "Hokulea=user/" (userB "_id") "; Path=/; Max-Age=432000")
        :url (str "/users/" (userB "_id") "/projects")})))

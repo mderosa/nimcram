@@ -20,9 +20,10 @@
    [:div {:id "headerWrapper" :class "gh-hbw"}
     [:div {:class "gh-hb"}
      [:div {:class "gh-mn"}
-      [:a {:id "BrowseCategories" :href "/projects/10/public/home"} "OUR SPACE"]
-      [:a {:id "BrowseCategories" :href "/projects/10/private/home"} "MY SPACE"]
-]]]])
+      [:a {:id "BrowseCategories" :href "/users/4didckeiie3/projects"} "HOME"]
+      [:a {:id "BrowseCategories" :href "/projects/10/public/home"} "COMMON SPACE"]
+      [:a {:id "BrowseCategories" :href "/projects/10/private/home"} "YOUR SPACE"]
+      ]]]])
 
 (defn footer []
   [:div
