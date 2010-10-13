@@ -7,7 +7,7 @@ YUI({
 	'tasklist', function(Y) {
 
 	var server = new Y.hokulea.Server({
-		baseTaskUri: "/projects/" + serverData['project-name'] + "/tasks"
+		baseTaskUri: "/projects/" + serverData['project-uid'] + "/tasks"
 		});
 	var newTaskForm = new Y.hokulea.NewTaskForm({
 		root: Y.one('#proposed div.tasks'),

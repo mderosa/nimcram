@@ -48,9 +48,9 @@
   (POST "/login" {params :params :as req}
 	(do (println req)
 	(direct-to (:login controllers) params)))
-  (GET "/projects/:project-name/home" {params :params :as req}
+  (GET "/projects/:project-uid/home" {params :params :as req}
        (direct-to (:projects-uid-home controllers) params))
-  (POST "/projects/:project/tasks" {params :params :as req}
+  (POST "/projects/:project-uid/tasks" {params :params :as req}
 	  (direct-to (:projects-uid-tasks controllers) params))
   (GET "/projects/:project-uid/tasks/:task-uid" {params :params :as req}
        (direct-to (:projects-uid-tasks-uid controllers) req))

@@ -6,7 +6,7 @@
 {'ok' true 'id' xxx 'rev' yyy}"}
   run-create-task [fn-create-task params]
   {:pre [(not (nil? (params "title"))) (not (= 0 (.. (params "title") trim length)))]}
-  (let [new-task (create-task params)]
+  (let [new-task (create-task (assoc params "project" (params "project-uid")))]
 	(fn-create-task new-task)))
 
 (defn run [fn-create-task fn-update-task fn-get-task params]

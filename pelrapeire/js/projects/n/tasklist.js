@@ -140,7 +140,6 @@ YUI.add('tasklist', function(Y) {
 					return;
 				}
 			});
-			console.log(index);
 			if (index != null) {
 				var task = this.get('tasks').splice(index, 1)[0];
 				task.get('node').remove();

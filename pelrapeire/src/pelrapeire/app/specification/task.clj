@@ -78,7 +78,8 @@ specifications"}
 	user-func ((condition-fns "deliversUserFunctionality") (map-data "deliversUserFunctionality"))
 	create-dt (datetime-to-vector (DateTime. DateTimeZone/UTC))
 	nm-space ((condition-fns "namespace") (map-data "namespace"))
-	conditioned-data (assoc map-data "specification" spec
+	filtered-data (select-keys map-data (keys template-task))
+	conditioned-data (assoc filtered-data "specification" spec
 				"deliversUserFunctionality" user-func
 				"namespace" nm-space
 				"taskCreateDate" create-dt)]

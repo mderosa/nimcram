@@ -159,3 +159,13 @@ that (condition-task) will ignore that key"
   (testing "we should only accept the values of 'proposed' 'in-progress' 'delivered'"
     (is (thrown? AssertionError (condition-progress "yo")))))
 
+(deftest test-unknown-variable-filtering
+  (testing "we should not write non schema variable into a task object"
+    (let [actual (create-task {"title" "a title"
+			       "project" "a project"
+			       "aa" "a"
+			       "bb" "b"
+			       "project-uid" "a project"})]
+      (is (nil? (actual "project-uid")))
+      (is (nil? (actual "aa"))))))
+      
