@@ -10,8 +10,8 @@
      [:label {:for "email"} "email:"]
      [:input {:type "text" :id "email" :name "email"}]
      [:label {:for "password"} "password:"]
-     [:input {:type "text" :id "password" :name "password"}]
+     [:input {:type "password" :id "password" :name "password"}]
      [:label {:for "confirmPassword"} "confirm password:"]
-     [:input {:type "text" :id="confirmPassword" :name "confirmPassword"}]
+     [:input {:type "password" :id="confirmPassword" :name "confirmPassword"}]
      [:input {:type "submit" :name "submit" :value "create" :class "submitting"}]
      ]]})

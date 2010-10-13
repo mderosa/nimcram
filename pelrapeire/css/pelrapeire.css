@@ -36,9 +36,10 @@ ul.errors li {
 }
 
 body {
+	width: 974px;
+	margin-left: auto;
+	margin-right: auto;
     margin-top: 10px;
-    margin-left: 20px;
-    margin-right: 20px;
 }
 
 .bmrcp-n {
@@ -181,7 +182,7 @@ div#steps {
 	clear: both;
 }
 
-#projects h2 {
+#projects h2, #actions h2 {
 	color: #89B31F;
 	font-size: 220%;
 	margin: 0 0 0.4em;
