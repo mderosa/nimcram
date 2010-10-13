@@ -3,7 +3,7 @@
 	pelrapeire.app.ui-control
 	clojure.contrib.json))
       
-(defn header []
+(defn header [context]
   [:div
    [:img {:src "/img/logoEbay_x45.gif"}]
    [:span {:style "padding-bottom:5px;font-size:20px"} "Hokulea"
@@ -20,9 +20,9 @@
    [:div {:id "headerWrapper" :class "gh-hbw"}
     [:div {:class "gh-hb"}
      [:div {:class "gh-mn"}
-      [:a {:id "BrowseCategories" :href "/users/4didckeiie3/projects"} "HOME"]
-      [:a {:id "BrowseCategories" :href "/projects/10/public/home"} "COMMON SPACE"]
-      [:a {:id "BrowseCategories" :href "/projects/10/private/home"} "YOUR SPACE"]
+      [:a {:id "BrowseCategories" :href (str "/users/" (:user-uid context) "/projects")} "HOME"]
+      [:a {:id "BrowseCategories" :href (str "/projects/" (:project-uid context) "/home")} "COMMON SPACE"]
+      [:a {:id "BrowseCategories" :href (str "/users/" (:user-uid context) "/projects/" (:project-uid context) "/home")} "YOUR SPACE"]
       ]]]])
 
 (defn footer []
@@ -46,10 +46,10 @@ surrounds the node with a layout"}
      [:link {:href "/css/pelrapeire.css" :type "text/css" :rel "stylesheet"}]
      [:script {:src "/js/yui/build/yui/yui-debug.js"}]
      (include-js (:js map-data))
-     [:script (str "var serverData = " (json-str (:params map-data)) ";")]
+     [:script (str "var serverData = " (json-str (:context map-data)) ";")]
      [:title (:title map-data)]]
     [:body
-     [:div {:class "header"} (header)]
+     [:div {:class "header"} (header (:context map-data))]
      [:div {:class "content"} (:content map-data)]
      [:div {:class "footer"} (footer)]]]))
 

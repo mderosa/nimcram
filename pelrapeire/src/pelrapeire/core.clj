@@ -2,6 +2,7 @@
   (:use compojure.core 
 	ring.adapter.jetty 
 	hiccup.core
+	pelrapeire.app.context
 	pelrapeire.controllerdefs
 	pelrapeire.views.viewdefs
 	pelrapeire.layouts.layoutdefs
@@ -11,8 +12,9 @@
   (:import (org.mortbay.jetty.handler ResourceHandler HandlerList)
 	   (org.mortbay.jetty Server)))
 
-(defn direct-to [fn-controller any-data]
-  (let [cntr-ret-data (fn-controller any-data)
+(defn direct-to [fn-controller req]
+  (let [cntr-ret-data (fn-controller req)
+	context (build-context req)
 	fn-view (let [pages-key (:view cntr-ret-data)
 		      pages-fn (do (assert pages-key)
 				   (pages-key pages))]
@@ -31,7 +33,7 @@
 	  (assert (. vw-ret-data containsKey :css))
 	  (assert (. vw-ret-data containsKey :title))
 	  (assert (. vw-ret-data containsKey :content))
-	  (fn-layout vw-ret-data))))))
+	  (fn-layout (merge vw-ret-data {:context context})))))))
 
 ;;below we have defined a set of handlers functions formed by get / post whatever.  We will pass these
 ;;functions a request map which is formed from elements in the req. but we do not pass the request 
@@ -40,30 +42,25 @@
 ;;map {:status ? :headers ? :body ?}
 (defroutes main-routes
   (GET "/index" {params :params :as req}
-       (do
-	 (println req)
-	 (println (req :headers))
-	 (println ((req :headers) "accept"))
-	 (direct-to (:index controllers) params)))
-  (POST "/login" {params :params :as req}
-	(do (println req)
-	(direct-to (:login controllers) params)))
-  (GET "/projects/:project-uid/home" {params :params :as req}
-       (direct-to (:projects-uid-home controllers) params))
-  (POST "/projects/:project-uid/tasks" {params :params :as req}
-	  (direct-to (:projects-uid-tasks controllers) params))
-  (GET "/projects/:project-uid/tasks/:task-uid" {params :params :as req}
+       (direct-to (:index controllers) req))
+  (POST "/login" req
+	(direct-to (:login controllers) req))
+  (GET "/projects/:project-uid/home" req
+       (direct-to (:projects-uid-home controllers) req))
+  (POST "/projects/:project-uid/tasks" req
+	(direct-to (:projects-uid-tasks controllers) req))
+  (GET "/projects/:project-uid/tasks/:task-uid" req
        (direct-to (:projects-uid-tasks-uid controllers) req))
-  (POST "/projects/:project-uid/tasks/:task-uid" {params :params :as req}
+  (POST "/projects/:project-uid/tasks/:task-uid" req
 	(direct-to (:projects-uid-tasks-uid controllers) req))
-  (DELETE "/projects/:project-uid/tasks/:task-uid" {params :params :as req}
+  (DELETE "/projects/:project-uid/tasks/:task-uid" req
 	  (direct-to (:projects-uid-tasks-uid controllers) req))
-  (POST "/users" {params :params}
-	(direct-to (:users controllers) params))
+  (POST "/users" req
+	(direct-to (:users controllers) req))
   (GET "/users/new" req
        (direct-to (:users-new controllers) req))
-  (GET "/users/:user-id/projects" {params :params}
-       (direct-to (:users-uid-projects controllers) params))
+  (GET "/users/:user-id/projects" req
+       (direct-to (:users-uid-projects controllers) req))
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 

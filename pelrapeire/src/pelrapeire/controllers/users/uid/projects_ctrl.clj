@@ -1,7 +1,7 @@
 (ns pelrapeire.controllers.users.uid.projects-ctrl
   (:use clojure.contrib.trace))
 
-(defn run [fn-get params]
+(defn run [fn-get {params :params}]
   {:pre [(not (nil? (params "user-id")))]}
   (let [user (fn-get (params "user-id"))]
   {:view :users.n.projects

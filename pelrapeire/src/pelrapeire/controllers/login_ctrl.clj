@@ -19,7 +19,7 @@
    (not= (shaHash in-pwd) (user "password")) {:errors '("incorrect password")}
    true user))
 
-(defn run [fn-db-get params]
+(defn run [fn-db-get {params :params}]
   (let [userA (query-user fn-db-get (params "email"))
 	userB (authenticate-password (params "password") userA)]
     (if (:errors userB)

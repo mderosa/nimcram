@@ -41,7 +41,7 @@
 	rsp-ok-error (trace (fn-create new-user))]
     (assoc new-user "_id" (rsp-ok-error "id") "_rev" (rsp-ok-error "rev"))))
 
-(defn run [{:keys [fn-get fn-create]} fn-get-users-by-email params]
+(defn run [{:keys [fn-get fn-create]} fn-get-users-by-email {params :params}]
   (let [errors (check-errors fn-get-users-by-email params)]
     (if (not-empty errors)
       {:view :users.new
