@@ -21,6 +21,16 @@
 	font-size: 50%;
 }
 
+.outlined {
+	border: 1px solid #CCC;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.std-margin {
+	margin: 1em;
+}
+
 .clickable {
 	cursor: pointer;
 }
@@ -194,6 +204,7 @@ div#steps {
 
 form {
 	padding: 10px;
+	font-size: 120%;
 	text-align: left;
 }
 form label {
@@ -212,6 +223,7 @@ form button:hover {
 }
 
 form input.submitting {
+	margin-top: 0.4em;
 	display: block;
 }
 

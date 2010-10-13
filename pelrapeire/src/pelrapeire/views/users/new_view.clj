@@ -2,7 +2,7 @@
 
 (defn show [map-data]
   {:js nil :css nil :title "new user registration" :content
-   [:div 
+   [:div {:style "width:20em;margin:auto"}
     (if (:errors map-data)
       [:ul {:class "errors"}
        (for [e (:errors map-data)] [:li e])])
