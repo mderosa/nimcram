@@ -41,7 +41,7 @@ function creates the classes for that designation"}
     (map make-task tasks-subset)))
    
 (defn show [map-data]
-  (let [js ["/js/projects/n/server.js" "/js/projects/n/task.js" "/js/projects/n/tasklist.js" "/js/projects/n/home.js"]
+  (let [js ["/js/projects/uid/server.js" "/js/projects/uid/task.js" "/js/projects/uid/tasklist.js" "/js/projects/uid/home.js"]
 	css nil
 	title "current project activity"
 	content 

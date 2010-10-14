@@ -238,7 +238,7 @@ YUI.add('tasklist', function(Y) {
 		},
 		_buildFormHtml: function() {
 			var nodNewTask = Y.Node.create(
-				'<form id="newTaskForm" >' +
+				'<form id="newTaskForm" class="task">' +
 					'<label for="title">title:</label>' +
 					'<input type="text" id="title" name="title" class="fill"></input>' +
 					'<label for="namespace">namespace:</label>' +
