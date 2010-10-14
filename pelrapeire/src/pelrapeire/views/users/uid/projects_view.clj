@@ -1,5 +1,6 @@
 (ns pelrapeire.views.users.uid.projects-view
-  (:use clojure.contrib.trace))
+  (:use clojure.contrib.trace
+	pelrapeire.app.ui-control))
 
 (defn make-project-links [ls]
   (map (fn [x] 
@@ -32,6 +33,7 @@
   [:div {:id "actions" :class "yui3-u-1-2"}
    [:div {:id "newproject" :class "outlined std-margin"}
     [:h2 "Create a new project"]
+    (error-list :newproject map-data)
     (new-project-form)]
    [:div {:id "invite" :class "outlined std-margin"}
     [:h2 "Invite others to a project"]

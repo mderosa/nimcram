@@ -1,0 +1,10 @@
+in general errors can be sent to views and layouts in on
+of two ways. When targets are specified they will be
+specific locations (<div>) in a form 
+
+errors are handled by functions in the ui-controls module
+
+:errors []
+
+:errors {:target1 []
+	:target2 []}
