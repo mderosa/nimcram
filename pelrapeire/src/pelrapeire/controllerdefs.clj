@@ -2,6 +2,7 @@
   (:use pelrapeire.repository.dbpelrapeire)
   (:require pelrapeire.controllers.index-ctrl
 	    pelrapeire.controllers.login-ctrl
+	    pelrapeire.controllers.projects.new-ctrl
 	    pelrapeire.controllers.projects.uid.home-ctrl
 	    pelrapeire.controllers.projects.uid.tasks-ctrl
 	    pelrapeire.controllers.projects.uid.tasks.uid-ctrl
@@ -23,6 +24,9 @@ request data object"}
   :login 
   (partial pelrapeire.controllers.login-ctrl/run 
 	   users-by-email)
+
+  :projects-new
+  (partial pelrapeire.controllers.projects.new-ctrl/run crud)
 
   :projects-uid-home 
   (partial pelrapeire.controllers.projects.uid.home-ctrl/run 

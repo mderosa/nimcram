@@ -13,8 +13,8 @@
 	   (org.mortbay.jetty Server)))
 
 (defn direct-to [fn-controller req]
-  (let [cntr-ret-data (fn-controller req)
-	context (build-context req)
+  (let [context (build-context req)
+	cntr-ret-data (fn-controller (merge req {:context context}))
 	fn-view (let [pages-key (:view cntr-ret-data)
 		      pages-fn (do (assert pages-key)
 				   (pages-key pages))]
@@ -45,6 +45,8 @@
        (direct-to (:index controllers) req))
   (POST "/login" req
 	(direct-to (:login controllers) req))
+  (POST "/projects/new" req
+	(direct-to (:projects-new controllers) req))
   (GET "/projects/:project-uid/home" req
        (direct-to (:projects-uid-home controllers) req))
   (POST "/projects/:project-uid/tasks" req
