@@ -24,12 +24,12 @@
   (testing "invalid emails should be flagged as errors"
     (is (= 1 (count (validate-params {"to" "marc, minmin" "project" "a project"}))))))
 
-(deftest test-add-recipient-project-not-found
+(deftest test-add-recipients-project-not-found
   (testing "if the project can not be found then we should get an error message back"
     (let [params {"to" "someone@comp.com" "project" "notexist"}
 	  fn-get (fn [x] (throw (HttpResponseException. 302 "")))
 	  fn-update (fn [x y] {"ok" true})
-	  actual (add-recipient-to-project-if-not-contributor fn-get fn-update params)]
+	  actual (add-recipients-to-project-if-not-contributor fn-get fn-update params)]
     (is (not (nil? (:errors actual)))))))
 
 

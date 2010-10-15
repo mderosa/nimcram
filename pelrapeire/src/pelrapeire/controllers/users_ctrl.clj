@@ -36,9 +36,9 @@
 	      [(:login-exists error-msgs)]
 	      [])))))))
 	
-(deftrace create-new-user [fn-create fn-contributes-to params]
-  (let [contributes-to (trace (map #(% "id") ((fn-contributes-to (params "email")) "rows")))
-	new-user (trace (create-user (assoc params "projectsImContributingTo" contributes-to)))
+(defn create-new-user [fn-create fn-contributes-to params]
+  (let [contributes-to (map #(% "id") ((fn-contributes-to (params "email")) "rows"))
+	new-user (create-user (assoc params "projectsImContributingTo" contributes-to))
 	rsp-ok-error (fn-create new-user)]
     (assoc new-user "_id" (rsp-ok-error "id") "_rev" (rsp-ok-error "rev"))))
 

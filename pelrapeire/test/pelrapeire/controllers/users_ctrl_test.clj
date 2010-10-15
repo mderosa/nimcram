@@ -34,7 +34,7 @@
   (testing "the user should not already exist in the database"
     (= [(:login-exists error-msgs)] 
        (check-errors
-	(fn [x] [{"rows" ["user1"]}])
+	(fn [x] {"rows" ["user@comp.com"]})
 	{"email" "user@comp.com" "password" "xxxxx" "confirmPassword" "xxxxx"}))))
 
 (deftest check-errors-test6
@@ -45,10 +45,11 @@
 	{"email" nil "password" nil "confirmPassword" nil}))))
 
 (deftest test-create-new-user
-  (testing "we should get a norman user object back"
-    (let [actual (create-new-user 
-		  (fn [user mode]
+  (testing "we should get a normal user object back"
+    (let [fn-create (fn [user]
 		    {"ok" true "id" "bc5287c66bc3acf02b958d6681390f3f" "rev" ""})
+	  fn-contributes-to (fn [email] {"rows" []})
+	  actual (create-new-user fn-create fn-contributes-to
 		  {"email" "marc@comp.com" "password" "shazam" "confirmPassword" "shazam"})]
       (is (= "bc5287c66bc3acf02b958d6681390f3f" (actual "_id")))
       (is (= "marc@comp.com" (actual "email"))))))

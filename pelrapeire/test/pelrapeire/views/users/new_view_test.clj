@@ -5,7 +5,7 @@
 
 (deftest test-view-error-reporting
   (testing "if there are any registration errors they should be reported by the view"
-    (let [rslt (trace (show {:errors ["this is one error"]}))]
-      (is (= :ul (first (second (:content rslt))))))))
+    (let [rslt (show {:errors ["this is one error"]})]
+      (is (= :ul (first (nth (:content rslt) 3)))))))
       
   
