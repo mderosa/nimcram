@@ -24,16 +24,15 @@
 		    (if (nil? layout-key)
 		      nil
 		      (layout-key layouts)))
-	vw-ret-data (fn-view cntr-ret-data)]
+	vw-ret-data (fn-view (merge cntr-ret-data {:context context}))]
     (if (nil? fn-layout)
       vw-ret-data
       (do 
-	(let [vw-ret-data (fn-view cntr-ret-data)]
-	  (assert (. vw-ret-data containsKey :js))
-	  (assert (. vw-ret-data containsKey :css))
-	  (assert (. vw-ret-data containsKey :title))
-	  (assert (. vw-ret-data containsKey :content))
-	  (fn-layout (merge vw-ret-data {:context context})))))))
+	(assert (. vw-ret-data containsKey :js))
+	(assert (. vw-ret-data containsKey :css))
+	(assert (. vw-ret-data containsKey :title))
+	(assert (. vw-ret-data containsKey :content))
+	(fn-layout (merge vw-ret-data {:context context}))))))
 
 ;;below we have defined a set of handlers functions formed by get / post whatever.  We will pass these
 ;;functions a request map which is formed from elements in the req. but we do not pass the request 
@@ -63,6 +62,8 @@
        (direct-to (:users-new controllers) req))
   (GET "/users/:user-id/projects" req
        (direct-to (:users-uid-projects controllers) req))
+  (POST "/users/:user-id/projects" req
+	(direct-to (:users-uid-projects controllers) req))
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 

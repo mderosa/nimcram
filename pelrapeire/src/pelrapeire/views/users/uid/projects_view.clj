@@ -20,14 +20,20 @@
    [:input {:type "submit" :class "submitting" :name "submit" :value "create"}]])
 
 (defn invitation-form [map-data]
-  [:form {:method "POST"}
+  [:form {:method "POST" :action (str "/users/" (:user-uid (:context map-data)) "/projects")}
    [:input {:type "hidden" :name "action" :value "invite"}]
    [:label {:for "project"} "project:"]
    [:select {:name "project"}
     [:option {:value "" :selected "selected"} "(select a project)"]
     (for [p ((:object map-data) "projectsImContributingTo")]
       [:option {:value p} p])
-    ]])
+    ]
+   [:label {:for "to"} "to: (separated by commas)"]
+   [:input {:type "text" :id "to" :name "to" :class "fill"}]
+   [:label {:for "message"} "message: (optional)"]
+   [:textarea {:id "message" :name "message" :class "fill"}]
+   [:input {:type "submit" :class "submitting" :name "submit" :value "invite"}]
+   ])
 
 (defn make-actions [map-data]
   [:div {:id "actions" :class "yui3-u-1-2"}
@@ -36,7 +42,7 @@
     (error-list :newproject map-data)
     (new-project-form)]
    [:div {:id "invite" :class "outlined std-margin"}
-    [:h2 "Invite others to a project"]
+    [:h2 "Send email invites to join a project"]
     (invitation-form map-data)]
    ])
 

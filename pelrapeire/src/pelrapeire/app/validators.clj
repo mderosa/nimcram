@@ -11,10 +11,15 @@
     false))
 
 ;;user specific validators
-(defn email? [^String email]
+(defmulti email? class)
+
+(defmethod email? String [email]
   (if (and email (re-find #"^\S+@\S+\.[a-zA-Z]{2,3}$" email))
     true
     false))
+
+(defmethod email? clojure.lang.PersistentVector [emails]
+  (and (< 0 (count emails)) (every? true? (map email? emails))))
 
 ;;task specific validators
 (defn progress? [^String progress]

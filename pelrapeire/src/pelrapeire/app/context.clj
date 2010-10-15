@@ -1,4 +1,5 @@
-(ns pelrapeire.app.context)
+(ns pelrapeire.app.context
+  (:use clojure.contrib.trace))
 
 (defn pull [search-string ls] 
   (if (empty? ls)
@@ -15,7 +16,7 @@
 	  key-vals (. base-string split ",")]
       (pull "user-uid/" key-vals))))
 
-(defn 
+(defn
   ^{:doc "takes a compojure request object and tries extracts application specific information"}
   build-context [req]
   (let [cookie-info ((:headers req) "cookie")]

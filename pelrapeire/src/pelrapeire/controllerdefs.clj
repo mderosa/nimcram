@@ -48,5 +48,4 @@ request data object"}
   (partial pelrapeire.controllers.users.new-ctrl/run crud)
 
   :users-uid-projects
-  (partial pelrapeire.controllers.users.uid.projects-ctrl/run 
-	   pel-get)})
+  (partial pelrapeire.controllers.users.uid.projects-ctrl/run crud users-by-email)})

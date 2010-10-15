@@ -14,7 +14,9 @@
 {
 	'_id': 'Uuid (project name)'
 	'_rev': 'Uuid'
-	'type': 'project'	
+	'type': 'project'
+	'contributors': []
+	'followers': []
 }
 
 //task

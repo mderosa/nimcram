@@ -34,6 +34,11 @@
   (testing "non emails should fail"
     (is (false? (email? "xxx")))))
 
+(deftest test-email?-collection
+  (testing "we have a lot documents that contain collections of emails so as a convience the email
+function should also be able to validate a collection of emails"
+    (is (email? ["marc@comp.com" "minmin@comp.com"]))))
+
 (deftest test-progress?-true
   (testing "test that a valid progress returns true"
     (is (progress? "in-progress"))))

@@ -1,11 +1,17 @@
 (ns pelrapeire.app.specification.conditioners
-  (:use pelrapeire.app.validators))
+  (:use pelrapeire.app.validators)
+  (:require [clojure.string :as cs]))
 
 (defn string-param-to-vector [ns]
     (cond 
      (nil? ns) []
      (string? ns) (string-param-to-vector [ns])
-     (vector? ns) (filter #(not (nil? %)) ns)))
+     (vector? ns) (vec (filter #(not (nil? %)) ns))))
+
+(defn csv-string-to-vector [^String str]
+  (if str
+    (vec (filter #(not= "" %) (map cs/trim (cs/split str #","))))
+    []))
 
 (defn 
   #^{:doc "this function is responsible for preprocessing object data before that object data
