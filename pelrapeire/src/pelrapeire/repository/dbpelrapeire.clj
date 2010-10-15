@@ -44,6 +44,15 @@ a lot of tasks so be careful what you wish for."}
     (op-get-view loc db-config)))
 
 (defn
+  #^{:doc "This function is intended for use during the create account process for a new user. Since a
+user may be registered as a contributor to an existing project. We will want to find any projects that
+he has preexisting registrations for and set those in the 'projectsImContributingTo' attribute."}
+  contributors-and-their-projects [^String email]
+  {:pre [(not (s/blank? email))]}
+  (let [loc (str "_design/picominmin/_view/contributors-and-their-projects?key=%22" email "%22")]
+    (op-get-view loc db-config)))
+
+(defn
   #^{:doc "returns a list of all the task associated with a project that are proposed
 ordering them from 3 down to 0"}
   proposed-project-tasks [#^String project-name]

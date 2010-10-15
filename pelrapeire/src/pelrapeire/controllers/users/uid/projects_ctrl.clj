@@ -60,7 +60,7 @@
        {:view :users.n.projects
 	:layout :minimallayout
 	:object user
-	:errors (:errors rslt-ok-error1)}))))
+	:errors {:invite (:errors rslt-ok-error1)}}))))
 
 (defn run [{:keys [fn-get fn-update]} fn-users-by-email {params :params :as req}]
   {:pre [(not (nil? (params "user-id")))]}

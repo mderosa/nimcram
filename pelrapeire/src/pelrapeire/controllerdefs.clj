@@ -43,7 +43,7 @@ request data object"}
 	   pel-get pel-update pel-delete)
 
   :users
-  (partial pelrapeire.controllers.users-ctrl/run crud users-by-email)
+  (partial pelrapeire.controllers.users-ctrl/run crud users-by-email contributors-and-their-projects)
   :users-new
   (partial pelrapeire.controllers.users.new-ctrl/run crud)
 

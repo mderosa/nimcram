@@ -36,18 +36,19 @@
 	      [(:login-exists error-msgs)]
 	      [])))))))
 	
-(defn create-new-user [fn-create params]
-  (let [new-user (trace (create-user params))
-	rsp-ok-error (trace (fn-create new-user))]
+(deftrace create-new-user [fn-create fn-contributes-to params]
+  (let [contributes-to (trace (map #(% "id") ((fn-contributes-to (params "email")) "rows")))
+	new-user (trace (create-user (assoc params "projectsImContributingTo" contributes-to)))
+	rsp-ok-error (fn-create new-user)]
     (assoc new-user "_id" (rsp-ok-error "id") "_rev" (rsp-ok-error "rev"))))
 
-(defn run [{:keys [fn-get fn-create]} fn-get-users-by-email {params :params}]
+(defn run [{:keys [fn-get fn-create]} fn-get-users-by-email fn-contributes-to {params :params}]
   (let [errors (check-errors fn-get-users-by-email params)]
     (if (not-empty errors)
       {:view :users.new
        :layout :minimallayout
        :errors errors}
-      (let [user (create-new-user fn-create params)]
+      (let [user (create-new-user fn-create fn-contributes-to params)]
 	{:view :redirect
 	 :layout nil
 	 :url (str "/users/" (user "_id") "/projects")}))))

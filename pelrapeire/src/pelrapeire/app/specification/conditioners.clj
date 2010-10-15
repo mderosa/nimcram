@@ -6,7 +6,9 @@
     (cond 
      (nil? ns) []
      (string? ns) (string-param-to-vector [ns])
-     (vector? ns) (vec (filter #(not (nil? %)) ns))))
+     (coll? ns) (vec (filter #(not (nil? %)) ns))
+     true (throw (IllegalArgumentException. "the argument has an invalid type"))))
+
 
 (defn csv-string-to-vector [^String str]
   (if str

@@ -48,3 +48,11 @@
       (is (re-find #"^[0-9a-f]{32,}$" "e7e02754901f31e9dea60841c9f263d5ef16b2"))
       (is (re-find #"^[0-9a-f]{32,}$" (actual "password"))))))
 
+(deftest test-create-user-bug1
+  (testing "we should be able to set a projects I am contributing to"
+    (let [params {"submit" "create", "confirmPassword" "juju", "password" "juju", "email" "juju@comp.com", 
+		 "projectsImContributingTo" '("abcdefg")}
+	 actual (create-user params)]
+      (is (not (nil? (actual "projectsImContributingTo"))))
+      (is (= "abcdefg" (first (actual "projectsImContributingTo")))))))
+	 

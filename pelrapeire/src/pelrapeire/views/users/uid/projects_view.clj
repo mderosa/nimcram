@@ -43,6 +43,7 @@
     (new-project-form)]
    [:div {:id "invite" :class "outlined std-margin"}
     [:h2 "Send email invites to join a project"]
+    (error-list :invite map-data)
     (invitation-form map-data)]
    ])
 
