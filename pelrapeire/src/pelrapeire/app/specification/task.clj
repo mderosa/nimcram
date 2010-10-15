@@ -36,7 +36,7 @@
      (nil? ns) []
      (string? ns) (ns-param-to-vector-map [ns])
      (vector? ns) (filter #(not (nil? %)) (map ns-string-to-map ns))
-     true (throw (IllegalArgumentException. "the argument has an invalid type"))
+     true (throw (IllegalArgumentException. "the argument has an invalid type"))))
 
 (defn condition-priority [p]
   {:pre [(or (nil? p) (#{"1" "2" "3"} p))]}

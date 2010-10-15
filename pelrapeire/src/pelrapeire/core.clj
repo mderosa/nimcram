@@ -64,6 +64,8 @@
        (direct-to (:users-uid-projects controllers) req))
   (POST "/users/:user-id/projects" req
 	(direct-to (:users-uid-projects controllers) req))
+  (GET "/users/:user-uid/projects/:project-uid/home" req
+	(direct-to (:users-uid-projects-uid-home controllers) req))
   (ANY "*" []
        {:status 404 :body "<h1>page not found</h1>"}))
 
