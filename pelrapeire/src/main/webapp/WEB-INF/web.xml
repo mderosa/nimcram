@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_5.xsd"
+	version="2.5">
+
+	<display-name>Hokulea</display-name>
+	<description>Project Management for Continuous Deployment</description>
+
+	<filter>
+		<filter-name>openSessionInView</filter-name>
+		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+		<init-param>
+			<param-name>sessionFactoryBeanName</param-name>
+			<param-value>sessionFactoryRegressionReport</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>openSessionInView</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!--
+		The initialization Servlet has to be the first servlet to be
+		intialized for the pipeline framework. This initializes all the ebox
+		pipeline modules
+	-->
+	<servlet>
+		<servlet-name>InitializationServlet</servlet-name>
+		<servlet-class>com.ebay.ebox.pres.web.InitializationServlet</servlet-class>
+		<init-param>
+			<param-name>com.ebay.ebox.rt.appInitModule</param-name>
+			<param-value>com.ebay.wayfinder.web.Module</param-value>
+		</init-param>
+		<init-param>
+			<param-name>com.ebay.ebox.rt.systemConfig</param-name>
+			<param-value>com.ebay.wayfinder.web.WayfinderSystemConfig</param-value>
+		</init-param>
+		<init-param>
+			<param-name>com.ebay.ebox.rt.presentationConfig</param-name>
+			<param-value>com.ebay.wayfinder.v4.error.WayfinderPresentationConfig</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<!--
+		ResourceServlet has to be mapped to baseDir "eboxapps" for
+		externalizing js and css
+	-->
+	<servlet>
+		<servlet-name>eboxapps</servlet-name>
+		<servlet-class>com.ebay.ebox.web.uti.ResourceServlet</servlet-class>
+		<init-param>
+			<param-name>baseDir</param-name>
+			<param-value>eboxapps</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>images</servlet-name>
+		<servlet-class>com.ebay.ebox.web.uti.FileServlet</servlet-class>
+		<init-param>
+			<param-name>baseDir</param-name>
+			<param-value>images</param-value>
+		</init-param>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+
+	<!--
+		Error Front Controller is required to provide a default error page for
+		any Runtime Exceptions within the ebox pipeline framework. This is not
+		mandatorym, but recommended to have it as a fallback error page for
+		your appplication.
+	-->
+	<servlet>
+		<servlet-name>ErrorFrontController</servlet-name>
+		<servlet-class>com.ebay.ebox.pres.web.ErrorFrontController</servlet-class>
+		<load-on-startup>4</load-on-startup>
+	</servlet>
+
+	<!--
+		DefaultFrontController is the ebox implemented Controller to handle
+		all the HttpRequests. Please replace this with your own Controller if
+		any.
+	-->
+	<servlet>
+		<servlet-name>DefaultFrontController</servlet-name>
+		<servlet-class>com.ebay.ebox.pres.web.DefaultFrontController</servlet-class>
+		<load-on-startup>5</load-on-startup>
+	</servlet>
+
+	<!--
+		This controller is required to enable the ValidateInternals page for
+		your server
+	-->
+	<servlet>
+		<servlet-name>ConsoleFrontController</servlet-name>
+		<servlet-class>com.ebay.configuration.console.ConsoleFrontController</servlet-class>
+		<load-on-startup>6</load-on-startup>
+	</servlet>
+
+	<!--
+		<servlet> <servlet-name>JobScheduleServlet</servlet-name>
+		<servlet-class> com.ebay.wayfinder.web.job.JobScheduleServlet
+		</servlet-class> <load-on-startup>7</load-on-startup> </servlet>
+	-->
+
+	<servlet-mapping>
+		<servlet-name>eboxapps</servlet-name>
+		<url-pattern>/eboxapps/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>images</servlet-name>
+		<url-pattern>/images/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ErrorFrontController</servlet-name>
+		<url-pattern>/DefaultError</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DefaultFrontController</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ConsoleFrontController</servlet-name>
+		<url-pattern>/admin/v3console/*</url-pattern>
+	</servlet-mapping>
+	<!--  Add other specific servlets here -->
+
+	<welcome-file-list>
+		<welcome-file>eboxapps/index.htm</welcome-file>
+	</welcome-file-list>
+</web-app>
+
