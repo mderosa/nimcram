@@ -1,6 +1,6 @@
 (ns pelrapeire.core
   (:use compojure.core 
-	ring.adapter.jetty 
+	pelrapeire.jetty 
 	hiccup.core
 	pelrapeire.app.context
 	pelrapeire.controllerdefs
