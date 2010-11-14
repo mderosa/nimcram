@@ -53,3 +53,4 @@
 		  {"email" "marc@comp.com" "password" "shazam" "confirmPassword" "shazam"})]
       (is (= "bc5287c66bc3acf02b958d6681390f3f" (actual "_id")))
       (is (= "marc@comp.com" (actual "email"))))))
+

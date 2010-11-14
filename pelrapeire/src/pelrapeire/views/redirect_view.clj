@@ -1,5 +1,6 @@
 (ns pelrapeire.views.redirect-view
-  (:use ring.util.response))
+  (:use ring.util.response
+	clojure.contrib.trace))
 
 (defn show [map-data]
   {:pre [(:url map-data)]}

@@ -1,4 +1,6 @@
 (ns pelrapeire.controllers.users-ctrl
+  ^{:doc "this contorller is resonsible for adding new users to to the database and storing a user cookie
+on the client side application."}
   (:use pelrapeire.app.validators
 	pelrapeire.app.specification.user
 	clojure.contrib.trace)
@@ -43,6 +45,7 @@
     (assoc new-user "_id" (rsp-ok-error "id") "_rev" (rsp-ok-error "rev"))))
 
 (defn run [{:keys [fn-get fn-create]} fn-get-users-by-email fn-contributes-to {params :params}]
+  {:post [(:cookie %)]}
   (let [errors (check-errors fn-get-users-by-email params)]
     (if (not-empty errors)
       {:view :users.new
@@ -51,4 +54,5 @@
       (let [user (create-new-user fn-create fn-contributes-to params)]
 	{:view :redirect
 	 :layout nil
+	 :cookie (str "Hokulea=user-uid/" (user "_id") "; Path=/; Max-Age=432000")
 	 :url (str "/users/" (user "_id") "/projects")}))))
