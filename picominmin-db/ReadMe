@@ -1,0 +1,6 @@
+
+Database Installation
+- install couchdb
+- install setuptools and CouchApp following the directions at http://guide.couchdb.org/editions/1/en/managing.html
+- from the directory where this ReadMe file is located
+enter the command  'couchapp push . picominmin' to push to your local couchdb installation
