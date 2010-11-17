@@ -5,6 +5,7 @@
 (def mail-config {:mail.smtp.host "smtp.gmail.com"
 		  :mail.smtp.auth "true"
 		  :mail.smtp.startls.enable, "true"
+		  :port 587
 		  :username "na"
 		  :password "na"})
 

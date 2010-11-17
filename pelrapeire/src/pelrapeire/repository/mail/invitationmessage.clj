@@ -14,7 +14,10 @@
        "Set up an account using this email adrees and you can begin "
        "contributing to the project right away.\nBest,\n\tHokulea"))
 
-(deftype InvitationData [frm to msg prj host]
+(deftype InvitationData [^String frm 
+			 ^clojure.lang.PersistentVector to 
+			 ^String msg ^String prj 
+			 ^String host]
   MailData
   (to [md] to)
   (message [md s]
