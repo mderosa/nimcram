@@ -11,7 +11,8 @@
 		 [org.mortbay.jetty/jetty-util "6.1.14"]
 		 [org.apache.httpcomponents/httpcore "4.0.1"]
 		 [org.apache.httpcomponents/httpclient "4.0.1"]
-		 [joda-time/joda-time "1.6"]]
+		 [joda-time/joda-time "1.6"]
+		 [javax.mail/mail "1.4.1"]]
   :dev-dependencies [[swank-clojure/swank-clojure "1.3.0-SNAPSHOT"]]
   :jar-dir "target/"
   :test-selectors {:default (fn [v] (not (:integration v)))
