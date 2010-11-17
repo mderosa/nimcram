@@ -18,7 +18,8 @@
   MailData
   (to [md] to)
   (message [md s]
-	    (doto (MimeMessage. s)
-	      (.setSubject "join our project")
-	      (.setText (invitation-text frm prj msg host))
-	      (.setFrom (frm)))))
+	   (let [fromAddress (InternetAddress. frm)]
+	   (doto (MimeMessage. s)
+	     (.setSubject "join our project")
+	     (.setText (invitation-text frm prj msg host))
+	     (.setFrom fromAddress)))))

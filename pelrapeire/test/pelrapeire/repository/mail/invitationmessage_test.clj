@@ -1,6 +1,9 @@
 (ns pelrapeire.repository.mail.invitationmessage-test
   (:use clojure.test
-	pelrapeire.repository.mail.invitationmessage))
+	pelrapeire.repository.mail.invitationmessage
+	pelrapeire.repository.mailconfig
+	pelrapeire.repository.mail.mail)
+  (:import pelrapeire.repository.mail.invitationmessage.InvitationData))
 
 (def request {:headers {
 		"cookie" "Hokulea=user-uid/bc5287c66bc3acf02b958d6681390f3f",
@@ -19,8 +22,10 @@
   (testing "we should not create messages for unknown senders"
     (is (thrown? AssertionError (invitation-text nil, "pico" "hello" request)))))
 
-;; (deftest test-message
-;;   (testing "we should be able to create a message from InvitationData"
-;;     (let [data (InvitationData. "marc@email.com" ["dude@email.com"] "hello" "PicoMinMin" "localhost:8080")
-;; 	  actual (message data)]
-;;       )))
+
+(deftest test-message
+  (testing "we should be able to create a message from InvitationData"
+    (let [data (InvitationData. "marc@email.com" ["dude@email.com"] "hello" "PicoMinMin" "localhost:8080")
+	  session (create-session (mail-properties mail-config))
+	  actual (message data session)]
+      (is (not (nil? actual))))))

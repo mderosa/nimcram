@@ -8,8 +8,8 @@
 		  :username "na"
 		  :password "na"})
 
-(defn mail-properties []
-  (let [mail-elements (filter #(re-find #":mail" (str (key %))) mail-config)]
+(defn mail-properties [config]
+  (let [mail-elements (filter #(re-find #":mail" (str (key %))) config)]
     (loop [es mail-elements props (Properties.)]
       (if (empty? es)
 	props

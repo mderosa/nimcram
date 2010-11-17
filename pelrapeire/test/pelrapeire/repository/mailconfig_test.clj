@@ -4,7 +4,7 @@
 
 (deftest test-mail-properties
   (testing "we should currently have 3 mail properties"
-    (let [props (mail-properties)]
+    (let [props (mail-properties mail-config)]
       (is (not (nil? (. props getProperty "mail.smtp.host"))))
       (is (= (. props size) 3)))))
 
