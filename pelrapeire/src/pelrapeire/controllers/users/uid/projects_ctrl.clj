@@ -52,15 +52,9 @@
    (let [rslt-ok-error1 (add-recipients-to-project-if-not-contributor fn-get fn-update params)
 	 user (fn-get (params "user-id"))]
      (if (rslt-ok-error1 "ok")
-       (let [rslt-ok-error2 (add-project-to-recipient-if-registered-user fn-update fn-users-by-email params)
-	     ]
-	 {:view :users.n.projects
-	  :layout :minimallayout
-	  :object user})
-       {:view :users.n.projects
-	:layout :minimallayout
-	:object user
-	:errors {:invite (:errors rslt-ok-error1)}}))))
+       (let [rslt-ok-error2 (add-project-to-recipient-if-registered-user fn-update fn-users-by-email params)]
+	 {:view :users.n.projects :layout :minimallayout :object user})
+       {:view :users.n.projects	:layout :minimallayout :object user :errors {:invite (:errors rslt-ok-error1)}}))))
 
 (defn run [{:keys [fn-get fn-update]} fn-users-by-email {params :params :as req}]
   {:pre [(not (nil? (params "user-id")))]}

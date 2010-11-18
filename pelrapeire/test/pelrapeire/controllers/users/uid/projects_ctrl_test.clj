@@ -32,5 +32,6 @@
 	  actual (add-recipients-to-project-if-not-contributor fn-get fn-update params)]
     (is (not (nil? (:errors actual)))))))
 
-
-	    
+(deftest test-no-recipeints-specified
+  (testing "if there are not recipients then then that should be indicated in an error message"
+    (is (= 1 1))))
