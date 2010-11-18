@@ -7,7 +7,7 @@
 
 (def couch-rsp-handler
      (proxy [ResponseHandler] []
-       (#^String handleResponse [rsp]
+       (^String handleResponse [rsp]
 		 (let [statusCode (.. rsp getStatusLine getStatusCode)
 		       entity (. rsp getEntity)]
 		   (if (>= statusCode 300)
