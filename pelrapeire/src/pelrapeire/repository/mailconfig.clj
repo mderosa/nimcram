@@ -2,14 +2,20 @@
   (:import (java.util Properties))
   (:use clojure.contrib.trace))
 
-(def mail-config {:mail.smtp.host "smtp.gmail.com"
+(def ^{:doc "The configuration setting needed by the application to send mail. Keys beginning with
+:mail are java mail api specific.  All other keys are used by application code"}
+     mail-config {:activate.mail true
+		  :mail.smtp.host "smtp.gmail.com"
 		  :mail.smtp.auth "true"
 		  :mail.smtp.startls.enable, "true"
 		  :port 587
 		  :username "na"
 		  :password "na"})
 
-(defn mail-properties [config]
+(defn 
+  ^{:doc "reads in all the configuration keys that start with :mail and places them 
+into a Properties class."}
+  mail-properties [config]
   (let [mail-elements (filter #(re-find #":mail" (str (key %))) config)]
     (loop [es mail-elements props (Properties.)]
       (if (empty? es)
