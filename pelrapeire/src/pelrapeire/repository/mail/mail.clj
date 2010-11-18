@@ -20,9 +20,7 @@ to turn off mail.  To turn off mail set the :activate.mail key in the mail confi
   create-transport [^Session session config]
   (if (:activate.mail config)
     (. session getTransport "smpt")
-    (proxy [Transport] [session nil]
-      (connect [host port user pwd] nil)
-      (send [msg] nil))))
+    nil))
   
 (defn sent-emails 
   ([es] es)
@@ -44,13 +42,15 @@ to turn off mail.  To turn off mail set the :activate.mail key in the mail confi
 	not-emails (filter #(not (email? %)) (to mailData))
 	to-addresses (trace (into-array InternetAddress (map #(InternetAddress. %) emails)))]
     (try 
-     (let [^Session session (create-session (mail-properties config))
-	   ^Message msg (message mailData session)
-	   ^Transport tprt (create-transport session config)]
+     (let [^Session session (trace (create-session (mail-properties config)))
+	   ^Message msg (trace (message mailData session))
+	   ^Transport tprt (trace (create-transport session config))]
        (do
-	 (. msg setRecipients Message$RecipientType/TO to-addresses)
-	 (. tprt connect (:mail.smtp.host mail-config) (:port mail-config) (:username mail-config) (:password mail-config))
-	 (. tprt send msg)
+	 (if (:activate.mail config)
+	   (do
+	     (. msg setRecipients Message$RecipientType/TO to-addresses)
+	     (. tprt connect (:mail.smtp.host mail-config) (:port mail-config) (:username mail-config) (:password mail-config))
+	     (. tprt send msg)))
 	 {:sent emails :unsent not-emails :error-msg nil}))
      (catch SendFailedException sfe 
        {:sent (sent-emails [] sfe) :unsent (unsent-emails not-emails sfe) :error-msg (. sfe getMessage)})

@@ -35,7 +35,20 @@
 
 (deftest test-send-mail
   (testing "we should get a workable error message if we can not send an email"
-    (let [actual (trace (send-mail invitation test-config))]
+    (let [actual (send-mail invitation test-config)]
       (is (not= nil (:error-msg actual)))
       (is (= "No provider for smpt" (:error-msg actual)))
       (is (= "to@email.com" (first (:unsent actual)))))))
+
+(def test-config-off {:activate.mail false
+		      :mail.smtp.host "smtp.server.com"
+		      :mail.smtp.auth "true"
+		      :mail.smtp.startls.enable, "true"
+		      :port 587
+		      :username "na"
+		      :password "na"})
+
+(deftest test-send-mail-turned-off
+  (testing "we should be able to turn off mail via a configuration setting for both production and testing"
+    (let [actual (send-mail invitation test-config-off)]
+      (is (nil? (:error-msg actual))))))
