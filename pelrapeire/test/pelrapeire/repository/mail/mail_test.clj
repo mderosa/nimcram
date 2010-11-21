@@ -2,6 +2,7 @@
   (:use clojure.test
 	clojure.contrib.trace
 	pelrapeire.repository.mail.invitationmessage
+	pelrapeire.app.exception
 	pelrapeire.repository.mail.mail)
   (:import (javax.mail Address SendFailedException)
 	   pelrapeire.repository.mail.invitationmessage.InvitationData	   
@@ -35,10 +36,9 @@
 
 (deftest test-send-mail
   (testing "we should get a workable error message if we can not send an email"
-    (let [actual (send-mail invitation test-config)]
-      (is (not= nil (:error-msg actual)))
-      (is (= "No provider for smpt" (:error-msg actual)))
-      (is (= "to@email.com" (first (:unsent actual)))))))
+    (let [actual (with-exception-translation (send-mail invitation test-config))]
+      (is (:errors actual))
+      (is (= "error sending mail, reason: No provider for smpt" (first (:errors actual)))))))
 
 (def test-config-off {:activate.mail false
 		      :mail.smtp.host "smtp.server.com"
@@ -51,4 +51,4 @@
 (deftest test-send-mail-turned-off
   (testing "we should be able to turn off mail via a configuration setting for both production and testing"
     (let [actual (send-mail invitation test-config-off)]
-      (is (nil? (:error-msg actual))))))
+      (is (nil? (:errors actual))))))

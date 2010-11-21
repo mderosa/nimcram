@@ -1,8 +1,13 @@
 (ns pelrapeire.controllers.users.uid.projects-ctrl
   (:use clojure.contrib.trace
 	pelrapeire.app.validators
+	pelrapeire.app.exception
+	pelrapeire.repository.mail.mail
+	pelrapeire.repository.mail.invitationmessage
+	pelrapeire.repository.mailconfig
 	pelrapeire.app.specification.conditioners)
-  (:import org.apache.http.client.HttpResponseException)
+  (:import org.apache.http.client.HttpResponseException
+	   pelrapeire.repository.mail.invitationmessage.InvitationData)
   (:require [clojure.string :as cs]))
 
 (defn run-get [fn-get {params :params}]
@@ -19,25 +24,19 @@
 		       "the list of emails does not have the expected form")))
 	project-error (if (cs/blank? (params "project"))
 			"a project name must be selected")]
-    (filter #(not (nil? %)) [to-error, project-error])))
+    (if (or to-error project-error)
+      (throw (Exception. (str (vec (filter #(not (nil? %)) [to-error, project-error])))))
+      nil)))
 
 (defn append-no-duplicates [current additions]
   (vec (set (flatten (conj current additions)))))
 
 (defn add-recipients-to-project-if-not-contributor [fn-get fn-update params]
-  (let [param-errors (validate-params params)]
-    (if (empty? param-errors)
-      (if-let [project (try 
-			(fn-get (params "project"))
-			(catch HttpResponseException e nil))]
-	(let [updated-contributors (append-no-duplicates (project "contributors") (csv-string-to-vector (params "to")))
-	      updated-project (assoc project "contributors" updated-contributors)
-	      rsp-ok-error (fn-update updated-project :write)]
-	  (if (rsp-ok-error "ok")
-	    rsp-ok-error
-	    {:errors [(rsp-ok-error "description")]}))
-	{:errors ["the project was not found"]})
-      {:errors param-errors})))
+  (do (validate-params params)
+      (let [project (fn-get (params "project"))
+	   updated-contributors (append-no-duplicates (project "contributors") (csv-string-to-vector (params "to")))
+	   updated-project (assoc project "contributors" updated-contributors)]
+	(do (fn-update updated-project :write)))))
 
 (defn add-project-to-recipient-if-registered-user [fn-update fn-users-by-email params]
   (doseq [email (csv-string-to-vector (params "to"))]
@@ -45,16 +44,26 @@
       (let [projects-im-contributing-to (append-no-duplicates (user "projectsImContributingTo") (params "project"))]
 	(fn-update (assoc user "projectsImContributingTo" projects-im-contributing-to) :write)))))
 
-(defn run-post [fn-get fn-update fn-users-by-email {params :params}]
+(defn mail-user-invitations [params req mail-config]
+  {:pre [(string? (params "message"))]}
+  (let [to (csv-string-to-vector (params "to"))
+	invitation-data (InvitationData. (params "user-id") to (params "message") (params "project") ((:headers req) "host"))]
+    (send-mail invitation-data mail-config)))
+
+(defn run-post [fn-get fn-update fn-users-by-email {params :params :as req}]
   {:pre [(#{"invite"} (params "action"))]}
   (cond 
    (= "invite" (params "action"))
-   (let [rslt-ok-error1 (add-recipients-to-project-if-not-contributor fn-get fn-update params)
-	 user (fn-get (params "user-id"))]
-     (if (rslt-ok-error1 "ok")
-       (let [rslt-ok-error2 (add-project-to-recipient-if-registered-user fn-update fn-users-by-email params)]
-	 {:view :users.n.projects :layout :minimallayout :object user})
-       {:view :users.n.projects	:layout :minimallayout :object user :errors {:invite (:errors rslt-ok-error1)}}))))
+   (let [user (fn-get (params "user-id"))
+	 rslt (with-exception-translation 
+		(do (add-recipients-to-project-if-not-contributor fn-get fn-update params)
+		    (add-project-to-recipient-if-registered-user fn-update fn-users-by-email params)
+		    (mail-user-invitations params req mail-config)
+		    {:view :users.n.projects :layout :minimallayout :object user}))
+	 ]
+     (if (:errors rslt)
+       {:view :users.n.projects	:layout :minimallayout :object user :errors {:invite (:errors rslt)}}
+       rslt))))
 
 (defn run [{:keys [fn-get fn-update]} fn-users-by-email {params :params :as req}]
   {:pre [(not (nil? (params "user-id")))]}

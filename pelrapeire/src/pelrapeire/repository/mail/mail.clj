@@ -28,6 +28,10 @@ to turn off mail.  To turn off mail set the :activate.mail key in the mail confi
      (concat es 
 	     (map #(. % toString) (. ex getValidSentAddresses)))))
 
+(defn join
+  ([] "")
+  ([x y] (str x "," y)))
+
 (defn unsent-emails
   ([es] es)
   ([es ^SendFailedException ex] 
@@ -40,11 +44,11 @@ to turn off mail.  To turn off mail set the :activate.mail key in the mail confi
   send-mail [mailData config]
   (let [emails (filter email? (to mailData))
 	not-emails (filter #(not (email? %)) (to mailData))
-	to-addresses (trace (into-array InternetAddress (map #(InternetAddress. %) emails)))]
+	to-addresses (into-array InternetAddress (map #(InternetAddress. %) emails))]
     (try 
-     (let [^Session session (trace (create-session (mail-properties config)))
-	   ^Message msg (trace (message mailData session))
-	   ^Transport tprt (trace (create-transport session config))]
+     (let [^Session session (create-session (mail-properties config))
+	   ^Message msg (message mailData session)
+	   ^Transport tprt (create-transport session config)]
        (do
 	 (if (:activate.mail config)
 	   (do
@@ -53,7 +57,14 @@ to turn off mail.  To turn off mail set the :activate.mail key in the mail confi
 	     (. tprt send msg)))
 	 {:sent emails :unsent not-emails :error-msg nil}))
      (catch SendFailedException sfe 
-       {:sent (sent-emails [] sfe) :unsent (unsent-emails not-emails sfe) :error-msg (. sfe getMessage)})
+       (throw (Exception. 
+	       (str "error sending mail"
+		    ", reason: " (. sfe getMessage) 
+		    ", successful recipients: " (reduce join (sent-emails [] sfe))
+		    ", unsuccessful recipients: " (reduce join (unsent-emails not-emails sfe))))))
      (catch MessagingException me 
-       {:sent [] :unsent emails :error-msg (. me getMessage)}))))
+              (throw (Exception. 
+	       (str "error sending mail"
+		    ", reason: " (. me getMessage))))))))
+
 

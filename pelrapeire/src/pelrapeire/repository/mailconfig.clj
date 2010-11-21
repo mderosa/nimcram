@@ -4,7 +4,7 @@
 
 (def ^{:doc "The configuration setting needed by the application to send mail. Keys beginning with
 :mail are java mail api specific.  All other keys are used by application code"}
-     mail-config {:activate.mail true
+     mail-config {:activate.mail false
 		  :mail.smtp.host "smtp.gmail.com"
 		  :mail.smtp.auth "true"
 		  :mail.smtp.startls.enable, "true"
