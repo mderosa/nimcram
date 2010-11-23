@@ -83,17 +83,18 @@ not have a taskCompleteDate"}
 
 ;;http://localhost:5984/picominmin/_design/picominmin/_view/delivered-tasks?startkey=[%22PicoMinMin%22,2011]
 (defn
-  #^{:doc "returns a list of delivered tasks (not (nil? taskCompleteDate)).  if a
+  ^{:doc "returns a list of delivered tasks (not (nil? taskCompleteDate)).  if a
 cut off date is supplied then projects where (< taskCompleteDate cut-off-date) are
 not included in the returned list"}
   delivered-project-tasks 
-  ([#^String project-name]
+  ([^String project-name]
      {:pre [(not (s/blank? project-name))]}
      (let [loc (str "_design/picominmin/_view/delivered-tasks?"
 		    "descending=true&"
+		    "startkey=[%22" project-name "%22,9999]&"
 		    "endkey=[%22" project-name "%22]")]
        (op-get-view loc db-config)))
-  ([#^String project-name #^DateTime cut-off-date]
+  ([^String project-name ^DateTime cut-off-date]
      {:pre [(not (s/blank? project-name))]}
      (let [loc (str "_design/picominmin/_view/delivered-tasks?"
 		    "descending=true&"
@@ -108,3 +109,15 @@ not included in the returned list"}
 		    (.. cut-off-date secondOfMinute get) "]")]
        (op-get-view loc db-config))))
 
+;;http://localhost:5984/picominmin/_design/picominmin/_view/delivered-tasks?descending=true&startkey=[%22PicoMinMin%22,9999]&endkey=[%22PicoMinMin%22]&limit=300
+(defn
+  ^{:doc "returns a list of delivered project task in order most recent to less recently deployed.  The
+function takes a parameter 'limit' which specifies the maximum number of entries to return"}
+  n-most-recent-delivered-project-tasks [^String project-name, limit]
+     {:pre [(not (s/blank? project-name)) (not (nil? limit))]}
+     (let [loc (str "_design/picominmin/_view/delivered-tasks?"
+		    "descending=true&"
+		    "startkey=[%22" project-name "%22,9999]&"
+		    "endkey=[%22" project-name "%22]"
+		    "limit=" limit)]
+       (op-get-view loc db-config)))
