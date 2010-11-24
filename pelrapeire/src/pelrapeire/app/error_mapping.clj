@@ -1,4 +1,5 @@
-(ns pelrapeire.app.error-mapping)
+(ns pelrapeire.app.error-mapping
+  (:use clojure.contrib.trace))
 
 (def errors {"not_found" 1})
 (def codes {1 "not_found"})

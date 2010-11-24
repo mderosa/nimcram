@@ -3,7 +3,9 @@
 (defn 
   ^{:doc "calculates the average of a sequence of numbers"}
   average [ls]
-  (/ (apply + ls) (count ls)))
+  (if (empty? ls)
+    nil
+    (/ (apply + ls) (count ls))))
 
 (defn 
   ^{:doc "calculates the standard deviation of a seqence of numbers"}
@@ -19,8 +21,8 @@
     (* n (half-factorial (- n 1)))))
 
 (defn factorial [n]
-  {:pre [(>= n 1) (= 0 (mod n 1))]}
-  (if (= n 1)
+  {:pre [(>= n 0) (= 0 (mod n 1))]}
+  (if (or (= n 1) (= n 0))
     1
     (* n (factorial (- n 1)))))
 

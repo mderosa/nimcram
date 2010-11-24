@@ -25,9 +25,9 @@
        :object user
        :errors {:newproject ["a project with this name already exists"]}}
       (let [new-project (create-project {"contributors" (user "email")})
-	    rsp-ok-error1 (trace (fn-create (. (params "project") trim) new-project))
+	    rsp-ok-error1 (fn-create (. (params "project") trim) new-project)
 	    modified-user (add-user-project (rsp-ok-error1 "id") user)
-	    rsp-ok-error2 (trace (fn-update modified-user :append))]
+	    rsp-ok-error2 (fn-update modified-user :append)]
 	{:view :users.n.projects
 	 :layout :minimallayout
 	 :object modified-user}))))

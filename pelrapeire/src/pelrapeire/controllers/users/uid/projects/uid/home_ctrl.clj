@@ -5,15 +5,6 @@
   (:import org.joda.time.Days))
 
 (defn 
-  ^{:doc "Returns a data structure which contains data which can be used to build an x (and r control chart
-eventually). the returned data structure is of the form 
-{:average x :ucl su :lcl sl :rationalsubgroups [[a b c]...] :subgroupaverage [a b c]}"}
-  run [{:keys [fn-get fn-update]} fn-n-recent-delivered-tasks {params :params :as req}]
-  {:view :users.uid.projects.uid.home
-   :layout :projectlayout
-   :object nil})
-
-(defn 
   ^{:doc "takes a sequence of the form (a b c d e f) and starting at the beginning returns every nth element.
 For example (a d)"} 
   take-first-of-each-n [ls n]
@@ -32,21 +23,56 @@ end of the list that are insufficient to make a full group are dropped"}
 (defn 
   ^{:doc "takes an object which have a taskStartDate and a taskCompleteDate and maybe a taskTerminateDate and
 calculates the time in process.  Tasks that have a terminate data are docked twice time"}
-  calculate-days-in-process [map]
-    {:pre [(map "taskStartDate")  (or (map "taskCompleteDate") (map "taskTerminateDate"))]
+  calculate-days-in-process [kv]
+    {:pre [(kv "taskStartDate")  (or (kv "taskCompleteDate") (kv "taskTerminateDate"))]
      :post [(>= % 0)]}
-    (let [startDt (vector-to-datetime (map "taskStartDate"))
+    (let [startDt (vector-to-datetime (kv "taskStartDate"))
 	  endDt (vector-to-datetime
-		 (if (map "taskTerminateDate") 
-		   (map "taskTerminateDate")
-		   (map "taskCompleteDate")))
-	  multiplier (if (map "taskTerminateDate") 2 1)]
+		 (if (kv "taskTerminateDate") 
+		   (kv "taskTerminateDate")
+		   (kv "taskCompleteDate")))
+	  multiplier (if (kv "taskTerminateDate") 2 1)]
       (* multiplier (.getDays (Days/daysBetween startDt endDt)))))
 
 (defn calculate-subgroup-averages [ls]
-  (map (fn [v] (/ (apply + v) (count v))) ls))
+  (map #(average %) ls))
+
+(defn calculate-subgroup-std-deviations [ls]
+  (map #(std-deviation %) ls))
 
 (defn 
-  ^{:doc "takes a sequence of the form ([a b c] [d e f]...) and returns an estimate of the subgroup standard
-deviation"}
-  estimate-subgroup-std-deviation [ls])
+  xbar-ucl [xbars ss group-size]
+  {:pre [(= (count xbars) (count ss))]}
+  (if (= 0 (count xbars))
+    nil
+    (let [a (* 3 (average ss))
+	  b (* (c4-factor group-size) (Math/sqrt group-size))]
+      (+ (average xbars) (/ a b)))))
+
+(defn 
+  xbar-lcl [xbars ss group-size]
+  {:pre [(= (count xbars) (count ss))]}
+  (if (= 0 (count xbars))
+    nil
+    (let [a (* 3 (average ss))
+	  b (* (c4-factor group-size) (Math/sqrt group-size))]
+      (- (average xbars) (/ a b)))))
+
+(defn 
+  ^{:doc "Returns a data structure which contains data which can be used to build an x (and r control chart
+eventually). the returned data structure is of the form 
+{:average x :ucl su :lcl sl :subgroups [[a b c]...] :subgroup-avgs [a b c]}"}
+  run [{:keys [fn-get fn-update]} fn-n-recent-delivered-tasks {params :params :as req}]
+(let [recently-delivered-raw (reverse (map #(% "value") ((fn-n-recent-delivered-tasks (:project-uid params) 300) "rows")))
+      recently-delivered-days (map #(calculate-days-in-process %) recently-delivered-raw)
+      days-subgroups (make-rational-subgroups recently-delivered-days 3)
+      xs (calculate-subgroup-averages days-subgroups)
+      ss (calculate-subgroup-std-deviations days-subgroups)]
+  {:view :users.uid.projects.uid.home
+   :layout :projectlayout
+   :object {:xbarbar (average xs)
+	    :xbarucl (xbar-ucl xs ss 3)
+	    :xbarlcl (xbar-lcl xs ss 3)
+	    :subgroups days-subgroups
+	    :subgroup-avgs xs
+	    }}))

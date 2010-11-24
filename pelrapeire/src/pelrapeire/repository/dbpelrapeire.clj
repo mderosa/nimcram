@@ -1,5 +1,5 @@
 (ns 
-    #^{:doc "this is the interface to the pelrapeire database"}
+    ^{:doc "this is the interface to the pelrapeire database"}
   pelrapeire.repository.dbpelrapeire
   (:use pelrapeire.repository.dbconfig
 	pelrapeire.repository.db.dbops)
@@ -118,6 +118,6 @@ function takes a parameter 'limit' which specifies the maximum number of entries
      (let [loc (str "_design/picominmin/_view/delivered-tasks?"
 		    "descending=true&"
 		    "startkey=[%22" project-name "%22,9999]&"
-		    "endkey=[%22" project-name "%22]"
+		    "endkey=[%22" project-name "%22]&"
 		    "limit=" limit)]
        (op-get-view loc db-config)))

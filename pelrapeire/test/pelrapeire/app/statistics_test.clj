@@ -1,6 +1,6 @@
-(ns pelrapiere.app.statistics-test
+(ns pelrapeire.app.statistics-test
   (:use clojure.test
-	pelrapeire.app.statistics)
+	pelrapeire.app.statistics))
 
 (deftest test-std-deviation
   (testing "test the standard deviation of 2 numbers"
@@ -23,3 +23,11 @@
     (let [r (c4-factor 10)]
       (is (> r 0.972))
       (is (< r 0.973)))))
+
+(deftest test-factorial-zero
+  (testing "0! should be equal to 1 by definition"
+    (is (= 1 (factorial 0)))))
+
+(deftest test-average
+  (testing "an empty list should return nil"
+    (is (nil? (average '())))))
