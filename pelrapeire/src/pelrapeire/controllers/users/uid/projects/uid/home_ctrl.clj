@@ -63,7 +63,7 @@ calculates the time in process.  Tasks that have a terminate data are docked twi
 eventually). the returned data structure is of the form 
 {:average x :ucl su :lcl sl :subgroups [[a b c]...] :subgroup-avgs [a b c]}"}
   run [{:keys [fn-get fn-update]} fn-n-recent-delivered-tasks {params :params :as req}]
-(let [recently-delivered-raw (reverse (map #(% "value") ((fn-n-recent-delivered-tasks (:project-uid params) 300) "rows")))
+(let [recently-delivered-raw (reverse (map #(% "value") ((fn-n-recent-delivered-tasks (params "project-uid") 300) "rows")))
       recently-delivered-days (map #(calculate-days-in-process %) recently-delivered-raw)
       days-subgroups (make-rational-subgroups recently-delivered-days 3)
       xs (calculate-subgroup-averages days-subgroups)
