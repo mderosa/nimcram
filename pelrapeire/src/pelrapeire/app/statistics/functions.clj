@@ -1,4 +1,4 @@
-(ns pelrapeire.app.statistics)
+(ns pelrapeire.app.statistics.functions)
 
 (defn 
   ^{:doc "calculates the average of a sequence of numbers"}

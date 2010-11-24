@@ -1,6 +1,6 @@
-(ns pelrapeire.app.statistics-test
+(ns pelrapeire.app.statistics.functions-test
   (:use clojure.test
-	pelrapeire.app.statistics))
+	pelrapeire.app.statistics.functions))
 
 (deftest test-std-deviation
   (testing "test the standard deviation of 2 numbers"
