@@ -43,6 +43,6 @@ request data object"}
   :users-uid-projects
   (partial pelrapeire.controllers.users.uid.projects-ctrl/run crud users-by-email)
   :users-uid-projects-uid-home
-  (partial pelrapeire.controllers.users.uid.projects.uid.home-ctrl/run crud)
+  (partial pelrapeire.controllers.users.uid.projects.uid.home-ctrl/run crud n-most-recent-delivered-project-tasks)
 
 })

@@ -34,7 +34,9 @@ odysseus$ curl -vX DELETE http://localhost:5984/albums/record2?rev=1-c3f5ae1d670
 querying views
 http://localhost:5984/picominmin/_design/picominmin/_view/project-tasks?key="PicoMinMin"
 limit=?
-descending=true|false    
+descending=true|false
+startkey=?
+endkey=? 
 
 
 examples
