@@ -17,7 +17,7 @@ var rlLeft = pnl.add(pv.Rule)
 	.left(0)
 	.strokeStyle("#aaa");
 rlLeft.add(pv.Label)
-	.text("hours")
+	.text("Hours")
 	.left(-5)
 	.top(100)
 	.textAngle(-Math.PI/2);
@@ -26,7 +26,7 @@ var rlRight = pnl.add(pv.Rule)
 	.right(0)
 	.strokeStyle("#aaa");
 rlRight.add(pv.Label)
-	.text("days")
+	.text("Days")
 	.right(-15)
 	.top(100)
 	.textAngle(-Math.PI/2);
@@ -44,6 +44,12 @@ hrule.add(pv.Label)
 	.right(0)
 	.textAlign("left")
 	.textBaseline("middle");
+	
+pnl.add(pv.Label)
+	.left(934/2)
+	.top(320)
+	.textAlign("center")	
+	.text("Earlier -> Later");
 	
 pnl.add(pv.Label)
 	.left(934/2)
