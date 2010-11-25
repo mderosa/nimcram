@@ -21,5 +21,5 @@
     
     [:div {:id "xbardescription"}
      [:p (str "average work in-progress time (hours): " (double (/ (Math/round (double (* 10 (:xbarbar xbar-data)))) 10)))]
-     [:p (str "average work in-progress time (days): " (double (/ (Math/round (* 10 (double (/ (:xbarbar xbar-data) 24)))) 10)))]
+     [:p (str "work in-progress warning limit (hours): " (double (/ (Math/round (double (* 10 (:xbarucl xbar-data)))) 10)))]
      ]]}))
