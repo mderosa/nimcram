@@ -85,4 +85,4 @@ for the 'progress', which need special processing logic"}
   (condp = (:request-method req)
     :get (run-get (:params req))
     :post (run-post fn-get fn-update (:params req))
-    :delete (trace(run-delete fn-get fn-update fn-delete req))))
+    :delete (run-delete fn-get fn-update fn-delete req)))

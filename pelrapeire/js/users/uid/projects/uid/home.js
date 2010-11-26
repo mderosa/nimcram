@@ -1,4 +1,19 @@
 
+var yScale = (function (ls) {
+	var max = 0;
+	for (var i = 0; i <= ls.length; i++) {
+		if (ls[i] > max) {max = ls[i];}
+	}
+	return 240/max;
+})(xbardata.subgroupavgs);
+
+var xSpacing, xOffset;
+if (xbardata.subgroupavgs.length <= 46) {
+	xSpacing = 20; xOffset = 5;
+} else {
+	xSpacing = 10; xOffset = 10;
+}
+
 var pnl = new pv.Panel()
 		.canvas("xbar")
 		.width(934)
@@ -10,8 +25,8 @@ var pnl = new pv.Panel()
 		
 pnl.add(pv.Dot)
 		.data(xbardata.subgroupavgs)
-		.left(function(d) {return this.index * 20 + 10;})
-		.bottom(function(d){return d/2;});
+		.left(function(d) {return this.index * xSpacing + xOffset;})
+		.bottom(function(d){return d * yScale;});
 		
 var rlLeft = pnl.add(pv.Rule)
 	.left(0)
@@ -33,7 +48,7 @@ rlRight.add(pv.Label)
 				
 var hrule = pnl.add(pv.Rule)
 			.data([0, xbardata.xbarbar, xbardata.xbarucl])
-			.bottom(function(d) {return d/2})
+			.bottom(function(d) {return d * yScale})
 			.strokeStyle("#aaa")
 			.add(pv.Label)
 				.text(function(d) {return Math.round(d);})
