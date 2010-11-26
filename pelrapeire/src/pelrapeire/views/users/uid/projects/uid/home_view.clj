@@ -3,6 +3,15 @@
 	clojure.contrib.json
 	pelrapeire.app.statistics.xbarchart))
 
+(defn graph-description [xbar-data]
+  (if (< 0 (count (:subgroupavgs xbar-data)))
+    [:div {:id "xbardescription"}
+     [:p (str "average work in-progress time (hours): " (double (/ (Math/round (double (* 10 (:xbarbar xbar-data)))) 10)))]
+     [:p (str "work in-progress warning limit (hours): " (double (/ (Math/round (double (* 10 (:xbarucl xbar-data)))) 10)))]]
+    [:div {:id "xbardescription"}
+     [:p "currently there is not enough data for a data display"]])
+)
+
 (defn show [map-data]
   (let [hours-subgroups (:collection map-data)
 	xs (calculate-subgroup-averages hours-subgroups)
@@ -18,8 +27,5 @@
      [:script (str "var xbardata=" (json-str xbar-data) ";")]
      [:script {:src "/js/users/uid/projects/uid/home.js" :type "text/javascript"}]
      ]
-    
-    [:div {:id "xbardescription"}
-     [:p (str "average work in-progress time (hours): " (double (/ (Math/round (double (* 10 (:xbarbar xbar-data)))) 10)))]
-     [:p (str "work in-progress warning limit (hours): " (double (/ (Math/round (double (* 10 (:xbarucl xbar-data)))) 10)))]
-     ]]}))
+    (graph-description xbar-data) 
+    ]}))

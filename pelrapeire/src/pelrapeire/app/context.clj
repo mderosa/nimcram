@@ -21,5 +21,7 @@
   build-context [req]
   (let [cookie-info ((:headers req) "cookie")]
     {:project-uid ((:params req) "project-uid")
-     :user-uid (extract-user-uid cookie-info)}))
+     :user-uid (extract-user-uid cookie-info)
+     :uri (:uri req)
+     }))
 

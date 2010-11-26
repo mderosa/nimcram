@@ -2,6 +2,22 @@
   (:use hiccup.core
 	pelrapeire.app.ui-control
 	clojure.contrib.json))
+
+(defn home-url? [url]
+  (re-find #"^/users/[a-f0-9]+/projects$" url))
+
+(defn common-space-url? [url]
+  (re-find #"^/projects/.+/home$" url))
+
+(defn common-stats-url? [url]
+  (re-find #"^/users/[a-f0-9]+/projects/.+/home$" url))
+
+(defn menu-class [menu-title context]
+  (cond 
+   (and (= menu-title "HOME") (home-url? (:uri context))) "gh-hs"
+   (and (= menu-title "COMMON SPACE") (common-space-url? (:uri context))) "gh-hs"
+   (and (= menu-title "COMMON STATS") (common-stats-url? (:uri context))) "gh-hs"
+   true ""))
       
 (defn header [context]
   [:div
@@ -20,9 +36,12 @@
    [:div {:id "headerWrapper" :class "gh-hbw"}
     [:div {:class "gh-hb"}
      [:div {:class "gh-mn"}
-      [:a {:id "BrowseCategories" :href (str "/users/" (:user-uid context) "/projects")} "HOME"]
-      [:a {:id "BrowseCategories" :href (str "/projects/" (:project-uid context) "/home")} "COMMON SPACE"]
-      [:a {:id "BrowseCategories" :href (str "/users/" (:user-uid context) "/projects/" (:project-uid context) "/home")} "YOUR SPACE"]
+      [:a {:href (str "/users/" (:user-uid context) "/projects")
+	   :class (menu-class "HOME" context)} "HOME"]
+      [:a {:href (str "/projects/" (:project-uid context) "/home")
+	   :class (menu-class "COMMON SPACE" context)} "COMMON SPACE"]
+      [:a {:href (str "/users/" (:user-uid context) "/projects/" (:project-uid context) "/home")
+	   :class (menu-class "COMMON STATS" context)} "COMMON STATS"]
       ]]]])
 
 (defn footer []
@@ -52,4 +71,3 @@ surrounds the node with a layout"}
      [:div {:class "header"} (header (:context map-data))]
      [:div {:class "content"} (:content map-data)]
      [:div {:class "footer"} (footer)]]]))
-
