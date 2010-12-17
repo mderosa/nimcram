@@ -4,9 +4,7 @@
 
 (defn header []
   [:div
-   [:img {:src "/img/logoEbay_x45.gif"}]
-   [:span {:style "padding-bottom:5px;font-size:20px"} "Hokulea"
-    [:sup "beta"]]
+   [:img {:src "/img/logoHokulea.png"}]
    [:div {:class "gh-col"} 
     [:b {:class "gh-c1"}]
     [:b {:class "gh-c2"}]
