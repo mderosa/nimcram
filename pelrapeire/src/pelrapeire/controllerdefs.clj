@@ -1,6 +1,7 @@
 (ns pelrapeire.controllerdefs
   (:use pelrapeire.repository.dbpelrapeire)
   (:require pelrapeire.controllers.index-ctrl
+	    pelrapeire.controllers.about-ctrl
 	    pelrapeire.controllers.login-ctrl
 	    pelrapeire.controllers.projects.new-ctrl
 	    pelrapeire.controllers.projects.uid.home-ctrl
@@ -21,6 +22,7 @@ run(), which will take any number of parameters the last of which will be a
 request data object"} 
  controllers 
  {:index pelrapeire.controllers.index-ctrl/run
+  :about pelrapeire.controllers.about-ctrl/run
   :login 
   (partial pelrapeire.controllers.login-ctrl/run users-by-email)
   :projects-new

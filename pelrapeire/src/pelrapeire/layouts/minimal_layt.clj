@@ -17,10 +17,8 @@
 
 (defn footer []
   [:div
-   [:a {:href "http://pages.ebay.com/aboutebay.html"} "About eBay"]
-   [:a {:href "http://www2.ebay.com/aw/marketing.shtml"} "Announcements"]
-   [:a {:href "http://pages.ebay.com/sitemap.html"} "Site Map"]
-   [:a {:href "http://pages.ebay.com/help/index.html"} "Help"]])
+   [:a {:href "/about"} "Whats and Whys"]
+   [:a {:href "http://pages.ebay.com/help/index.html"} "Contact Us"]])
 
 (defn
   #^{:doc "takes a map of the form {:content Node :js String :css String :title String} and

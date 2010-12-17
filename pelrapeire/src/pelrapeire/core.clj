@@ -42,6 +42,8 @@
 (defroutes main-routes
   (GET "/index" {params :params :as req}
        (direct-to (:index controllers) req))
+  (GET "/about" req
+       (direct-to (:about controllers) req))
   (POST "/login" req
 	(direct-to (:login controllers) req))
   (POST "/projects/new" req
