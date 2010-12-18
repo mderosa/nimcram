@@ -148,19 +148,6 @@ table.task a.collapsible {
 	font-size: 120%;
 }
 
-#headline h2 {
-	color: #89B31F;
-	font-size: 220%;
-	margin: 0 0 0.4em;
-}
-
-#headline p {
-	text-align: left;	
-	font-size: 120%;
-	line-height: 1.5em;
-	margin-bottom: 1em;
-}
-
 #headline strong {
 	border-bottom: 1px solid #D9D9D9;
 	color: #666666;
@@ -194,8 +181,21 @@ div#steps {
 
 #projects h2, #actions h2 {
 	color: #89B31F;
-	font-size: 220%;
-	margin: 0 0 0.4em;
+	font-size: 1.8em;
+	margin: 0 0 0.4em 0;
+}
+
+div.infoblock h2 {
+	color: #89B31F;
+	font-size: 2em;
+	margin: 0 0 0 0;
+}
+
+div.infoblock p {
+	text-align: left;	
+	font-size: 1.2em;
+	line-height: 1.5em;
+	margin-bottom: 1em;
 }
 
 #projects a {

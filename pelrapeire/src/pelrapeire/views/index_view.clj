@@ -33,7 +33,7 @@ with a big impact.  Try it for yourself.")
 	content 
 	[:div
 	 [:div {:id "top"}
-	  [:div {:id "headline"}
+	  [:div {:id "headline" :class "infoblock"}
 	   [:h2 "Navigate well"]
 	   [:p 
 	    [:strong "The law of the loop"] txt-law-of-loop]
