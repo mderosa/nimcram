@@ -7,7 +7,7 @@
 	 [:a {:href (str "/projects/" x "/home")} x]) ls))
 
 (defn make-project-navigation [map-data]
-  [:div {:id "projects" :class "yui3-u-1-2"}
+  [:div {:id "projects" :class "yui3-u-1-2 infoblock"}
    [:div {:id "contributing-to" :class "outlined std-margin"}
     (into
      [:h2 "Navigate to projects"]
@@ -36,7 +36,7 @@
    ])
 
 (defn make-actions [map-data]
-  [:div {:id "actions" :class "yui3-u-1-2"}
+  [:div {:id "actions" :class "yui3-u-1-2 infoblock"}
    [:div {:id "newproject" :class "outlined std-margin"}
     [:h2 "Create a new project"]
     (error-list :newproject map-data)
