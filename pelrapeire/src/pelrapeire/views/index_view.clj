@@ -15,7 +15,8 @@
     [:input {:type "submit" :id "submit" :name "submit" :value "login"}]]])
 
 (def txt-law-of-loop
-     " - Hokulea gives teams feedback on their loop time, the time from the start of feature planning to 
+     " - Hokulea is a project management application that gives teams feedback on their loop time, 
+the time from the start of feature planning to 
 feature delivered. Effective teams have loops that are, first, consistent and,
 second, that accelerate over time. If your team is going to be effective you will want your loops
 to have those characteristics as well.  Join us; you too can loop with the best.")

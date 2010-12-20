@@ -19,7 +19,7 @@
 (defn footer []
   [:div
    [:a {:href "/about"} "Whats and Whys"]
-   [:a {:href "http://pages.ebay.com/help/index.html"} "Contact Us"]])
+   [:a {:href "/contactus"} "Contact Us"]])
 
 (defn
   #^{:doc "takes a map of the form {:content Node :js String :css String :title String} and

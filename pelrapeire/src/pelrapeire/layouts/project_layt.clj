@@ -21,7 +21,7 @@
       
 (defn header [context]
   [:div
-   [:img {:src "/img/logoHokulea.png"}]
+   [:a {:href "/index"} [:img {:src "/img/logoHokulea.png"}]]
    [:div {:class "gh-col"} 
     [:b {:class "gh-c1"}]
     [:b {:class "gh-c2"}]
@@ -44,10 +44,8 @@
 
 (defn footer []
   [:div
-   [:a {:href "http://pages.ebay.com/aboutebay.html"} "About eBay"]
-   [:a {:href "http://www2.ebay.com/aw/marketing.shtml"} "Announcements"]
-   [:a {:href "http://pages.ebay.com/sitemap.html"} "Site Map"]
-   [:a {:href "http://pages.ebay.com/help/index.html"} "Help"]])
+   [:a {:href "/about"} "Whats and Whys"]
+   [:a {:href "/contactus"} "Contact Us"]])
 
 (defn
   #^{:doc "takes a map of the form {:content Node :js String :css String :title String} and

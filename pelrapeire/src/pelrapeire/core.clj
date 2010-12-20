@@ -44,6 +44,8 @@
        (direct-to (:index controllers) req))
   (GET "/about" req
        (direct-to (:about controllers) req))
+  (GET "/contactus" req
+       (direct-to (:contactus controllers) req))
   (POST "/login" req
 	(direct-to (:login controllers) req))
   (POST "/projects/new" req
