@@ -24,5 +24,5 @@
 
 (deftest test-menu-class
   (testing "should return the gh-hb class on a match"
-    (is (= "gh-hb" (menu-class "HOME" {:uri "/users/83883/projects"})))))
+    (is (= "gh-hs" (menu-class "HOME" {:uri "/users/83883/projects"})))))
 

@@ -25,7 +25,6 @@
   #^{:doc "takes a map of the form {:content Node :js String :css String :title String} and
 surrounds the node with a layout"}
   render [map-data] 
-  (let [tt (trace map-data)]
   (html 
    [:html
     [:head
@@ -40,4 +39,4 @@ surrounds the node with a layout"}
     [:body
      [:div {:class "header"} (header map-data)]
      [:div {:class "content"} (:content map-data)]
-     [:div {:class "footer"} (footer)]]])))
+     [:div {:class "footer"} (footer)]]]))

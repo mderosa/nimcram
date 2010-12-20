@@ -48,6 +48,8 @@
        (direct-to (:contactus controllers) req))
   (POST "/login" req
 	(direct-to (:login controllers) req))
+  (POST "/mail/admin" req
+	(direct-to (:mail-admin controllers) req))
   (POST "/projects/new" req
 	(direct-to (:projects-new controllers) req))
   (GET "/projects/:project-uid/home" req

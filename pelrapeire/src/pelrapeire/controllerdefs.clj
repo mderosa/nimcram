@@ -4,6 +4,7 @@
 	    pelrapeire.controllers.about-ctrl
 	    pelrapeire.controllers.contactus-ctrl
 	    pelrapeire.controllers.login-ctrl
+	    pelrapeire.controllers.mail.admin-ctrl
 	    pelrapeire.controllers.projects.new-ctrl
 	    pelrapeire.controllers.projects.uid.home-ctrl
 	    pelrapeire.controllers.projects.uid.tasks-ctrl
@@ -24,9 +25,12 @@ request data object"}
  controllers 
  {:index pelrapeire.controllers.index-ctrl/run
   :about pelrapeire.controllers.about-ctrl/run
-  :contactus pelrapeire.controllers.contactus-ctrl/run
+  :contactus 
+  (partial pelrapeire.controllers.contactus-ctrl/run crud)
   :login 
   (partial pelrapeire.controllers.login-ctrl/run users-by-email)
+  :mail-admin
+  (partial pelrapeire.controllers.mail.admin-ctrl/run crud)
   :projects-new
   (partial pelrapeire.controllers.projects.new-ctrl/run crud)
   :projects-uid-home 

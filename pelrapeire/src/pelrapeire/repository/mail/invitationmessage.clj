@@ -22,7 +22,7 @@
   (to [md] to)
   (message [md s]
 	   (let [fromAddress (InternetAddress. frm)]
-	   (doto (MimeMessage. s)
-	     (.setSubject "join our project")
-	     (.setText (invitation-text frm prj msg host))
-	     (.setFrom fromAddress)))))
+	     (doto (MimeMessage. s)
+	       (.setSubject "join our project")
+	       (.setText (invitation-text frm prj msg host))
+	       (.setFrom fromAddress)))))

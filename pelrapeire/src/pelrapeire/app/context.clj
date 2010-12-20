@@ -23,5 +23,6 @@
     {:project-uid ((:params req) "project-uid")
      :user-uid (extract-user-uid cookie-info)
      :uri (:uri req)
+     :referer ((:headers req) "referer")
      }))
 
