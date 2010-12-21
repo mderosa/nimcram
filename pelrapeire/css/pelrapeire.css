@@ -63,7 +63,7 @@ body {
     -moz-background-clip:border;
     -moz-background-inline-policy:continuous;
     -moz-background-origin:padding;
-    background:transparent url(http://pics.ebaystatic.com/aw/pics/globalAssets/imgPanelURYellow.gif) no-repeat scroll right top;
+    background:transparent url(/img/imgPanelURYellow.gif) no-repeat scroll right top;
     position:relative;
     right:-1px;
     top:-1px;
@@ -72,7 +72,7 @@ body {
     -moz-background-clip:border;
     -moz-background-inline-policy:continuous;
     -moz-background-origin:padding;
-    background:transparent url(http://pics.ebaystatic.com/aw/pics/globalAssets/imgPanelULYellow.gif) no-repeat scroll left top;
+    background:transparent url(/img/imgPanelULYellow.gif) no-repeat scroll left top;
     font-size:0;
     height:6px;
     left:-2px;
@@ -83,7 +83,7 @@ body {
     -moz-background-clip:border;
     -moz-background-inline-policy:continuous;
     -moz-background-origin:padding;
-    background:#FAF5CE url(http://pics.ebaystatic.com/aw/pics/globalAssets/imgPanelBGYellowGrad1.gif) repeat-x scroll center bottom;
+    background:#FAF5CE url(/img/imgPanelBGYellowGrad1.gif) repeat-x scroll center bottom;
     border-color:#FFDD66 #FFDD66 #CCCCCC;
     border-style:solid;
     border-width:0 1px 1px;
