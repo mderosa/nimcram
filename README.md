@@ -7,7 +7,7 @@ Db-extract is a very flexible ETL tool.  Unlike a lot of ETL tools which take st
 
 # Picominmin 
 ## Overview
-The picominmin application (now named Hokulea) is a work progress tracking application designed for teams that are doing continuous deployment.  It tracks and shows variations in the time for work start to work deployed, what I call the loop time.  For CD, and actually for any team that is doing short loops, there is no other metric that has to be tracked - the ability of a team to accelerate over time, with safety, is a linear function of a teams capablility.
+The picominmin application (now named Hokulea) is a work progress tracking application designed for teams that are doing continuous deployment.  It tracks and shows variations in the time from work start to work deployed, what I call the loop time.  For CD, and actually for any team that is doing short loops, there is no other metric that has to be tracked - the ability of a team to accelerate over time, with safety, is a linear function of a teams capablility.
 
 ## Picominmin Installation
 - install maven 3
