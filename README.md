@@ -1,5 +1,5 @@
 # Introduction
-This is a set of small but very functional tools suitable for in small to medium sized projects.
+This is a set of small, functional tools suitable for use in small to medium sized projects.
 
 # Db-extract 
 ## Overview
