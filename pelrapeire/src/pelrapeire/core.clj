@@ -86,7 +86,7 @@
 	handler-list (doto (HandlerList.)
 		      (.addHandler resource-handler)
 		      (.addHandler request-handler))
-       #^Server s (create-server (dissoc {:port 8080} :configurator))]
+       #^Server s (create-server (dissoc {:port 8081} :configurator))]
     (doto s
       (.setHandler handler-list)
       (.start)

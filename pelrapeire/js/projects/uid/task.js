@@ -200,7 +200,7 @@ YUI.add('task', function(Y) {
 				_rev: this.getRevision(),
 				title: this.get('data').title,
 				htmlNamespace: this._renderTaskFormNamespaces(this.get('data').namespace),
-				specification: this.get('data').specification,
+				specification: this.get('data').specification || "",
 				checkedTrue: checked(this.get('data'), true),
 				checkedFalse: checked(this.get('data'), false)
 			};

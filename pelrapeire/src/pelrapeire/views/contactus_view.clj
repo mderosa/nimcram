@@ -1,8 +1,9 @@
-(ns pelrapeire.views.contactus-view
-  (:use clojure.contrib.trace))
+(ns pelrapeire.views.contactus-view)
 
 (defn show [map-data]
-  (let [user-email ((:object map-data) "email")]
+  (let [user-email (if (nil? (:object map-data))
+		     nil
+		     ((:object map-data) "email"))]
     {:js nil :css nil :title "send us you thoughts" :content
      [:div {:style "width:50em;margin:auto"}
       [:form {:method "POST" :action "/mail/admin"}
