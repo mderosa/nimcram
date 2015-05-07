@@ -12,6 +12,8 @@ Tags: Groovy
 An experimental project to investigate using Closure and YUI for a web application as the basis for a web
 application. The application is designed for teams that are doing continuous deployment and tracks tasks and shows variations in the time from work start to work deployed, what I call the loop time.
 
+Tags: Clojure, YUI
+
 ## Picominmin Installation
 - install maven 3
 - install leiningen from https://github.com/technomancy/leiningen
