@@ -10,7 +10,7 @@ Tags: Groovy
 # Picominmin 
 ## Overview
 An experimental project to investigate using Closure and YUI for a web application as the basis for a web
-application. The application designed for teams that are doing continuous deployment.  It tracks and shows variations in the time from work start to work deployed, what I call the loop time.
+application. The application is designed for teams that are doing continuous deployment and tracks tasks and shows variations in the time from work start to work deployed, what I call the loop time.
 
 ## Picominmin Installation
 - install maven 3
