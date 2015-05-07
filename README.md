@@ -9,7 +9,8 @@ Tags: Groovy
 
 # Picominmin 
 ## Overview
-The picominmin application (now named Hokulea) is a work progress tracking application designed for teams that are doing continuous deployment.  It tracks and shows variations in the time from work start to work deployed, what I call the loop time.  For CD, and actually for any team that is doing short loops, there is no other metric that has to be tracked - the ability of a team to accelerate over time, with safety, is a linear function of a teams capablility.
+An experimental project to investigate using Closure and YUI for a web application as the basis for a web
+application. The application designed for teams that are doing continuous deployment.  It tracks and shows variations in the time from work start to work deployed, what I call the loop time.
 
 ## Picominmin Installation
 - install maven 3
